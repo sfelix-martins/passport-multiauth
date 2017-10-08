@@ -1,0 +1,30 @@
+{
+    "name": "smartins/passport-multiauth",
+    "description": "Add support to multi-auth on Laravel Passport",
+    "type": "library",
+    "license": "MIT",
+    "keywords": ["laravel", "passport", "multi-auth"],
+    "authors": [
+        {
+            "name": "Samuel Martins",
+            "email": "sfelix_martins@hotmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.6.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "SMartins\\PassportMultiauth\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "SMartins\\PassportMultiauth\\Providers\\MultiauthServiceProvider",
+                "SMartins\\PassportMultiauth\\Providers\\EventServiceProvider"
+            ]
+        }
+    }
+
+}
