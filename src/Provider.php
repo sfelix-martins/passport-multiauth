@@ -1,6 +1,6 @@
 <?php
 
-namespace Laravel\Passport;
+namespace SMartins\PassportMultiauth;
 
 use Illuminate\Database\Eloquent\Model;
 
