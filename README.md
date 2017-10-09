@@ -242,3 +242,23 @@ Response if isn't admin:
     ]
 }
 ```
+
+### Refreshing tokens
+
+- Add the 'provider' param in your request at `/oauth/token`:
+
+```
+POST /oauth/token HTTP/1.1
+Host: localhost
+Accept: application/json, text/plain, */*
+Content-Type: application/json;charset=UTF-8
+Cache-Control: no-cache
+
+{
+    "grant_type" : "refresh_token",
+    "client_id": "client-id",
+    "client_secret" : "client-secret",
+    "refresh_token" : "refresh-token",
+    "provider" : "admins"
+}
+```

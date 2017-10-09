@@ -2,14 +2,12 @@
 
 namespace SMartins\PassportMultiauth\Listeners;
 
-use DB;
-use Carbon\Carbon;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Laravel\Passport\Events\AccessTokenCreated;
 use SMartins\PassportMultiauth\ProviderRepository;
 
-class PassportAccessTokenCreated
+class CreateAccessTokenProvider
 {
     private $providers;
 

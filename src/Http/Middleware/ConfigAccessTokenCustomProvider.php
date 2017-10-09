@@ -2,7 +2,6 @@
 
 namespace SMartins\PassportMultiauth\Http\Middleware;
 
-use DB;
 use Closure;
 use Illuminate\Http\Request;
 use League\OAuth2\Server\ResourceServer;
