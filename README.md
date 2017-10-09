@@ -21,8 +21,11 @@ $ php artisan migrate
 **Optional:** Publish migrations:
 
 ```console
-$ php artisan vendor:publish --provider=SMartins\PassportMultiauth\Providers\MultiauthServiceProvider --tag=migrations
+$ php artisan vendor:publish
 ```
+
+And choose the provider `SMartins\PassportMultiauth\Providers\MultiauthServiceProvider`
+**End optional**
 
 - Add new provider in `config/auth.php` using a model that extends `Authenticable` class and use `HasRoles`, `HasApiTokens` traits.
 
@@ -77,8 +80,8 @@ class Kernel extends HttpKernel
             'throttle:60,1',
             'bindings',
             \Barryvdh\Cors\HandleCors::class,
-            \SMartins\PassportMultiauth\PassportCustomProvider,
-            \SMartins\PassportMultiauth\PassportCustomProviderAccessToken,
+            \SMartins\PassportMultiauth\Http\Middleware\AddCustomProvider::class,
+            \SMartins\PassportMultiauth\Http\Middleware\ConfigAccessTokenCustomProvider::class,
         ],
     ];
 

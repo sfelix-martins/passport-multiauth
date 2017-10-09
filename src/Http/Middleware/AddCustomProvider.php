@@ -5,7 +5,7 @@ namespace SMartins\PassportMultiauth\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 
-class PassportCustomProvider
+class AddCustomProvider
 {
     /**
      * Handle an incoming request.

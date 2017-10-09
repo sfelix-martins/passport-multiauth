@@ -9,7 +9,7 @@ use League\OAuth2\Server\ResourceServer;
 use SMartins\PassportMultiauth\ProviderRepository;
 use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 
-class PassportCustomProviderAccessToken
+class ConfigAccessTokenCustomProvider
 {
     private $server;
 
