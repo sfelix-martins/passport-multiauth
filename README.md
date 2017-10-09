@@ -9,7 +9,7 @@ Add support to multi-authentication to [Laravel Passport](https://laravel.com/do
 - Install using composer:
 
 ```console
-$ composer required smartins/passport-multiauth
+$ composer require smartins/passport-multiauth
 ```
 
 - Migrate database to create `oauth_access_token_providers` table:
