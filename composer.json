@@ -22,7 +22,6 @@
         "laravel": {
             "providers": [
                 "SMartins\\PassportMultiauth\\Providers\\MultiauthServiceProvider"
-                // "SMartins\\PassportMultiauth\\Providers\\EventServiceProvider"
             ]
         }
     }
