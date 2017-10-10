@@ -12,6 +12,15 @@ Add support to multi-authentication to [Laravel Passport](https://laravel.com/do
 $ composer require smartins/passport-multiauth
 ```
 
+- If you are using less than Laravel 5.5 do you need add the providers to `config/app.php`:
+
+```php
+    'providers' => [
+        ...
+        SMartins\PassportMultiauth\Providers\MultiauthServiceProvider::class,
+    ],
+```
+
 - Migrate database to create `oauth_access_token_providers` table:
 
 ```console

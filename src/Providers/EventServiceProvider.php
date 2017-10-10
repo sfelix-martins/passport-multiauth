@@ -14,7 +14,7 @@ class EventServiceProvider extends ServiceProvider
      */
     protected $listen = [
         'Laravel\Passport\Events\AccessTokenCreated' => [
-            'SMartins\PassportMultiauth\Listeners\PassportAccessTokenCreated',
+            // 'SMartins\PassportMultiauth\Listeners\PassportAccessTokenCreated',
         ],
     ];
 
