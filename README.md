@@ -4,6 +4,13 @@ Add support to multi-authentication to [Laravel Passport](https://laravel.com/do
 
 **OBS:** Based on responses from [renanwilian](https://github.com/renanwilliam) to [Passport Multi-Auth issue](https://github.com/laravel/passport/issues/161)
 
+## Compatibility
+
+| Laravel Passport |
+|------------------|
+| ^2.0             |
+| ^3.0             |
+
 ## Installing and configuring
 
 - Install using composer:
