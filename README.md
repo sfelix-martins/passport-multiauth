@@ -4,12 +4,28 @@ Add support to multi-authentication to [Laravel Passport](https://laravel.com/do
 
 **OBS:** Based on responses from [renanwilian](https://github.com/renanwilliam) to [Passport Multi-Auth issue](https://github.com/laravel/passport/issues/161)
 
+## Compatibility
+
+| Laravel Passport |
+|------------------|
+| ^2.0             |
+| ^3.0             |
+
 ## Installing and configuring
 
 - Install using composer:
 
 ```console
 $ composer require smartins/passport-multiauth
+```
+
+- If you are using less than Laravel 5.5 do you need add the providers to `config/app.php`:
+
+```php
+    'providers' => [
+        ...
+        SMartins\PassportMultiauth\Providers\MultiauthServiceProvider::class,
+    ],
 ```
 
 - Migrate database to create `oauth_access_token_providers` table:
@@ -21,8 +37,11 @@ $ php artisan migrate
 **Optional:** Publish migrations:
 
 ```console
-$ php artisan vendor:publish --provider=SMartins\PassportMultiauth\Providers\MultiauthServiceProvider --tag=migrations
+$ php artisan vendor:publish
 ```
+
+And choose the provider `SMartins\PassportMultiauth\Providers\MultiauthServiceProvider`
+**End optional**
 
 - Add new provider in `config/auth.php` using a model that extends `Authenticable` class and use `HasRoles`, `HasApiTokens` traits.
 
@@ -77,6 +96,11 @@ class Kernel extends HttpKernel
             'throttle:60,1',
             'bindings',
             \Barryvdh\Cors\HandleCors::class,
+<<<<<<< HEAD
+=======
+            \SMartins\PassportMultiauth\Http\Middleware\AddCustomProvider::class,
+            \SMartins\PassportMultiauth\Http\Middleware\ConfigAccessTokenCustomProvider::class,
+>>>>>>> 1843a439881fe56e03e897f6395bb7d25b24e051
         ],
 
         'custom-provider' => [
@@ -244,5 +268,25 @@ Response if isn't admin:
             "detail": "You aren't admin."
         }
     ]
+}
+```
+
+### Refreshing tokens
+
+- Add the 'provider' param in your request at `/oauth/token`:
+
+```
+POST /oauth/token HTTP/1.1
+Host: localhost
+Accept: application/json, text/plain, */*
+Content-Type: application/json;charset=UTF-8
+Cache-Control: no-cache
+
+{
+    "grant_type" : "refresh_token",
+    "client_id": "client-id",
+    "client_secret" : "client-secret",
+    "refresh_token" : "refresh-token",
+    "provider" : "admins"
 }
 ```
