@@ -9,7 +9,7 @@ Add support to multi-authentication to [Laravel Passport](https://laravel.com/do
 - Install using composer:
 
 ```console
-$ composer required smartins/passport-multiauth
+$ composer require smartins/passport-multiauth
 ```
 
 - Migrate database to create `oauth_access_token_providers` table:
@@ -49,7 +49,7 @@ return [
 
 ```
 
-- Add the middlewares `PassportCustomProvider` and `PassportCustomProviderAccessToken` to api array on `$middlewareGroups` attribute on `app/Http/Kernel`.
+- Register the middlewares on a group `PassportCustomProvider` and `PassportCustomProviderAccessToken` on `$middlewareGroups` attribute on `app/Http/Kernel`.
 
 ```php
 
@@ -77,16 +77,19 @@ class Kernel extends HttpKernel
             'throttle:60,1',
             'bindings',
             \Barryvdh\Cors\HandleCors::class,
-            \SMartins\PassportMultiauth\PassportCustomProvider,
-            \SMartins\PassportMultiauth\PassportCustomProviderAccessToken,
         ],
+
+        'custom-provider' => [
+            \SMartins\PassportMultiauth\Http\Middleware\AddCustomProvider::class,
+            \SMartins\PassportMultiauth\Http\Middleware\ConfigAccessTokenCustomProvider::class,
+        ]
     ];
 
     ...
 }
 ```
 
-- Encapsulate the passport routes with this middleware in `AuthServiceProvider`:
+- Encapsulate the passport routes for access token with the registered middleware in `AuthServiceProvider`:
 
 ```php
 
@@ -103,15 +106,19 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        Route::group(['middleware' => 'api'], function () {
-            Passport::routes();
+        Passport::routes();
+
+        Route::group(['middleware' => 'custom-provider'], function () {
+            Passport::routes(function ($router) {
+                return $router->forAccessTokens();
+            });
         });
     }
     ...
 }
 ```
 
-- Add the 'provider' param in your request at `/oauth/token`:
+- Add the 'provider' parameter in your request at `/oauth/token`:
 
 ```
 POST /oauth/token HTTP/1.1
