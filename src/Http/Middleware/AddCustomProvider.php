@@ -18,7 +18,9 @@ class AddCustomProvider
     {
         $params = $request->all();
         if (array_key_exists('provider', $params)) {
-            config(['auth.guards.api.provider' => $params['provider']]);
+            if (! is_null($params['provider'])) {
+                config(['auth.guards.api.provider' => $params['provider']]);
+            }
         }
 
         return $next($request);

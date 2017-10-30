@@ -34,15 +34,6 @@ $ composer require smartins/passport-multiauth
 $ php artisan migrate
 ```
 
-**Optional:** Publish migrations:
-
-```console
-$ php artisan vendor:publish
-```
-
-And choose the provider `SMartins\PassportMultiauth\Providers\MultiauthServiceProvider`
-**End optional**
-
 - Add new provider in `config/auth.php` using a model that extends `Authenticable` class and use `HasRoles`, `HasApiTokens` traits.
 
 Ex.:
@@ -96,11 +87,6 @@ class Kernel extends HttpKernel
             'throttle:60,1',
             'bindings',
             \Barryvdh\Cors\HandleCors::class,
-<<<<<<< HEAD
-=======
-            \SMartins\PassportMultiauth\Http\Middleware\AddCustomProvider::class,
-            \SMartins\PassportMultiauth\Http\Middleware\ConfigAccessTokenCustomProvider::class,
->>>>>>> 1843a439881fe56e03e897f6395bb7d25b24e051
         ],
 
         'custom-provider' => [
@@ -141,6 +127,14 @@ class AuthServiceProvider extends ServiceProvider
     ...
 }
 ```
+
+**Optional:** Publish migrations:
+
+```console
+$ php artisan vendor:publish
+```
+
+And choose the provider `SMartins\PassportMultiauth\Providers\MultiauthServiceProvider`
 
 - Add the 'provider' parameter in your request at `/oauth/token`:
 
