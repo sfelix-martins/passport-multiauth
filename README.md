@@ -2,6 +2,8 @@
 
 Add support to multi-authentication to [Laravel Passport](https://laravel.com/docs/5.5/passport)
 
+To use t
+
 **OBS:** Based on responses from [renanwilian](https://github.com/renanwilliam) to [Passport Multi-Auth issue](https://github.com/laravel/passport/issues/161)
 
 ## Compatibility
@@ -155,6 +157,17 @@ Cache-Control: no-cache
 }
 ```
 
+- On routes encapsulated with custom-provider middleware you needs now pass the 'api' guard to user() method:
+
+```
+public function store(Request $request)
+{
+    $entity = $request->user('api');
+    ...
+}
+
+```
+
 ## Use sample
 
 - Create a middleware to check if user authenticated is admin
@@ -284,3 +297,16 @@ Cache-Control: no-cache
     "provider" : "admins"
 }
 ```
+
+### Using scopes
+
+- Instead of using the `scope` and `scopes` middleware from `Laravel\Passport` use from `SMartins\PassportMultiauth` package:
+
+```
+protected $routeMiddleware = [
+    'scope' => \SMartins\PassportMultiauth\Http\Middleware\MultiAuthCheckForAnyScope::class,
+    'scopes' => \SMartins\PassportMultiauth\Http\Middleware\MultiAuthCheckScopes::class,
+];
+```
+
+On middlewares the has the guard `api` on request object
