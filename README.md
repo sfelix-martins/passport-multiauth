@@ -2,8 +2,6 @@
 
 Add support to multi-authentication to [Laravel Passport](https://laravel.com/docs/5.5/passport)
 
-To use t
-
 **OBS:** Based on responses from [renanwilian](https://github.com/renanwilliam) to [Passport Multi-Auth issue](https://github.com/laravel/passport/issues/161)
 
 ## Compatibility
@@ -168,7 +166,7 @@ Cache-Control: no-cache
 ```
 use Illuminate\Http\Request;
 
-Route::get('/admin', function (Request $request) {
+Route::get('/company', function (Request $request) {
     return $request->user('api');
 });
 
