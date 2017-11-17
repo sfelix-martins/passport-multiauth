@@ -61,7 +61,7 @@ return [
 
 ```
 
-- Register the middlewares on a group `PassportCustomProvider` and `PassportCustomProviderAccessToken` on `$middlewareGroups` attribute on `app/Http/Kernel`.
+- Register the middlewares `PassportCustomProvider` and `PassportCustomProviderAccessToken` on `$middlewareGroups` attribute on `app/Http/Kernel`.
 
 ```php
 
@@ -89,6 +89,7 @@ class Kernel extends HttpKernel
             'throttle:60,1',
             'bindings',
             \Barryvdh\Cors\HandleCors::class,
+            'custom-provider',
         ],
 
         'custom-provider' => [
@@ -105,6 +106,9 @@ class Kernel extends HttpKernel
 
 ```php
 
+use Route;
+use Laravel\Passport\Passport;
+
 class AuthServiceProvider extends ServiceProvider
 {
     ...
@@ -120,7 +124,7 @@ class AuthServiceProvider extends ServiceProvider
 
         Passport::routes();
 
-        Route::group(['middleware' => 'custom-provider'], function () {
+        Route::group(['middleware' => 'api'], function () {
             Passport::routes(function ($router) {
                 return $router->forAccessTokens();
             });
@@ -157,14 +161,16 @@ Cache-Control: no-cache
 }
 ```
 
-- On routes encapsulated with custom-provider middleware you needs now pass the 'api' guard to user() method:
+- On your routes encapsulated with `custom-provider` middleware you needs now pass the 'api' guard to user() method:
+
+- `app\routes\api.php`:
 
 ```
-public function store(Request $request)
-{
-    $entity = $request->user('api');
-    ...
-}
+use Illuminate\Http\Request;
+
+Route::get('/admin', function (Request $request) {
+    return $request->user('api');
+});
 
 ```
 
