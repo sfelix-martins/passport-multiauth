@@ -163,10 +163,10 @@ Cache-Control: no-cache
 
 - `app\routes\api.php`:
 
-```
+```php
 use Illuminate\Http\Request;
 
-Route::get('/company', function (Request $request) {
+Route::get('/admin', function (Request $request) {
     return $request->user('api');
 });
 
@@ -240,11 +240,16 @@ class Kernel extends HttpKernel
 ```php
 <?php
 
+use Illuminate\Http\Request;
+
 Route::group(['middleware' => 'api', 'prefix' => 'admins'], function () {
-    Route::get('/me', 'AdminController@me')->middleware('admin');
+    Route::get('/me', function (Request $request) {
+        return $request->user('api');
+    })->middleware('admin');
 });
 
 ```
+
 
 - Create a new admin, login with `admins` provider parameter on `oauth/token` and call route with access token:
 
@@ -304,9 +309,10 @@ Cache-Control: no-cache
 
 ### Using scopes
 
-- Instead of using the `scope` and `scopes` middleware from `Laravel\Passport` use from `SMartins\PassportMultiauth` package:
+- Instead of using the [`scope` and `scopes`](https://laravel.com/docs/5.5/passport#checking-scopes
+) middleware from `Laravel\Passport` use from `SMartins\PassportMultiauth` package:
 
-```
+```php
 protected $routeMiddleware = [
     'scope' => \SMartins\PassportMultiauth\Http\Middleware\MultiAuthCheckForAnyScope::class,
     'scopes' => \SMartins\PassportMultiauth\Http\Middleware\MultiAuthCheckScopes::class,
