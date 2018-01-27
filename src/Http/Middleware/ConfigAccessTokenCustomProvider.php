@@ -3,14 +3,16 @@
 namespace SMartins\PassportMultiauth\Http\Middleware;
 
 use Closure;
+use Illuminate\Support\Str;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Auth\CreatesUserProviders;
 use Illuminate\Http\Request;
 use Illuminate\Auth\AuthenticationException;
 use League\OAuth2\Server\ResourceServer;
-use SMartins\PassportMultiauth\ProviderRepository;
+use League\OAuth2\Server\Exception\OAuthServerException;
 use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
+use SMartins\PassportMultiauth\ProviderRepository;
 
 class ConfigAccessTokenCustomProvider
 {
@@ -65,18 +67,46 @@ class ConfigAccessTokenCustomProvider
                 return $next($request);
             }
 
-            // If has users with same id and the accessToken provider is different
-            // of default provider return unauthenticated.
-            if ($accessToken->provider != $this->defaultApiProvider()) {
-                throw new AuthenticationException("Unauthenticated", ['api']);
+            // Get the auth guard if has to check the default guard
+            $guards = $this->getAuthGuards($request);
+
+            if (count($guards) == 0) {
+                return $next($request);
             }
 
-            config(['auth.guards.api.provider' => $accessToken->provider]);
-        } catch (\Exception $e) {
+            if (count($guards) > 1) {
+                // Set the api provider used to choose provider on
+                // \Laravel\Passport\Bridge\UserRepository::getUserEntityByUserCredentials
+                config(['auth.guards.api.provider' => $accessToken->provider]);
+
+                return $next($request);
+            }
+
+            // If has users with same id and the accessToken provider is different
+            // of default provider return unauthenticated.
+            if ($accessToken->provider != $this->defaultGuardProvider($guards[0])) {
+                throw new AuthenticationException("Unauthenticated", $guards);
+            }
+        } catch (OAuthServerException $e) {
             //
         }
 
         return $next($request);
+    }
+
+    public function getAuthGuards(Request $request)
+    {
+        $middlewares = $request->route()->middleware();
+
+        $guards = [];
+        foreach ($middlewares as $middleware) {
+            if (Str::startsWith($middleware, 'auth')) {
+                $explodedGuards = explode(',', Str::after($middleware, ':'));
+                $guards = array_unique(array_merge($guards, $explodedGuards));
+            }
+        }
+
+        return $guards;
     }
 
     public function entitiesWithSameIdOnProviders($id): Collection
@@ -90,9 +120,9 @@ class ConfigAccessTokenCustomProvider
         return $entities;
     }
 
-    public function defaultApiProvider()
+    public function defaultGuardProvider(string $guard)
     {
-        return config('auth.guards.api.provider');
+        return config('auth.guards.'.$guard.'.provider');
     }
 
     public function findEntityOnProvider($provider, $userId)

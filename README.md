@@ -59,7 +59,29 @@ return [
 
 ```
 
-- Register the middlewares `PassportCustomProvider` and `PassportCustomProviderAccessToken` on `$middlewareGroups` attribute on `app/Http/Kernel`.
+- Add a new `guard` in `config/auth.php` guards array using driver `passport` and the provider added above:
+
+```php
+    'guards' => [
+        'web' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
+
+        'api' => [
+            'driver' => 'passport',
+            'provider' => 'users',
+        ],
+
+        // ** New guard **
+        'admin' => [
+            'driver' => 'passport',
+            'provider' => 'admins',
+        ],
+    ]
+```
+
+- Register the middlewares `AddCustomProvider` and `ConfigAccessTokenCustomProvider` on `$middlewareGroups` attribute on `app/Http/Kernel`.
 
 ```php
 
@@ -122,6 +144,7 @@ class AuthServiceProvider extends ServiceProvider
 
         Passport::routes();
 
+        // Middleware `api` that contains the `custom-provider` middleware group defined on $middlewareGroups above
         Route::group(['middleware' => 'api'], function () {
             Passport::routes(function ($router) {
                 return $router->forAccessTokens();
@@ -139,6 +162,8 @@ $ php artisan vendor:publish
 ```
 
 And choose the provider `SMartins\PassportMultiauth\Providers\MultiauthServiceProvider`
+
+## Usage
 
 - Add the 'provider' parameter in your request at `/oauth/token`:
 
@@ -159,6 +184,35 @@ Cache-Control: no-cache
 }
 ```
 
+- You can pass your guards on `auth` middleware as you with. Example:
+
+```php
+Route::group(['middleware' => ['api', 'auth:admin']], function () {
+    Route::get('/admin', function ($request) {
+        // Get the logged admin instance
+        return $request->user(); // You can use too `$request->user('admin')` passing the guard.
+    });
+});
+
+```
+
+The  `api` guard use is equals the example with `admin`
+
+- You can pass many guards to `auth` middleware. 
+
+**OBS:** To pass many you need pass the `api` guard on end of guards and the guard `api` as parameter on `$request->user()` method. Ex:
+
+```php
+// `api` guard on end of guards separated by comma
+Route::group(['middleware' => ['api', 'auth:admin,api']], function () {
+    Route::get('/admin', function ($request) {
+        // Passing `api` guard to `$request->user()` method
+        // The instance of user authenticated (Admin or User in this case) will be returned
+        return $request->user('api');
+    });
+});
+```
+
 - On your routes encapsulated with `custom-provider` middleware you needs now pass the 'api' guard to user() method:
 
 - `app\routes\api.php`:
@@ -170,121 +224,6 @@ Route::get('/admin', function (Request $request) {
     return $request->user('api');
 });
 
-```
-
-## Use sample
-
-- Create a middleware to check if user authenticated is admin
-
-```php
-<?php
-
-namespace App\Http\Middleware;
-
-use Auth;
-use Closure;
-use App\Admin;
-
-class CheckIfIsAdmin
-{
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @return mixed
-     */
-    public function handle(Request $request, Closure $next)
-    {
-        $model = Auth::guard('api')->user();
-
-        if ($model instanceof Admin) {
-            return $next($request);
-        } else {
-            abort(403, "You aren't admin.");
-        }
-    }
-}
-
-```
-
-- Register the middleware
-
-```php
-<?php
-
-namespace App\Http;
-
-use Illuminate\Foundation\Http\Kernel as HttpKernel;
-
-class Kernel extends HttpKernel
-{
-    ...
-    /**
-     * The application's route middleware.
-     *
-     * These middleware may be assigned to groups or used individually.
-     *
-     * @var array
-     */
-    protected $routeMiddleware = [
-        ...
-        'admin' => \App\Http\Middleware\CheckIfIsAdmin::class,
-    ];
-    ...
-}
-```
-
-- Add middleware to route
-
-```php
-<?php
-
-use Illuminate\Http\Request;
-
-Route::group(['middleware' => 'api', 'prefix' => 'admins'], function () {
-    Route::get('/me', function (Request $request) {
-        return $request->user('api');
-    })->middleware('admin');
-});
-
-```
-
-
-- Create a new admin, login with `admins` provider parameter on `oauth/token` and call route with access token:
-
-```
-GET /admins/me HTTP/1.1
-Host: localhost
-Accept: application/json
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbG ...
-```
-
-Response if is admin:
-
-```json
-{
-    "id": 1,
-    "name": "Admin",
-    "email": "admin@domain.com",
-    "created_at": "2017-10-08 00:00:00",
-    "updated_at": "2017-10-08 00:00:00"
-}
-```
-
-Response if isn't admin:
-
-```json
-{
-    "errors": [
-        {
-            "status": 403,
-            "code": 121,
-            "title": "Action not allowed.",
-            "detail": "You aren't admin."
-        }
-    ]
-}
 ```
 
 ### Refreshing tokens
