@@ -16,10 +16,10 @@ Add support to multi-authentication to [Laravel Passport](https://laravel.com/do
 - Install using composer:
 
 ```console
-$ composer require smartins/passport-multiauth
+composer require smartins/passport-multiauth
 ```
 
-- If you are using less than Laravel 5.5 do you need add the providers to `config/app.php`:
+- If you are using a Laravel version **less than 5.5** do you **need add** the provider to `config/app.php`:
 
 ```php
     'providers' => [
@@ -31,12 +31,30 @@ $ composer require smartins/passport-multiauth
 - Migrate database to create `oauth_access_token_providers` table:
 
 ```console
-$ php artisan migrate
+php artisan migrate
 ```
 
-- Add new provider in `config/auth.php` using a model that extends `Authenticable` class and use `HasRoles`, `HasApiTokens` traits.
+- Add new provider in `config/auth.php` using a model that extends of `Authenticatable` class and use `HasApiTokens` trait.
 
 Ex.:
+
+- Configure your model:
+
+```php
+<?php
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Passport\HasApiTokens;
+
+class Admin extends Authenticatable
+{
+   use Notifiable, HasApiTokens;
+
+```
+
+- And your `config/auth.php` providers:
 
 ```php
 <?php
@@ -50,6 +68,7 @@ return [
             'model' => App\User::class,
         ],
 
+        // ** New provider**
         'admins' => [
             'driver' => 'eloquent',
             'model' => App\Administrator::class,
@@ -158,14 +177,14 @@ class AuthServiceProvider extends ServiceProvider
 **Optional:** Publish migrations:
 
 ```console
-$ php artisan vendor:publish
+php artisan vendor:publish
 ```
 
 And choose the provider `SMartins\PassportMultiauth\Providers\MultiauthServiceProvider`
 
 ## Usage
 
-- Add the 'provider' parameter in your request at `/oauth/token`:
+- Add the `provider` parameter in your request at `/oauth/token`:
 
 ```
 POST /oauth/token HTTP/1.1
@@ -184,7 +203,7 @@ Cache-Control: no-cache
 }
 ```
 
-- You can pass your guards on `auth` middleware as you with. Example:
+- You can pass your guards on `auth` middleware as you wish. Example:
 
 ```php
 Route::group(['middleware' => ['api', 'auth:admin']], function () {
@@ -196,7 +215,7 @@ Route::group(['middleware' => ['api', 'auth:admin']], function () {
 
 ```
 
-The  `api` guard use is equals the example with `admin`
+The  `api` guard use is equals the example with `admin`.
 
 - You can pass many guards to `auth` middleware. 
 
@@ -213,22 +232,9 @@ Route::group(['middleware' => ['api', 'auth:admin,api']], function () {
 });
 ```
 
-- On your routes encapsulated with `custom-provider` middleware you needs now pass the 'api' guard to user() method:
-
-- `app\routes\api.php`:
-
-```php
-use Illuminate\Http\Request;
-
-Route::get('/admin', function (Request $request) {
-    return $request->user('api');
-});
-
-```
-
 ### Refreshing tokens
 
-- Add the 'provider' param in your request at `/oauth/token`:
+- Add the `provider` parameter in your request at `/oauth/token`:
 
 ```
 POST /oauth/token HTTP/1.1
@@ -258,4 +264,4 @@ protected $routeMiddleware = [
 ];
 ```
 
-On middlewares the has the guard `api` on request object
+On middlewares has the guard `api` on request user object
