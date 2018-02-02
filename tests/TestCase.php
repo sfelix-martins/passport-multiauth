@@ -7,6 +7,11 @@ use Orchestra\Testbench\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
 {
+    public function setUp()
+    {
+        parent::setUp();
+    }
+
     protected function getPackageProviders($app)
     {
         return [MultiauthServiceProvider::class];
