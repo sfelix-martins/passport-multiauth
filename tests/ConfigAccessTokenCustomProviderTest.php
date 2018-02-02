@@ -2,9 +2,11 @@
 
 namespace SMartins\PassportMultiauth\Tests;
 
+use \Mockery;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
-use League\OAuth2\Server\ResourceServer;
+use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpFoundation\ServerBag;
 use Symfony\Component\HttpFoundation\HeaderBag;
 use SMartins\PassportMultiauth\Http\Middleware\ConfigAccessTokenCustomProvider;
@@ -13,39 +15,94 @@ use SMartins\PassportMultiauth\Provider;
 
 class ConfigAccessTokenCustomProviderTest extends TestCase
 {
+
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->loadLaravelMigrations(['--database' => 'passport']);
+    }
+
     public function tearDown()
     {
         \Mockery::close();
     }
 
-    public function testTryConfigWithoutAccessTokenId()
+    public function test_try_config_without_access_token_id()
     {
-        $server = \Mockery::mock(ResourceServer::class);
+        $resourceServer = \Mockery::mock('League\OAuth2\Server\ResourceServer');
 
-        $repository = \Mockery::mock(ProviderRepository::class);
-        $repository->shouldReceive('findForToken')->andReturn(new Provider);
+        $repository = \Mockery::mock('SMartins\PassportMultiauth\ProviderRepository');
+        $repository->shouldReceive('findForToken')->andReturn($provide = \Mockery::mock());
 
-        $middleware = new ConfigAccessTokenCustomProvider($server, $repository, new App);
+        $middleware = new ConfigAccessTokenCustomProvider($resourceServer, $repository, new App);
 
-        $request = $this->createRequest();
+        $request = Request::create('/');
+        $request->headers->set('Authorization', 'Bearer token');
+
+        $resourceServer->shouldReceive('validateAuthenticatedRequest')->andReturn($psr = \Mockery::mock());
+        $psr->shouldReceive('getAttribute')->with('oauth_access_token_id')->andReturn(null);
+
         $response = $middleware->handle($request, function () {
             return 'response';
         });
 
-        dd($response);
+        $this->assertEquals('response', $response);
     }
 
-    public function testTryConfigWithNotExistentAccessToken()
+    public function test_try_config_with_not_existent_access_token()
     {
-        //
+        $resourceServer = \Mockery::mock('League\OAuth2\Server\ResourceServer');
+
+        $repository = \Mockery::mock('SMartins\PassportMultiauth\ProviderRepository');
+        $repository->shouldReceive('findForToken')->andReturn(null);
+
+        $middleware = new ConfigAccessTokenCustomProvider($resourceServer, $repository, new App);
+
+        $request = Request::create('/');
+        $request->headers->set('Authorization', 'Bearer token');
+
+        $resourceServer->shouldReceive('validateAuthenticatedRequest')->andReturn($psr = \Mockery::mock());
+        $psr->shouldReceive('getAttribute')->with('oauth_access_token_id')->andReturn(1);
+
+        $response = $middleware->handle($request, function () {
+            return 'response';
+        });
+
+        $this->assertEquals('response', $response);
     }
 
-    public function testTryConfigWithJustOneEntityWithOnlyOneIdOnProviders()
+
+    public function test_try_config_with_not_more_than_one_entity_with_same_id_on_providers()
     {
-        //
+        $this->createUser();
+
+        $resourceServer = \Mockery::mock('League\OAuth2\Server\ResourceServer');
+        $resourceServer->shouldReceive('validateAuthenticatedRequest')->andReturn($psr = \Mockery::mock());
+
+        $repository = \Mockery::mock('SMartins\PassportMultiauth\ProviderRepository');
+        $repository->shouldReceive('findForToken')->andReturn($provider = \Mockery::mock());
+
+        $request = Request::create('/');
+        $request->headers->set('Authorization', 'Bearer token');
+
+        $psr->shouldReceive('getAttribute')->with('oauth_access_token_id')->andReturn(1);
+        $psr->shouldReceive('getAttribute')->with('oauth_user_id')->andReturn(1);
+
+        $userProvider = Mockery::mock('Illuminate\Contracts\Auth\UserProvider');
+        $userProvider->shouldReceive('retrieveById')->with(1)->andReturn(new TokenGuardTestUser);
+
+        $this->app['config']->set('auth.providers.users.model', TokenGuardTestUser::class);
+
+        $middleware = new ConfigAccessTokenCustomProvider($resourceServer, $repository, new App);
+        $response = $middleware->handle($request, function () {
+            return 'response';
+        });
+
+        $this->assertEquals('response', $response);
     }
 
-    public function testTryConfigWithoutGuardsOnAuthMiddleware()
+    public function test_try_config_without_guards_on_auth_middleware()
     {
         //
     }
@@ -60,58 +117,27 @@ class ConfigAccessTokenCustomProviderTest extends TestCase
         //
     }
 
-    public function createRequest()
+    public function createUser()
     {
-        $request = \Mockery::mock(Request::class);
-        $request->shouldReceive('headers')->andReturn(new HeaderBag([
-            "host" => [
-                "testing.dev"
-            ],
-            "user-agent" => [
-                "Symfony/3.X"
-            ],
-            "accept" => [
-                "application/json"
-            ],
-            "accept-language" => [
-                "en-us,en;q=0.5"
-            ],
-            "accept-charset" => [
-                "ISO-8859-1,utf-8;q=0.7,*;q=0.7"
-            ],
-            "content-length" => [
-                 148
-            ],
-            "content-type" => [
-                "application/json"
-            ],
-        ]));
-
-        dd($request->headers);
-
-        dd($request->headers->all());
-
-        $request->shouldReceive('server->all()')->andReturn([
-            "SERVER_NAME" => "testing.dev",
-            "SERVER_PORT" => 80,
-            "HTTP_HOST" => "testing.dev",
-            "HTTP_USER_AGENT" => "Symfony/3.X",
-            "HTTP_ACCEPT" => "application/json",
-            "HTTP_ACCEPT_LANGUAGE" => "en-us,en;q=0.5",
-            "HTTP_ACCEPT_CHARSET" => "ISO-8859-1,utf-8;q=0.7,*;q=0.7",
-            "REMOTE_ADDR" => "127.0.0.1",
-            "SCRIPT_NAME" => "",
-            "SCRIPT_FILENAME" => "",
-            "SERVER_PROTOCOL" => "HTTP/1.1",
-            "REQUEST_TIME" => 1517577267,
-            "HTTP_CONTENT_LENGTH" => 146,
-            "CONTENT_TYPE" => "application/json",
-            "PATH_INFO" => "",
-            "REQUEST_METHOD" => "POST",
-            "REQUEST_URI" => "/v0/users",
-            "QUERY_STRING" => "",
+        $now = Carbon::now();
+        \DB::table('users')->insert([
+            'name' => 'Samuel',
+            'email' => 'sam.martins.dev@gmail.com',
+            'password' => \Hash::make('456'),
+            'created_at' => $now,
+            'updated_at' => $now,
         ]);
+    }
+}
 
-        return $request;
+class TokenGuardTestUser extends Model
+{
+    protected $table = 'users';
+
+    use \Laravel\Passport\HasApiTokens;
+
+    public function getAuthIdentifierName()
+    {
+        return 'id';
     }
 }
