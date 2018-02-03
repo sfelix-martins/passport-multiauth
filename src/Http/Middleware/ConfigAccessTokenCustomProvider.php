@@ -3,16 +3,16 @@
 namespace SMartins\PassportMultiauth\Http\Middleware;
 
 use Closure;
-use Illuminate\Support\Str;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\App;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\CreatesUserProviders;
 use Illuminate\Http\Request;
-use Illuminate\Auth\AuthenticationException;
-use League\OAuth2\Server\ResourceServer;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Str;
 use League\OAuth2\Server\Exception\OAuthServerException;
-use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
+use League\OAuth2\Server\ResourceServer;
 use SMartins\PassportMultiauth\ProviderRepository;
+use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 
 class ConfigAccessTokenCustomProvider
 {
@@ -34,26 +34,27 @@ class ConfigAccessTokenCustomProvider
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param \Illuminate\Http\Request $request
+     * @param \Closure                 $next
+     *
      * @return mixed
      */
     public function handle(Request $request, Closure $next)
     {
-        $psr = (new DiactorosFactory)->createRequest($request);
+        $psr = (new DiactorosFactory())->createRequest($request);
 
         try {
             $psr = $this->server->validateAuthenticatedRequest($psr);
 
             $tokenId = $psr->getAttribute('oauth_access_token_id');
 
-            if (! $tokenId) {
+            if (!$tokenId) {
                 return $next($request);
             }
 
             $accessToken = $this->providers->findForToken($tokenId);
 
-            if (! $accessToken) {
+            if (!$accessToken) {
                 return $next($request);
             }
 
@@ -63,7 +64,7 @@ class ConfigAccessTokenCustomProvider
             );
 
             // If just one entity a register with this id follow the flow
-            if (! $entities->count() > 1) {
+            if (!$entities->count() > 1) {
                 return $next($request);
             }
 
@@ -88,7 +89,7 @@ class ConfigAccessTokenCustomProvider
             // If has users with same id and the accessToken provider is different
             // of the default provider return unauthenticated.
             if ($accessToken->provider != $this->defaultGuardProvider($guards[0])) {
-                throw new AuthenticationException("Unauthenticated", $guards);
+                throw new AuthenticationException('Unauthenticated', $guards);
             }
         } catch (OAuthServerException $e) {
             //

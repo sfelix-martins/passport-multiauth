@@ -13,11 +13,11 @@ class ProviderRepository
 
     public function create($token, $provider)
     {
-        $provider = (new Provider)->forceFill([
+        $provider = (new Provider())->forceFill([
             'oauth_access_token_id' => $token,
-            'provider' => $provider,
-            'created_at' => new Carbon(),
-            'updated_at' => new Carbon(),
+            'provider'              => $provider,
+            'created_at'            => new Carbon(),
+            'updated_at'            => new Carbon(),
         ]);
 
         $provider->save();

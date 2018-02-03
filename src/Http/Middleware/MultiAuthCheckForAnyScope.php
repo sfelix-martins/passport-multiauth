@@ -10,16 +10,18 @@ class MultiAuthCheckForAnyScope
     /**
      * Handle the incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @param  mixed  ...$scopes
-     * @return \Illuminate\Http\Response
+     * @param \Illuminate\Http\Request $request
+     * @param \Closure                 $next
+     * @param mixed                    ...$scopes
+     *
      * @throws \Illuminate\Auth\AuthenticationException|\Laravel\Passport\Exceptions\MissingScopeException
+     *
+     * @return \Illuminate\Http\Response
      */
     public function handle($request, $next, ...$scopes)
     {
-        if (! $request->user('api') || ! $request->user('api')->token()) {
-            throw new AuthenticationException;
+        if (!$request->user('api') || !$request->user('api')->token()) {
+            throw new AuthenticationException();
         }
 
         foreach ($scopes as $scope) {
