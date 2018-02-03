@@ -29,6 +29,6 @@ class CreateCompaniesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('oauth_access_token_providers');
+        Schema::dropIfExists('companies');
     }
 }

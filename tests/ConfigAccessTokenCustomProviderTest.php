@@ -90,7 +90,6 @@ class ConfigAccessTokenCustomProviderTest extends TestCase
         $this->assertEquals('response', $response);
     }
 
-
     public function testTryConfigWithNotMoreThanOneEntityWithSameIDOnProviders()
     {
         User::createUser();

@@ -12,5 +12,11 @@ class Provider extends Model
      * @var string
      */
     protected $table = 'oauth_access_token_providers';
+
+    /**
+     * The primary key for the model.
+     *
+     * @var string
+     */
     protected $primaryKey = 'oauth_access_token_id';
 }
