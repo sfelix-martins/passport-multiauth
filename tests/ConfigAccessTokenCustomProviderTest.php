@@ -14,7 +14,6 @@ use SMartins\PassportMultiauth\Http\Middleware\ConfigAccessTokenCustomProvider;
 
 class ConfigAccessTokenCustomProviderTest extends TestCase
 {
-
     public function setUp()
     {
         parent::setUp();
