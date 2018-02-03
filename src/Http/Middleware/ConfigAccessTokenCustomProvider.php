@@ -3,16 +3,16 @@
 namespace SMartins\PassportMultiauth\Http\Middleware;
 
 use Closure;
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
-use Illuminate\Auth\CreatesUserProviders;
-use Illuminate\Http\Request;
-use Illuminate\Auth\AuthenticationException;
 use League\OAuth2\Server\ResourceServer;
-use League\OAuth2\Server\Exception\OAuthServerException;
-use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
+use Illuminate\Auth\CreatesUserProviders;
+use Illuminate\Auth\AuthenticationException;
 use SMartins\PassportMultiauth\ProviderRepository;
 use SMartins\PassportMultiauth\Guards\GuardChecker;
+use League\OAuth2\Server\Exception\OAuthServerException;
+use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 
 class ConfigAccessTokenCustomProvider
 {
@@ -88,7 +88,7 @@ class ConfigAccessTokenCustomProvider
             // If has users with same id and the accessToken provider is different
             // of default provider return unauthenticated.
             if ($accessToken->provider != GuardChecker::defaultGuardProvider($guards[0])) {
-                throw new AuthenticationException("Unauthenticated", $guards);
+                throw new AuthenticationException('Unauthenticated', $guards);
             }
         } catch (OAuthServerException $e) {
             //

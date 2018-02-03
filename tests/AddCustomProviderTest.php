@@ -2,6 +2,7 @@
 
 namespace SMartins\PassportMultiauth\Tests;
 
+use Mockery;
 use Illuminate\Http\Request;
 use SMartins\PassportMultiauth\Http\Middleware\AddCustomProvider;
 
@@ -9,12 +10,12 @@ class AddCustomProviderTest extends TestCase
 {
     public function tearDown()
     {
-        \Mockery::close();
+        Mockery::close();
     }
 
     public function testIfApiProviderOnAuthWasSetCorrectly()
     {
-        $request = \Mockery::mock(Request::class);
+        $request = Mockery::mock(Request::class);
         $request->shouldReceive('all')->andReturn([
             'provider' => 'companies',
         ]);

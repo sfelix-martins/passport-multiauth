@@ -3,8 +3,8 @@
 namespace SMartins\PassportMultiauth\Tests;
 
 use Orchestra\Database\ConsoleServiceProvider;
-use SMartins\PassportMultiauth\Providers\MultiauthServiceProvider;
 use Orchestra\Testbench\TestCase as BaseTestCase;
+use SMartins\PassportMultiauth\Providers\MultiauthServiceProvider;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -36,7 +36,6 @@ abstract class TestCase extends BaseTestCase
         $app['config']->set('database.connections.passport', [
             'driver'   => 'sqlite',
             'database' => ':memory:',
-            'prefix'   => '',
         ]);
     }
 }

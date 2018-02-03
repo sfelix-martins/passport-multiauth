@@ -2,7 +2,6 @@
 
 namespace SMartins\PassportMultiauth\Tests;
 
-use \Mockery;
 use SMartins\PassportMultiauth\Provider;
 use SMartins\PassportMultiauth\ProviderRepository;
 
@@ -13,11 +12,6 @@ class ProviderRepositoryTest extends TestCase
         parent::setUp();
 
         $this->loadMigrationsFrom(realpath(__DIR__.'/../database/migrations'));
-    }
-
-    public function tearDown()
-    {
-        Mockery::close();
     }
 
     public function testFindForToken()

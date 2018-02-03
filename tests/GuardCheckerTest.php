@@ -2,7 +2,7 @@
 
 namespace SMartins\PassportMultiauth\Tests;
 
-use \Mockery;
+use Mockery;
 use SMartins\PassportMultiauth\Guards\GuardChecker;
 
 class GuardCheckerTest extends TestCase
