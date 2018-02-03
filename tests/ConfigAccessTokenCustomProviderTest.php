@@ -7,13 +7,14 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\App;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Auth\AuthenticationException;
 use Symfony\Component\HttpFoundation\ServerBag;
 use Symfony\Component\HttpFoundation\HeaderBag;
 use SMartins\PassportMultiauth\Http\Middleware\ConfigAccessTokenCustomProvider;
 use SMartins\PassportMultiauth\ProviderRepository;
 use SMartins\PassportMultiauth\Provider;
+use SMartins\PassportMultiauth\Tests\Models\User;
+use SMartins\PassportMultiauth\Tests\Models\Company;
 
 class ConfigAccessTokenCustomProviderTest extends TestCase
 {
@@ -35,7 +36,7 @@ class ConfigAccessTokenCustomProviderTest extends TestCase
         $resourceServer = \Mockery::mock('League\OAuth2\Server\ResourceServer');
 
         $repository = \Mockery::mock('SMartins\PassportMultiauth\ProviderRepository');
-        $repository->shouldReceive('findForToken')->andReturn($provide = \Mockery::mock());
+        $repository->shouldReceive('findForToken')->andReturn(Mockery::mock());
 
         $middleware = new ConfigAccessTokenCustomProvider($resourceServer, $repository, new App);
 
@@ -97,7 +98,7 @@ class ConfigAccessTokenCustomProviderTest extends TestCase
 
     public function testTryConfigWithNotMoreThanOneEntityWithSameIDOnProviders()
     {
-        $this->createUser();
+        User::createUser();
 
         $resourceServer = \Mockery::mock('League\OAuth2\Server\ResourceServer');
         $resourceServer->shouldReceive('validateAuthenticatedRequest')->andReturn($psr = \Mockery::mock());
@@ -136,7 +137,7 @@ class ConfigAccessTokenCustomProviderTest extends TestCase
 
     public function testTryConfigWithoutGuardsOnAuthMiddleware()
     {
-        $this->createUser();
+        User::createUser();
 
         $resourceServer = \Mockery::mock('League\OAuth2\Server\ResourceServer');
         $resourceServer->shouldReceive('validateAuthenticatedRequest')->andReturn($psr = \Mockery::mock());
@@ -172,8 +173,8 @@ class ConfigAccessTokenCustomProviderTest extends TestCase
 
     public function testTryConfigWithMoreThanOneGuardsOnAuthMiddleware()
     {
-        $this->createUser();
-        $this->createCompany();
+        User::createUser();
+        Company::createCompany();
 
         $resourceServer = \Mockery::mock('League\OAuth2\Server\ResourceServer');
         $resourceServer->shouldReceive('validateAuthenticatedRequest')->andReturn($psr = \Mockery::mock());
@@ -224,8 +225,8 @@ class ConfigAccessTokenCustomProviderTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
-        $this->createUser();
-        $this->createCompany();
+        User::createUser();
+        Company::createCompany();
 
         $resourceServer = \Mockery::mock('League\OAuth2\Server\ResourceServer');
         $resourceServer->shouldReceive('validateAuthenticatedRequest')->andReturn($psr = \Mockery::mock());
@@ -279,8 +280,8 @@ class ConfigAccessTokenCustomProviderTest extends TestCase
 
     public function testTryConfigWithCorrectProvider()
     {
-        $this->createUser();
-        $this->createCompany();
+        User::createUser();
+        Company::createCompany();
 
         $resourceServer = \Mockery::mock('League\OAuth2\Server\ResourceServer');
         $resourceServer->shouldReceive('validateAuthenticatedRequest')->andReturn($psr = \Mockery::mock());
@@ -326,53 +327,5 @@ class ConfigAccessTokenCustomProviderTest extends TestCase
         // Check if config was set
         $this->assertEquals(config('auth.guards.api.provider'), $accessToken->provider);
         $this->assertEquals($response, 'response');
-    }
-
-    public function createUser()
-    {
-        $now = Carbon::now();
-        \DB::table('users')->insert([
-            'name' => 'Samuel',
-            'email' => 'sam.martins.dev@gmail.com',
-            'password' => \Hash::make('456'),
-            'created_at' => $now,
-            'updated_at' => $now,
-        ]);
-    }
-
-    public function createCompany()
-    {
-        $now = Carbon::now();
-        \DB::table('companies')->insert([
-            'name' => 'Samuel',
-            'email' => 'sam.martins.dev@gmail.com',
-            'password' => \Hash::make('456'),
-            'created_at' => $now,
-            'updated_at' => $now,
-        ]);
-    }
-}
-
-class User extends Model
-{
-    protected $table = 'users';
-
-    use \Laravel\Passport\HasApiTokens;
-
-    public function getAuthIdentifierName()
-    {
-        return 'id';
-    }
-}
-
-class Company extends Model
-{
-    protected $table = 'companies';
-
-    use \Laravel\Passport\HasApiTokens;
-
-    public function getAuthIdentifierName()
-    {
-        return 'id';
     }
 }
