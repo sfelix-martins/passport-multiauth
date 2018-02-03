@@ -2,6 +2,7 @@
 
 namespace SMartins\PassportMultiauth\Tests;
 
+use Orchestra\Database\ConsoleServiceProvider;
 use SMartins\PassportMultiauth\Providers\MultiauthServiceProvider;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 
@@ -10,11 +11,16 @@ abstract class TestCase extends BaseTestCase
     public function setUp()
     {
         parent::setUp();
+
+        $this->loadMigrationsFrom(realpath(__DIR__.'/database/migrations'));
     }
 
     protected function getPackageProviders($app)
     {
-        return [MultiauthServiceProvider::class];
+        return [
+            MultiauthServiceProvider::class,
+            ConsoleServiceProvider::class,
+        ];
     }
 
     /**

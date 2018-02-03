@@ -7,7 +7,7 @@ use SMartins\PassportMultiauth\Guards\GuardChecker;
 
 class GuardCheckerTest extends TestCase
 {
-    public function test_try_get_auth_guards_without_guards()
+    public function testTryGetAuthGuardsWithoutGuards()
     {
         $request = Mockery::mock('Illuminate\Http\Request');
         $request->shouldReceive('route')->andReturn($route = Mockery::mock());
@@ -19,7 +19,7 @@ class GuardCheckerTest extends TestCase
         $this->assertEquals($response, []);
     }
 
-    public function test_try_get_auth_guards_with_one_guard()
+    public function testTryGetAuthGuardsWithOneGuard()
     {
         $request = Mockery::mock('Illuminate\Http\Request');
         $request->shouldReceive('route')->andReturn($route = Mockery::mock());
@@ -31,7 +31,7 @@ class GuardCheckerTest extends TestCase
         $this->assertEquals($response, ['api']);
     }
 
-    public function test_try_get_auth_guards_with_more_than_one_guard()
+    public function testTryGetAuthGuardsWithMoreThanOneGuard()
     {
         $request = Mockery::mock('Illuminate\Http\Request');
         $request->shouldReceive('route')->andReturn($route = Mockery::mock());
@@ -43,7 +43,7 @@ class GuardCheckerTest extends TestCase
         $this->assertEquals($response, ['api', 'companies']);
     }
 
-    public function test_try_get_auth_guards_with_more_than_one_guard_in_many_middlewares()
+    public function testTryGetAuthGuardsWithMoreThanOneGuardInManyMiddlewares()
     {
         $request = Mockery::mock('Illuminate\Http\Request');
         $request->shouldReceive('route')->andReturn($route = Mockery::mock());
@@ -55,7 +55,7 @@ class GuardCheckerTest extends TestCase
         $this->assertEquals($response, ['api', 'companies']);
     }
 
-    public function test_get_default_guard_provider()
+    public function testGetDefaultGuardProvider()
     {
         $guards = ['users', 'companies'];
 

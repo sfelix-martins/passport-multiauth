@@ -40,6 +40,14 @@ class ConfigAccessTokenCustomProvider
      */
     public function handle(Request $request, Closure $next)
     {
+        // Get the auth guard if has to check the default guard
+        $guards = GuardChecker::getAuthGuards($request);
+
+        // If don't has any guard follow the flo
+        if (count($guards) == 0) {
+            return $next($request);
+        }
+
         $psr = (new DiactorosFactory)->createRequest($request);
 
         try {
@@ -64,14 +72,6 @@ class ConfigAccessTokenCustomProvider
 
             // If just one entity a register with this id follow the flow
             if (! ($entities->count() > 1)) {
-                return $next($request);
-            }
-
-            // Get the auth guard if has to check the default guard
-            $guards = GuardChecker::getAuthGuards($request);
-
-            // If don't has any guard follow the flo
-            if (count($guards) == 0) {
                 return $next($request);
             }
 
@@ -100,6 +100,7 @@ class ConfigAccessTokenCustomProvider
     public function entitiesWithSameIdOnProviders($id): Collection
     {
         $providers = array_keys(config('auth.providers'));
+
         $entities = collect([]);
         foreach ($providers as $provider) {
             $entity = $this->findEntityOnProvider($provider, $id);
