@@ -16,3 +16,12 @@ checks:
         fix_line_ending: true
         fix_identation_4spaces: true
         fix_doc_comments: true
+
+build:
+    tests:
+        override:
+            -
+                command: 'vendor/bin/phpunit --coverage-clover=some-file'
+                coverage:
+                    file: 'some-file'
+                    format: 'clover'
