@@ -35,11 +35,14 @@ class MultiauthServiceProvider extends ServiceProvider
 
     protected function registerMigrations()
     {
-        $this->loadMigrationsFrom(__DIR__.'/.database/migrations');
+        $migrationsPath = __DIR__.'/../../database/migrations';
 
-        $this->publishes([
-            __DIR__.'/database/migrations' => database_path('migrations'),
-        ], 'migrations');
+        $this->loadMigrationsFrom($migrationsPath);
+
+        $this->publishes(
+            [$migrationsPath => database_path('migrations')],
+            'migrations'
+        );
     }
 
     /**
