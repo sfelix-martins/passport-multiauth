@@ -70,15 +70,18 @@ class ConfigAccessTokenCustomProvider
             // Get the auth guard if has to check the default guard
             $guards = GuardChecker::getAuthGuards($request);
 
+            // If don't has any guard follow the flo
             if (count($guards) == 0) {
                 return $next($request);
             }
 
-            if (count($guards) > 1) {
-                // Set the api provider used to choose provider on
-                // \Laravel\Passport\Bridge\UserRepository::getUserEntityByUserCredentials
-                config(['auth.guards.api.provider' => $accessToken->provider]);
+            // If has one or more than guards set the api provider used to
+            // choose provider on \Laravel\Passport\Bridge\UserRepository::getUserEntityByUserCredentials.
+            // When has one or more guards the api provider will receive the
+            // provider of token stored on oauth_access_token_providers.
+            config(['auth.guards.api.provider' => $accessToken->provider]);
 
+            if (count($guards) > 1) {
                 return $next($request);
             }
 
