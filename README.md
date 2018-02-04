@@ -254,14 +254,24 @@ Cache-Control: no-cache
 
 ### Using scopes
 
-- Instead of using the [`scope` and `scopes`](https://laravel.com/docs/5.5/passport#checking-scopes
-) middleware from `Laravel\Passport` use from `SMartins\PassportMultiauth` package:
+- If you are using more than one guard on same route, use the following package middlewares instead of using the [`scope` and `scopes`](https://laravel.com/docs/5.5/passport#checking-scopes
+) middlewares from `Laravel\Passport`.
 
 ```php
 protected $routeMiddleware = [
-    'scope' => \SMartins\PassportMultiauth\Http\Middleware\MultiAuthCheckForAnyScope::class,
-    'scopes' => \SMartins\PassportMultiauth\Http\Middleware\MultiAuthCheckScopes::class,
+    'multiauth.scope' => \SMartins\PassportMultiauth\Http\Middleware\MultiAuthCheckForAnyScope::class,
+    'multiauth.scopes' => \SMartins\PassportMultiauth\Http\Middleware\MultiAuthCheckScopes::class,
 ];
 ```
 
-On middlewares has the guard `api` on request user object
+The middlewares are equals the `Laravel\Passport` middlewares with guard `api` on `request->user()` object.
+
+User Sample:
+
+```php
+Route::group([
+    'middleware' => ['auth:admin,api', 'multiauth.scope:read-books']
+], function ($request) {
+    return $request->user('api');
+});
+```

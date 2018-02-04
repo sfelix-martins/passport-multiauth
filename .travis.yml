@@ -1,0 +1,25 @@
+language: php
+
+php:
+  - 7.0
+  - 7.1
+  - 7.2
+
+env:
+  global:
+    - setup=stable
+
+matrix:
+  include:
+    - php: 7.0
+    - php: 7.1
+    - php: 7.2
+
+sudo: false
+
+install:
+  - if [[ $setup = 'stable' ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-stable; fi
+  - if [[ $setup = 'lowest' ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-lowest --prefer-stable; fi
+
+script:
+  - vendor/bin/phpunit

@@ -23,23 +23,16 @@ class MultiauthServiceProvider extends ServiceProvider
         $this->createAccessTokenProvider($providers);
     }
 
-    /**
-     * Register any application services.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        //
-    }
-
     protected function registerMigrations()
     {
-        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        $migrationsPath = __DIR__.'/../../database/migrations';
 
-        $this->publishes([
-            __DIR__.'/../database/migrations' => database_path('migrations'),
-        ], 'migrations');
+        $this->loadMigrationsFrom($migrationsPath);
+
+        $this->publishes(
+            [$migrationsPath => database_path('migrations')],
+            'migrations'
+        );
     }
 
     /**
