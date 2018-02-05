@@ -1,8 +1,8 @@
 # Laravel Passport Multi-Auth
 
-Add support to multi-authentication to [Laravel Passport](https://laravel.com/docs/5.5/passport)
+Add multi-authentication support to [Laravel Passport](https://laravel.com/docs/5.5/passport)
 
-**OBS:** Based on responses from [renanwilian](https://github.com/renanwilliam) to [Passport Multi-Auth issue](https://github.com/laravel/passport/issues/161)
+**OBS:** Based on [renanwilian](https://github.com/renanwilliam) responses to [Passport Multi-Auth issue](https://github.com/laravel/passport/issues/161)
 
 ## Compatibility
 
@@ -19,7 +19,7 @@ Add support to multi-authentication to [Laravel Passport](https://laravel.com/do
 composer require smartins/passport-multiauth
 ```
 
-- If you are using a Laravel version **less than 5.5** do you **need add** the provider to `config/app.php`:
+- If you are using a Laravel version **less than 5.5** you **need to add** the provider on `config/app.php`:
 
 ```php
     'providers' => [
@@ -144,7 +144,6 @@ class Kernel extends HttpKernel
 - Encapsulate the passport routes for access token with the registered middleware in `AuthServiceProvider`:
 
 ```php
-
 use Route;
 use Laravel\Passport\Passport;
 
@@ -275,3 +274,102 @@ Route::group([
     return $request->user('api');
 });
 ```
+
+### Unit tests
+
+If you are using multi-authentication in a request you need to pass just an `Authenticatable` object to `Laravel\Passport\Passport::actingAs()`. E.g.:
+
+- You have a route with multi-auth:
+
+```php
+Route::group(['middleware' => 'auth:admin,api'], function () {
+    Route::get('/foo', function ($request) {
+        return $request->user('api'); // Return user or admin
+    });
+});
+```
+
+- On your test just pass your entity to `Passport::actingAs()`:
+
+```php
+use App\User;
+use App\Admin;
+use Laravel\Passport\Passport;
+
+class MyTest extends TestCase
+{
+    public function testFooAdmin()
+    {
+        $admin = factory(Admin::class)->create();
+
+        Passport::actingAs($admin);
+
+        // When you use your endpoint your admin will be returned
+        $this->json('GET', '/foo')
+            ->assertStatus(200)
+            ->assertJson([
+                'data' => [
+                    'id' => 1,
+                    'name' => 'Admin',
+                    'email' => 'admin@admin.com'
+                ]
+            ]);
+    }
+
+    public function testFooUser()
+    {
+        $user = factory(User::class)->create();
+
+        Passport::actingAs($user);
+
+        // When you use your endpoint your user will be returned
+        $this->json('GET', '/foo')
+            ->assertStatus(200)
+            ->assertJson([
+                'data' => [
+                    'id' => 1,
+                    'name' => 'User',
+                    'email' => 'user@user.com'
+                ]
+            ]);
+    }
+}
+```
+
+- If your route has just one guard:
+
+```php
+Route::group(['middleware' => 'auth:admin'], function () {
+    Route::get('/foo', function ($request) {
+        return $request->user(); // Return admin
+    });
+});
+```
+
+- And on your tests just pass your entity, scopes and guard to `Passport::actingAs()`:
+
+```php
+use App\User;
+use App\Admin;
+use Laravel\Passport\Passport;
+
+class MyTest extends TestCase
+{
+    public function testFooAdmin()
+    {
+        $admin = factory(Admin::class)->create();
+
+        Passport::actingAs($admin, [], 'admin');
+
+        // When you use your endpoint your admin will be returned
+        $this->json('GET', '/foo')
+            ->assertStatus(200)
+            ->assertJson([
+                'data' => [
+                    'id' => 1,
+                    'name' => 'Admin',
+                    'email' => 'admin@admin.com'
+                ]
+            ]);
+    }
+}
