@@ -1,5 +1,10 @@
 # Laravel Passport Multi-Auth
 
+[![Build Status](https://travis-ci.org/sfelix-martins/passport-multiauth.svg?branch=master)](https://travis-ci.org/sfelix-martins/passport-multiauth)
+[![Code Coverage](https://scrutinizer-ci.com/g/sfelix-martins/passport-multiauth/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/sfelix-martins/passport-multiauth/?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/sfelix-martins/passport-multiauth/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/sfelix-martins/passport-multiauth/?branch=master)
+[![StyleCI](https://styleci.io/repos/106218586/shield?branch=master)](https://styleci.io/repos/106218586)
+
 Add multi-authentication support to [Laravel Passport](https://laravel.com/docs/5.5/passport)
 
 **OBS:** Based on [renanwilian](https://github.com/renanwilliam) responses to [Passport Multi-Auth issue](https://github.com/laravel/passport/issues/161)
