@@ -319,7 +319,6 @@ class ConfigAccessTokenCustomProviderTest extends TestCase
         });
 
         // Check if config was set
-        $this->assertEquals(config('auth.guards.api.provider'), $accessToken->provider);
         $this->assertEquals($response, 'response');
     }
 }

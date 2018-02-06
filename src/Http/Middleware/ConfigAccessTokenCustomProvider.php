@@ -75,13 +75,11 @@ class ConfigAccessTokenCustomProvider
                 return $next($request);
             }
 
-            // If has one or more than guards set the api provider used to
-            // choose provider on \Laravel\Passport\Bridge\UserRepository::getUserEntityByUserCredentials.
-            // When has one or more guards the api provider will receive the
-            // provider of token stored on oauth_access_token_providers.
-            config(['auth.guards.api.provider' => $accessToken->provider]);
-
             if (count($guards) > 1) {
+                // If has more than one guards set the api provider used to
+                // choose provider on \Laravel\Passport\Bridge\UserRepository::getUserEntityByUserCredentials.
+                config(['auth.guards.api.provider' => $accessToken->provider]);
+
                 return $next($request);
             }
 
