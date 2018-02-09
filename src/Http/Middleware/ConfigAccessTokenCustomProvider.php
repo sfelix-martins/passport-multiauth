@@ -43,7 +43,7 @@ class ConfigAccessTokenCustomProvider
         // Get the auth guard if has to check the default guard
         $guards = GuardChecker::getAuthGuards($request);
 
-        // If don't has any guard follow the flo
+        // If don't has any guard follow the flow
         if (count($guards) == 0) {
             return $next($request);
         }
