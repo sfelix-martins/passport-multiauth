@@ -5,7 +5,7 @@ namespace SMartins\PassportMultiauth\Tests;
 use Mockery;
 use SMartins\PassportMultiauth\Http\Middleware\MultiAuthCheckScopes as CheckScopes;
 
-class CheckScopesTest extends TestCase
+class MultiAuthCheckForScopesTest extends TestCase
 {
     public function tearDown()
     {
