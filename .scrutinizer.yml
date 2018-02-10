@@ -25,3 +25,13 @@ build:
                 coverage:
                     file: 'some-file'
                     format: 'clover'
+tools:
+    php_analyzer:
+        config:
+            metrics_coupling:
+                stable_code:
+                    namespace_prefixes:
+                        - Illuminate
+                        - Symfony
+                        - League\OAuth2\Server
+                        - Laravel\Passport
