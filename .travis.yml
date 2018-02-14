@@ -10,31 +10,44 @@ env:
   global:
     - setup=stable
     - testbench=3.2.x
+    - passport=2.0.x
 
 matrix:
   include:
     - php: 5.6
       env: setup=lowest
     - php: 5.6
+      env: passport=2.0.x
       env: testbench=3.3.x
     - php: 5.6
+      env: passport=3.0.x
+      env: testbench=3.4.x
+    - php: 5.6
+      env: passport=4.0.x
       env: testbench=3.4.x
     - php: 7.0
+      env: passport=3.0.x
       env: testbench=3.4.x
     - php: 7.0
+      env: passport=4.0.x
       env: testbench=3.5.x
     - php: 7.1
+      env: passport=4.0.x
       env: testbench=3.5.x
     - php: 7.1
+      env: passport=5.0.x
       env: testbench=3.6.x
     - php: 7.2
+      env: passport=4.0.x
       env: testbench=3.5.x
     - php: 7.2
+      env: passport=5.0.x
       env: testbench=3.6.x
 
 sudo: false
 
 install:
+  - composer require laravel/passport:${passport} --no-update
   - composer require orchestra/testbench:${testbench} --dev --no-update
   - composer require orchestra/database:${testbench} --dev --no-update
   - if [[ $setup = 'stable' ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-stable; fi
