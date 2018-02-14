@@ -67,8 +67,8 @@ install:
   - composer require orchestra/testbench:${testbench} --dev --no-update
   - composer require orchestra/database:${testbench} --dev --no-update
   - composer require phpunit/phpunit:${phpunit} --dev --no-update
-  - if [[ $setup = 'stable' ]]; then travis_retry composer install --prefer-dist --no-interaction --prefer-stable; fi
-  - if [[ $setup = 'lowest' ]]; then travis_retry composer install --prefer-dist --no-interaction --prefer-lowest --prefer-stable; fi
+  - if [[ $setup = 'stable' ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-stable; fi
+  - if [[ $setup = 'lowest' ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-lowest --prefer-stable; fi
 
 script:
   - vendor/bin/phpunit
