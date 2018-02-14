@@ -217,8 +217,6 @@ class ConfigAccessTokenCustomProviderTest extends TestCase
 
     public function testTryConfigWithProviderNotEqualsDefaultGuardProvider()
     {
-        $this->withoutExceptionHandling();
-
         User::createUser();
         Company::createCompany();
 
