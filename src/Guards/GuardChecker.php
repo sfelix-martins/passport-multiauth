@@ -22,7 +22,7 @@ class GuardChecker
         return $guards;
     }
 
-    public static function defaultGuardProvider(string $guard)
+    public static function defaultGuardProvider($guard)
     {
         return config('auth.guards.'.$guard.'.provider');
     }
