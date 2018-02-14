@@ -95,7 +95,7 @@ class ConfigAccessTokenCustomProvider
         return $next($request);
     }
 
-    public function entitiesWithSameIdOnProviders($id): Collection
+    public function entitiesWithSameIdOnProviders($id)
     {
         $providers = array_keys(config('auth.providers'));
 
