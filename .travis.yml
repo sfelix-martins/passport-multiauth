@@ -9,7 +9,7 @@ php:
 env:
   global:
     - setup=stable
-    - testbench=3.x
+    - testbench=3.2.x
 
 matrix:
   include:
@@ -35,8 +35,8 @@ matrix:
 sudo: false
 
 install:
-  - composer require orchestra/testbench:${testbench} --no-update
-  - composer require orchestra/database:${testbench} --no-update
+  - composer require orchestra/testbench:${testbench} --dev --no-update
+  - composer require orchestra/database:${testbench} --dev --no-update
   - if [[ $setup = 'stable' ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-stable; fi
   - if [[ $setup = 'lowest' ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-lowest --prefer-stable; fi
 
