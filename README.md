@@ -11,14 +11,13 @@ Add multi-authentication support to [Laravel Passport](https://laravel.com/docs/
 
 ## Compatibility
 
-- Tested Versions:
 
-| Laravel Passport | Laravel Framework |
-|------------------|-------------------|
-| ^2.0             | 5.4               |
-| ^3.0             | 5.4               |
-| ^4.0             | 5.4, 5.5          |
-| ^5.0             | 5.4, 5.5, 5.6     |
+| Laravel Passport |
+|------------------|
+| ^2.0             |
+| ^3.0             |
+| ^4.0             |
+| ^5.0             |
 
 ## Installing and configuring
 
@@ -45,7 +44,7 @@ php artisan migrate
 
 - Add new provider in `config/auth.php` using a model that extends of `Authenticatable` class and use `HasApiTokens` trait.
 
-Ex.:
+Example:
 
 - Configure your model:
 
@@ -109,7 +108,7 @@ return [
     ]
 ```
 
-- Register the middlewares `AddCustomProvider` and `ConfigAccessTokenCustomProvider` on `$middlewareGroups` attribute on `app/Http/Kernel`.
+- Register the middlewares `AddCustomProvider` and `ConfigAccessTokenCustomProvider` on `app/Http/Kernel` `$middlewareGroups` attribute.
 
 ```php
 
@@ -382,3 +381,4 @@ class MyTest extends TestCase
             ]);
     }
 }
+```
