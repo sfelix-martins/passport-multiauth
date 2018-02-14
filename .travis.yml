@@ -9,6 +9,9 @@ php:
 env:
   global:
     - setup=stable
+    - testbench=3.2.x
+    - passport=2.0.x
+    - phpunit=5.0.x
 
 matrix:
   include:
