@@ -11,10 +11,13 @@ Add multi-authentication support to [Laravel Passport](https://laravel.com/docs/
 
 ## Compatibility
 
+
 | Laravel Passport |
 |------------------|
 | ^2.0             |
 | ^3.0             |
+| ^4.0             |
+| ^5.0             |
 
 ## Installing and configuring
 
@@ -41,7 +44,7 @@ php artisan migrate
 
 - Add new provider in `config/auth.php` using a model that extends of `Authenticatable` class and use `HasApiTokens` trait.
 
-Ex.:
+Example:
 
 - Configure your model:
 
@@ -105,7 +108,7 @@ return [
     ]
 ```
 
-- Register the middlewares `AddCustomProvider` and `ConfigAccessTokenCustomProvider` on `$middlewareGroups` attribute on `app/Http/Kernel`.
+- Register the middlewares `AddCustomProvider` and `ConfigAccessTokenCustomProvider` on `app/Http/Kernel` `$middlewareGroups` attribute.
 
 ```php
 
@@ -155,7 +158,7 @@ use Laravel\Passport\Passport;
 class AuthServiceProvider extends ServiceProvider
 {
     ...
-    
+
     /**
      * Register any authentication / authorization services.
      *
@@ -221,7 +224,7 @@ Route::group(['middleware' => ['api', 'auth:admin']], function () {
 
 The  `api` guard use is equals the example with `admin`.
 
-- You can pass many guards to `auth` middleware. 
+- You can pass many guards to `auth` middleware.
 
 **OBS:** To pass many you need pass the `api` guard on end of guards and the guard `api` as parameter on `$request->user()` method. Ex:
 
@@ -378,3 +381,4 @@ class MyTest extends TestCase
             ]);
     }
 }
+```

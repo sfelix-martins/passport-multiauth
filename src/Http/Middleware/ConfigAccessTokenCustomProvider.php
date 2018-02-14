@@ -4,7 +4,6 @@ namespace SMartins\PassportMultiauth\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use League\OAuth2\Server\ResourceServer;
 use Illuminate\Auth\CreatesUserProviders;
@@ -95,7 +94,7 @@ class ConfigAccessTokenCustomProvider
         return $next($request);
     }
 
-    public function entitiesWithSameIdOnProviders($id): Collection
+    public function entitiesWithSameIdOnProviders($id)
     {
         $providers = array_keys(config('auth.providers'));
 

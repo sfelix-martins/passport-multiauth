@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class GuardChecker
 {
-    public static function getAuthGuards(Request $request): array
+    public static function getAuthGuards(Request $request)
     {
         $middlewares = $request->route()->middleware();
 
@@ -22,7 +22,7 @@ class GuardChecker
         return $guards;
     }
 
-    public static function defaultGuardProvider(string $guard)
+    public static function defaultGuardProvider($guard)
     {
         return config('auth.guards.'.$guard.'.provider');
     }

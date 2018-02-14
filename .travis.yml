@@ -1,23 +1,64 @@
 language: php
 
-php:
-  - 7.0
-  - 7.1
-  - 7.2
-
 env:
   global:
     - setup=stable
 
 matrix:
   include:
+    - php: 5.6
+      env:
+        - passport=2.0.x
+        - testbench=3.4.x
+        - phpunit=5.7.x
+    - php: 5.6
+      env:
+        - passport=3.0.x
+        - testbench=3.4.x
+        - phpunit=5.7.x
+    - php: 5.6
+      env:
+        - passport=4.0.x
+        - testbench=3.4.x
+        - phpunit=5.7.x
     - php: 7.0
+      env:
+        - passport=3.0.x
+        - testbench=3.4.x
+        - phpunit=5.7.x
+    - php: 7.0
+      env:
+        - passport=4.0.x
+        - testbench=3.5.x
+        - phpunit=6.0.x
     - php: 7.1
+      env:
+        - passport=4.0.x
+        - testbench=3.5.x
+        - phpunit=6.0.x
+    - php: 7.1
+      env:
+        - passport=5.0.x
+        - testbench=3.6.x
+        - phpunit=7.0.x
     - php: 7.2
+      env:
+        - passport=4.0.x
+        - testbench=3.5.x
+        - phpunit=6.0.x
+    - php: 7.2
+      env:
+        - passport=5.0.x
+        - testbench=3.6.x
+        - phpunit=7.0.x
 
 sudo: false
 
 install:
+  - composer require laravel/passport:${passport} --no-update
+  - composer require orchestra/testbench:${testbench} --dev --no-update
+  - composer require orchestra/database:${testbench} --dev --no-update
+  - composer require phpunit/phpunit:${phpunit} --dev --no-update
   - if [[ $setup = 'stable' ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-stable; fi
   - if [[ $setup = 'lowest' ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-lowest --prefer-stable; fi
 
