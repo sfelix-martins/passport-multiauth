@@ -11,10 +11,14 @@ Add multi-authentication support to [Laravel Passport](https://laravel.com/docs/
 
 ## Compatibility
 
-| Laravel Passport |
-|------------------|
-| ^2.0             |
-| ^3.0             |
+- Tested Versions:
+
+| Laravel Passport | Laravel Framework |
+|------------------|-------------------|
+| ^2.0             | 5.4               |
+| ^3.0             | 5.4               |
+| ^4.0             | 5.4, 5.5          |
+| ^5.0             | 5.4, 5.5, 5.6     |
 
 ## Installing and configuring
 
@@ -155,7 +159,7 @@ use Laravel\Passport\Passport;
 class AuthServiceProvider extends ServiceProvider
 {
     ...
-    
+
     /**
      * Register any authentication / authorization services.
      *
@@ -221,7 +225,7 @@ Route::group(['middleware' => ['api', 'auth:admin']], function () {
 
 The  `api` guard use is equals the example with `admin`.
 
-- You can pass many guards to `auth` middleware. 
+- You can pass many guards to `auth` middleware.
 
 **OBS:** To pass many you need pass the `api` guard on end of guards and the guard `api` as parameter on `$request->user()` method. Ex:
 
