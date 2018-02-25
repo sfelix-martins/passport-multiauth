@@ -1,9 +1,11 @@
 # Laravel Passport Multi-Auth
 
+[![Latest Stable Version](https://poser.pugx.org/smartins/passport-multiauth/v/stable)](https://packagist.org/packages/smartins/passport-multiauth)
 [![Build Status](https://travis-ci.org/sfelix-martins/passport-multiauth.svg?branch=master)](https://travis-ci.org/sfelix-martins/passport-multiauth)
 [![Code Coverage](https://scrutinizer-ci.com/g/sfelix-martins/passport-multiauth/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/sfelix-martins/passport-multiauth/?branch=master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/sfelix-martins/passport-multiauth/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/sfelix-martins/passport-multiauth/?branch=master)
 [![StyleCI](https://styleci.io/repos/106218586/shield?branch=master)](https://styleci.io/repos/106218586)
+[![License](https://poser.pugx.org/smartins/passport-multiauth/license)](https://packagist.org/packages/smartins/passport-multiauth)
 
 Add multi-authentication support to [Laravel Passport](https://laravel.com/docs/5.5/passport)
 
@@ -24,7 +26,7 @@ Add multi-authentication support to [Laravel Passport](https://laravel.com/docs/
 - Install using composer:
 
 ```console
-composer require smartins/passport-multiauth
+$ composer require smartins/passport-multiauth
 ```
 
 - If you are using a Laravel version **less than 5.5** you **need to add** the provider on `config/app.php`:
@@ -39,7 +41,7 @@ composer require smartins/passport-multiauth
 - Migrate database to create `oauth_access_token_providers` table:
 
 ```console
-php artisan migrate
+$ php artisan migrate
 ```
 
 - Add new provider in `config/auth.php` using a model that extends of `Authenticatable` class and use `HasApiTokens` trait.
@@ -183,11 +185,11 @@ class AuthServiceProvider extends ServiceProvider
 
 **Optional:** Publish migrations:
 
-```console
-php artisan vendor:publish
-```
+Just run the `vendor:publish` artisan command with package provider as parameter:
 
-And choose the provider `SMartins\PassportMultiauth\Providers\MultiauthServiceProvider`
+```console
+$ php artisan vendor:publish --provider="SMartins\PassportMultiauth\Providers\MultiauthServiceProvider"
+```
 
 ## Usage
 
