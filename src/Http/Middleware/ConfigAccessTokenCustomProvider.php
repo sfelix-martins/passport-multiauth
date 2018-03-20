@@ -69,18 +69,12 @@ class ConfigAccessTokenCustomProvider
                 $psr->getAttribute('oauth_user_id')
             );
 
-            // If just one entity a register with this id follow the flow
-            if (! ($entities->count() > 1)) {
-                // If has just one entity with id set the provider on `api` guard
-                // to get the correct user type using `api` guard
-                config(['auth.guards.api.provider' => $accessToken->provider]);
-
-                return $next($request);
-            }
-
-            if (count($guards) > 1) {
-                // If has more than one guards set the api provider used to
-                // choose provider on \Laravel\Passport\Bridge\UserRepository::getUserEntityByUserCredentials.
+            // If just one entity has a register with this id or
+            // has more than one guard set the api guard provider follow the flow
+            if ($entities->count() == 1 || count($guards) > 1) {
+                // If has more than one guards or just one entity with same id set
+                // the api provider used to choose provider on
+                // \Laravel\Passport\Bridge\UserRepository::getUserEntityByUserCredentials.
                 config(['auth.guards.api.provider' => $accessToken->provider]);
 
                 return $next($request);
