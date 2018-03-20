@@ -97,8 +97,13 @@ class ConfigAccessTokenCustomProviderTest extends TestCase
         $resourceServer = Mockery::mock('League\OAuth2\Server\ResourceServer');
         $resourceServer->shouldReceive('validateAuthenticatedRequest')->andReturn($psr = Mockery::mock());
 
+        $userProvider = Mockery::mock('Illuminate\Contracts\Auth\UserProvider');
+        $userProvider->shouldReceive('setProvider')->set('provider', 'users');
+        $userProvider->setProvider();
+        $userProvider->shouldReceive('retrieveById')->with(1)->andReturn(new User);
+
         $repository = Mockery::mock('SMartins\PassportMultiauth\ProviderRepository');
-        $repository->shouldReceive('findForToken')->andReturn($provider = Mockery::mock());
+        $repository->shouldReceive('findForToken')->andReturn($userProvider);
 
         $request = Request::create('/');
         $request->headers->set('Authorization', 'Bearer token');
@@ -115,9 +120,6 @@ class ConfigAccessTokenCustomProviderTest extends TestCase
 
         $psr->shouldReceive('getAttribute')->with('oauth_access_token_id')->andReturn(1);
         $psr->shouldReceive('getAttribute')->with('oauth_user_id')->andReturn(1);
-
-        $userProvider = Mockery::mock('Illuminate\Contracts\Auth\UserProvider');
-        $userProvider->shouldReceive('retrieveById')->with(1)->andReturn(new User);
 
         $this->app['config']->set('auth.providers.users.model', User::class);
 

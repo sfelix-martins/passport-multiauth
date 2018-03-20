@@ -71,6 +71,10 @@ class ConfigAccessTokenCustomProvider
 
             // If just one entity a register with this id follow the flow
             if (! ($entities->count() > 1)) {
+                // If has just one entity with id set the provider on `api` guard
+                // to get the correct user type using `api` guard
+                config(['auth.guards.api.provider' => $accessToken->provider]);
+
                 return $next($request);
             }
 
