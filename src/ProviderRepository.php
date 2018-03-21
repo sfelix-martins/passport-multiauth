@@ -7,7 +7,7 @@ use Carbon\Carbon;
 class ProviderRepository
 {
     /**
-     * Find on `oauth_access_token_providers` table by `oauth_access_token_id`
+     * Find on `oauth_access_token_providers` table by `oauth_access_token_id`.
      * @param  string $tokenId
      * @return \SMartins\PassportMultiauth\Provider|null
      */
@@ -17,7 +17,7 @@ class ProviderRepository
     }
 
     /**
-     * Store new register on `oauth_access_token_providers` table
+     * Store new register on `oauth_access_token_providers` table.
      *
      * @param  string $token
      * @param  string $provider

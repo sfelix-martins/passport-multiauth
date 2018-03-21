@@ -18,7 +18,7 @@ class ConfigAccessTokenCustomProvider
     use CreatesUserProviders;
 
     /**
-     * The application instance
+     * The application instance.
      *
      * @var \Illuminate\Foundation\Application
      */
@@ -104,7 +104,7 @@ class ConfigAccessTokenCustomProvider
     }
 
     /**
-     * Get entities stored on database with same id on auth providers
+     * Get entities stored on database with same id on auth providers.
      *
      * @param  string|int $id
      * @return \Illuminate\Support\Collection
@@ -125,7 +125,7 @@ class ConfigAccessTokenCustomProvider
     }
 
     /**
-     * Find entity by id on auth provider
+     * Find entity by id on auth provider.
      *
      * @param  string $provider
      * @param  string|int $userId

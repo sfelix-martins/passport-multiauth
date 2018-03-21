@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 class GuardChecker
 {
     /**
-     * Get guards passed as parameters to `auth` middleware
+     * Get guards passed as parameters to `auth` middleware.
      *
      * @param  \Illuminate\Http\Request $request
      * @return array
@@ -29,7 +29,7 @@ class GuardChecker
     }
 
     /**
-     * Get default provider from guard
+     * Get default provider from guard.
      *
      * @param  string $guard
      * @return string|null

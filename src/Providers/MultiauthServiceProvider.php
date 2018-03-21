@@ -24,7 +24,7 @@ class MultiauthServiceProvider extends ServiceProvider
     }
 
     /**
-     * Register migrations to work on `php artisan migrate` comamnd
+     * Register migrations to work on `php artisan migrate` comamnd.
      *
      * @return void
      */
