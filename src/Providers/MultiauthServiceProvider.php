@@ -23,6 +23,11 @@ class MultiauthServiceProvider extends ServiceProvider
         $this->createAccessTokenProvider($providers);
     }
 
+    /**
+     * Register migrations to work on `php artisan migrate` comamnd
+     *
+     * @return void
+     */
     protected function registerMigrations()
     {
         $migrationsPath = __DIR__.'/../../database/migrations';

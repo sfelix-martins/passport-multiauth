@@ -17,10 +17,21 @@ class ConfigAccessTokenCustomProvider
 {
     use CreatesUserProviders;
 
+    /**
+     * The application instance
+     *
+     * @var \Illuminate\Foundation\Application
+     */
     private $app;
 
+    /**
+     * @var \League\OAuth2\Server\ResourceServer
+     */
     private $server;
 
+    /**
+     * @var \SMartins\PassportMultiauth\ProviderRepository
+     */
     private $providers;
 
     public function __construct(ResourceServer $server, ProviderRepository $providers, App $app)
@@ -92,6 +103,12 @@ class ConfigAccessTokenCustomProvider
         return $next($request);
     }
 
+    /**
+     * Get entities stored on database with same id on auth providers
+     *
+     * @param  string|int $id
+     * @return \Illuminate\Support\Collection
+     */
     public function entitiesWithSameIdOnProviders($id)
     {
         $providers = array_keys(config('auth.providers'));
@@ -107,6 +124,13 @@ class ConfigAccessTokenCustomProvider
         return $entities;
     }
 
+    /**
+     * Find entity by id on auth provider
+     *
+     * @param  string $provider
+     * @param  string|int $userId
+     * @return \Illuminate\Contracts\Auth\Authenticatable|null
+     */
     public function findEntityOnProvider($provider, $userId)
     {
         $userProvider = $this->createUserProvider($provider);
