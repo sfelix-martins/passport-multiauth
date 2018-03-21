@@ -100,7 +100,6 @@ class ConfigAccessTokenCustomProviderTest extends TestCase
         $userProvider = Mockery::mock('Illuminate\Contracts\Auth\UserProvider');
         $userProvider->shouldReceive('setProvider')->set('provider', 'users');
         $userProvider->setProvider();
-        $userProvider->shouldReceive('retrieveById')->with(1)->andReturn(new User);
 
         $repository = Mockery::mock('SMartins\PassportMultiauth\ProviderRepository');
         $repository->shouldReceive('findForToken')->andReturn($userProvider);
@@ -153,9 +152,6 @@ class ConfigAccessTokenCustomProviderTest extends TestCase
         $psr->shouldReceive('getAttribute')->with('oauth_access_token_id')->andReturn(1);
         $psr->shouldReceive('getAttribute')->with('oauth_user_id')->andReturn(1);
 
-        $userProvider = Mockery::mock('Illuminate\Contracts\Auth\UserProvider');
-        $userProvider->shouldReceive('retrieveById')->with(1)->andReturn(new User);
-
         $this->app['config']->set('auth.providers.users.model', User::class);
 
         $middleware = new ConfigAccessTokenCustomProvider($resourceServer, $repository, new App);
@@ -197,9 +193,6 @@ class ConfigAccessTokenCustomProviderTest extends TestCase
 
         $psr->shouldReceive('getAttribute')->with('oauth_access_token_id')->andReturn('token');
         $psr->shouldReceive('getAttribute')->with('oauth_user_id')->andReturn(1);
-
-        $userProvider = Mockery::mock('Illuminate\Contracts\Auth\UserProvider');
-        $userProvider->shouldReceive('retrieveById')->with(1)->andReturn(new User);
 
         $this->app['config']->set('auth.providers.users.driver', 'eloquent');
         $this->app['config']->set('auth.providers.users.model', User::class);
@@ -247,9 +240,6 @@ class ConfigAccessTokenCustomProviderTest extends TestCase
 
         $psr->shouldReceive('getAttribute')->with('oauth_access_token_id')->andReturn('token');
         $psr->shouldReceive('getAttribute')->with('oauth_user_id')->andReturn(1);
-
-        $userProvider = Mockery::mock('Illuminate\Contracts\Auth\UserProvider');
-        $userProvider->shouldReceive('retrieveById')->with(1)->andReturn(new User);
 
         $this->app['config']->set('auth.providers.users.driver', 'eloquent');
         $this->app['config']->set('auth.providers.users.model', User::class);
@@ -302,9 +292,6 @@ class ConfigAccessTokenCustomProviderTest extends TestCase
 
         $psr->shouldReceive('getAttribute')->with('oauth_access_token_id')->andReturn('token');
         $psr->shouldReceive('getAttribute')->with('oauth_user_id')->andReturn(1);
-
-        $userProvider = Mockery::mock('Illuminate\Contracts\Auth\UserProvider');
-        $userProvider->shouldReceive('retrieveById')->with(1)->andReturn(new User);
 
         $this->app['config']->set('auth.providers.users.driver', 'eloquent');
         $this->app['config']->set('auth.providers.users.model', User::class);
