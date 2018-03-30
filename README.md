@@ -25,7 +25,7 @@ Add multi-authentication support to [Laravel Passport](https://laravel.com/docs/
 
 - Install using composer:
 
-```console
+```sh
 $ composer require smartins/passport-multiauth
 ```
 
@@ -40,7 +40,7 @@ $ composer require smartins/passport-multiauth
 
 - Migrate database to create `oauth_access_token_providers` table:
 
-```console
+```sh
 $ php artisan migrate
 ```
 
@@ -187,7 +187,7 @@ class AuthServiceProvider extends ServiceProvider
 
 Just run the `vendor:publish` artisan command with package provider as parameter:
 
-```console
+```sh
 $ php artisan vendor:publish --provider="SMartins\PassportMultiauth\Providers\MultiauthServiceProvider"
 ```
 
@@ -241,6 +241,12 @@ Route::group(['middleware' => ['api', 'auth:admin,api']], function () {
 });
 ```
 
+You can use too the `Auth` facade:
+
+```php
+Auth::guard('api')->user();
+```
+
 ### Refreshing tokens
 
 - Add the `provider` parameter in your request at `/oauth/token`:
@@ -275,7 +281,7 @@ protected $routeMiddleware = [
 
 The middlewares are equals the `Laravel\Passport` middlewares with guard `api` on `request->user()` object.
 
-User Sample:
+Use Sample:
 
 ```php
 Route::group([

@@ -8,6 +8,7 @@ class ProviderRepository
 {
     /**
      * Find on `oauth_access_token_providers` table by `oauth_access_token_id`.
+     *
      * @param  string $tokenId
      * @return \SMartins\PassportMultiauth\Provider|null
      */
