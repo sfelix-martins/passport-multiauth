@@ -3,14 +3,14 @@
 namespace SMartins\PassportMultiauth\Http\Middleware;
 
 use Closure;
-use Illuminate\Auth\AuthenticationException;
-use Illuminate\Contracts\Auth\Factory as Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
-use League\OAuth2\Server\Exception\OAuthServerException;
 use League\OAuth2\Server\ResourceServer;
-use SMartins\PassportMultiauth\Guards\GuardChecker;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Contracts\Auth\Factory as Auth;
 use SMartins\PassportMultiauth\ProviderRepository;
+use SMartins\PassportMultiauth\Guards\GuardChecker;
+use League\OAuth2\Server\Exception\OAuthServerException;
 use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 
 class MultiAuthenticate
@@ -72,19 +72,23 @@ class MultiAuthenticate
 
             $tokenId = $psr->getAttribute('oauth_access_token_id');
 
-            if (!$tokenId) {
+            if (! $tokenId) {
                 throw new AuthenticationException('Unauthenticated', $guards);
             }
 
             $accessToken = $this->providers->findForToken($tokenId);
 
-            if (!$accessToken) {
+            if (! $accessToken ) {
                 throw new AuthenticationException('Unauthenticated', $guards);
             }
+            
+            $providers = collect($guards)->mapWithKeys(function ($guard) {
+                return [GuardChecker::defaultGuardProvider($guard) => $guard];
+            });
 
-            // use only guard associated to access token
-            if (in_array($accessToken->provider, $guards, true)) {
-                $this->authenticate([$accessToken->provider]);
+            // use only guard associated to access token provider
+            if ($providers->has($accessToken->provider)) {
+                $this->authenticate([$providers->get($accessToken->provider)]);
             } else {
                 $this->authenticate([]);
             }
