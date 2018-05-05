@@ -151,6 +151,35 @@ class Kernel extends HttpKernel
 }
 ```
 
+- Replace the middleware `Authenticate` on `app/Http/Kernel` `$routeMiddleware` attribute.
+
+```php
+
+class Kernel extends HttpKernel
+{
+    ...
+
+    /**
+     * The application's route middleware.
+     *
+     * These middleware may be assigned to groups or used individually.
+     *
+     * @var array
+     */
+    protected $routeMiddleware = [
+        //'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
+        'auth' => \SMartins\PassportMultiauth\Http\Middleware\MultiAuthenticate::class,
+        'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+        'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        'can' => \Illuminate\Auth\Middleware\Authorize::class,
+        'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
+        'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+    ];
+
+    ...
+}
+```
+
 - Encapsulate the passport routes for access token with the registered middleware in `AuthServiceProvider`:
 
 ```php
@@ -228,15 +257,12 @@ The  `api` guard use is equals the example with `admin`.
 
 - You can pass many guards to `auth` middleware.
 
-**OBS:** To pass many you need pass the `api` guard on end of guards and the guard `api` as parameter on `$request->user()` method. Ex:
-
 ```php
 // `api` guard on end of guards separated by comma
 Route::group(['middleware' => ['api', 'auth:admin,api']], function () {
     Route::get('/admin', function ($request) {
-        // Passing `api` guard to `$request->user()` method
         // The instance of user authenticated (Admin or User in this case) will be returned
-        return $request->user('api');
+        return $request->user();
     });
 });
 ```
@@ -244,7 +270,8 @@ Route::group(['middleware' => ['api', 'auth:admin,api']], function () {
 You can use too the `Auth` facade:
 
 ```php
-Auth::guard('api')->user();
+Auth::check();
+Auth::user();
 ```
 
 ### Refreshing tokens
