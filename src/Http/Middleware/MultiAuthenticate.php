@@ -81,7 +81,7 @@ class MultiAuthenticate
             if (! $accessToken) {
                 throw new AuthenticationException('Unauthenticated', $guards);
             }
-            
+
             $providers = collect($guards)->mapWithKeys(function ($guard) {
                 return [GuardChecker::defaultGuardProvider($guard) => $guard];
             });
