@@ -78,7 +78,7 @@ class MultiAuthenticate
 
             $accessToken = $this->providers->findForToken($tokenId);
 
-            if (! $accessToken ) {
+            if (! $accessToken) {
                 throw new AuthenticationException('Unauthenticated', $guards);
             }
             
