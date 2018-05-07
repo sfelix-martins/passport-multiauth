@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use League\OAuth2\Server\ResourceServer;
+use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Auth\Factory as Auth;
 use SMartins\PassportMultiauth\ProviderRepository;
@@ -13,7 +14,7 @@ use SMartins\PassportMultiauth\Guards\GuardChecker;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 
-class MultiAuthenticate
+class MultiAuthenticate extends Authenticate
 {
     /**
      * The authentication factory instance.
@@ -21,12 +22,6 @@ class MultiAuthenticate
      * @var \Illuminate\Contracts\Auth\Factory
      */
     protected $auth;
-    /**
-     * The application instance.
-     *
-     * @var \Illuminate\Foundation\Application
-     */
-    private $app;
 
     /**
      * @var \League\OAuth2\Server\ResourceServer
@@ -38,16 +33,16 @@ class MultiAuthenticate
      */
     private $providers;
 
-    public function __construct(ResourceServer $server, ProviderRepository $providers, App $app, Auth $auth)
+    public function __construct(ResourceServer $server, ProviderRepository $providers, Auth $auth)
     {
         $this->server = $server;
         $this->providers = $providers;
-        $this->app = App::getFacadeRoot();
         $this->auth = $auth;
     }
 
     /**
-     * Handle an incoming request.
+     * Handle an incoming request. Authenticates the guard from access token
+     * used on request.
      *
      * @param \Illuminate\Http\Request $request
      * @param \Closure                 $next
@@ -55,7 +50,7 @@ class MultiAuthenticate
      *
      * @return mixed
      */
-    public function handle(Request $request, Closure $next, ...$guards)
+    public function handle($request, Closure $next, ...$guards)
     {
         // Get the auth guard if has to check the default guard
         $guards = GuardChecker::getAuthGuards($request);
@@ -95,30 +90,10 @@ class MultiAuthenticate
 
             return $next($request);
         } catch (OAuthServerException $e) {
+            // @todo Check if it's the best way to handle with OAuthServerException
+            throw new AuthenticationException('Unauthenticated', $guards);
         }
 
         return $next($request);
-    }
-
-    /**
-     * Determine if the user is logged in to any of the given guards.
-     *
-     * @param array $guards
-     *
-     * @throws \Illuminate\Auth\AuthenticationException
-     */
-    protected function authenticate(array $guards)
-    {
-        if (empty($guards)) {
-            return $this->auth->authenticate();
-        }
-
-        foreach ($guards as $guard) {
-            if ($this->auth->guard($guard)->check()) {
-                return $this->auth->shouldUse($guard);
-            }
-        }
-
-        throw new AuthenticationException('Unauthenticated.', $guards);
     }
 }
