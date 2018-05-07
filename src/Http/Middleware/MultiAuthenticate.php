@@ -3,7 +3,6 @@
 namespace SMartins\PassportMultiauth\Http\Middleware;
 
 use Closure;
-use Illuminate\Http\Request;
 use League\OAuth2\Server\ResourceServer;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Middleware\Authenticate;
@@ -92,7 +91,5 @@ class MultiAuthenticate extends Authenticate
             // @todo Check if it's the best way to handle with OAuthServerException
             throw new AuthenticationException('Unauthenticated', $guards);
         }
-
-        return $next($request);
     }
 }

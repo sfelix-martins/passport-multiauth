@@ -38,9 +38,17 @@ class AddCustomProvider
         return $next($request);
     }
 
-    public function terminate($request, $response)
+    /**
+     * Reset config provider to default after complete request. If necessary
+     * can receive $request and $response params. To be used the attribute
+     * $this->defaultApiProvider the middleware was registered on ServiceProvider
+     * as a singleton.
+     * Read more in https://laravel.com/docs/5.6/middleware#terminable-middleware
+     *
+     * @return void
+     */
+    public function terminate()
     {
-        // Reset config provider to default after complete request.
         config(['auth.guards.api.provider' => $this->defaultApiProvider]);
     }
 }

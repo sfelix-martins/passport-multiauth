@@ -3,9 +3,14 @@
 namespace SMartins\PassportMultiauth\Testing;
 
 use Laravel\Passport\Client;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Foundation\Testing\Concerns\MakesHttpRequests;
+use Illuminate\Foundation\Testing\Concerns\InteractsWithConsole;
 
 trait MultiauthActions
 {
+    use MakesHttpRequests, InteractsWithConsole;
+
     /**
      * The route to generate the access token. The default value is the standard
      * route from Laravel\Passport.
@@ -33,7 +38,7 @@ trait MultiauthActions
      * @param  string $scope
      * @return $this
      */
-    public function multiauthActingAs($user, $scope = '')
+    public function multiauthActingAs(Authenticatable $user, $scope = '')
     {
         $client = Client::where('personal_access_client', false)
                         ->where('revoked', false)
