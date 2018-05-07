@@ -21,6 +21,10 @@ class MultiauthServiceProvider extends ServiceProvider
         }
 
         $this->createAccessTokenProvider($providers);
+
+        // Register the middleware as signleton to use the same middleware
+        // instance when the handle and terminate methods are called.
+        $this->app->singleton(\SMartins\PassportMultiauth\Http\Middleware\AddCustomProvider::class);
     }
 
     /**
