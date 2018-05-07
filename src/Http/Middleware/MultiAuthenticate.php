@@ -4,10 +4,9 @@ namespace SMartins\PassportMultiauth\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
 use League\OAuth2\Server\ResourceServer;
-use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Contracts\Auth\Factory as Auth;
 use SMartins\PassportMultiauth\ProviderRepository;
 use SMartins\PassportMultiauth\Guards\GuardChecker;
