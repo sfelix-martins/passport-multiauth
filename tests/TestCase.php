@@ -2,8 +2,10 @@
 
 namespace SMartins\PassportMultiauth\Tests;
 
+use Laravel\Passport\PassportServiceProvider;
 use Orchestra\Database\ConsoleServiceProvider;
 use Orchestra\Testbench\TestCase as BaseTestCase;
+use SMartins\PassportMultiauth\Tests\Fixtures\Http\Kernel;
 use SMartins\PassportMultiauth\Providers\MultiauthServiceProvider;
 
 abstract class TestCase extends BaseTestCase
@@ -18,6 +20,7 @@ abstract class TestCase extends BaseTestCase
     protected function getPackageProviders($app)
     {
         return [
+            PassportServiceProvider::class,
             MultiauthServiceProvider::class,
             ConsoleServiceProvider::class,
         ];
@@ -37,5 +40,16 @@ abstract class TestCase extends BaseTestCase
             'driver'   => 'sqlite',
             'database' => ':memory:',
         ]);
+    }
+
+    /**
+     * Resolve application HTTP Kernel implementation.
+     *
+     * @param  \Illuminate\Foundation\Application  $app
+     * @return void
+     */
+    protected function resolveApplicationHttpKernel($app)
+    {
+        $app->singleton('Illuminate\Contracts\Http\Kernel', Kernel::class);
     }
 }

@@ -43,7 +43,7 @@ class AddCustomProvider
      * can receive $request and $response params. To be used the attribute
      * $this->defaultApiProvider the middleware was registered on ServiceProvider
      * as a singleton.
-     * Read more in https://laravel.com/docs/5.6/middleware#terminable-middleware
+     * Read more in https://laravel.com/docs/5.6/middleware#terminable-middleware.
      *
      * @return void
      */

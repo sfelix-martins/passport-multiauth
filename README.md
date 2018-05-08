@@ -293,7 +293,7 @@ protected $routeMiddleware = [
 
 Use the trait `SMartins\PassportMultiauth\Testing\MultiauthActions` in your test and call the method `multiauthActingAs()` passing an `Authenticatable` instance. Actually the `multiauthActingAs` uses the `Laravel\Passport` `oauth/token` route to generate the access token. If your route has a different address, set in attribute `oauthTokenRoute`. E.g.:
 
-**Warning:** The trait `MultiauthActions` actions call on your `setUp` the method `$this->artisan('passport:install')`. It's highly recommended that you use a test database.
+**Warning:** The trait `MultiauthActions` actions call on your `setUp` the method `$this->artisan('passport:install')`. It's highly recommended that you use a test database. 
 
 ```php
 
@@ -331,4 +331,30 @@ class AuthTest extends TestCase
         $this->assertInstanceOf(AuthenticationException::class, $response->exception);
     }
 }
+```
+
+**OBS:** If you override the method `setUp()` in your test you should run `$this->artisan('passport:install');` in your `setUp()`. E.g.:
+
+```
+namespace Tests\Feature;
+
+use Tests\TestCase;
+use SMartins\PassportMultiauth\Testing\MultiauthActions;
+
+class AuthTest extends TestCase
+{
+    use MultiauthActions;
+
+    public function setUp()
+    {
+        parent::setUp();
+
+        // Call to $this->multiauthActingAs() method works correctly.
+        $this->artisan('passport:install');
+
+        // Your another set ups.
+    }
+
+    // ...
+
 ```

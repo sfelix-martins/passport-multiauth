@@ -4,6 +4,7 @@ namespace SMartins\PassportMultiauth\Testing;
 
 use Laravel\Passport\Client;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\Concerns\MakesHttpRequests;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithConsole;
 
@@ -19,6 +20,9 @@ trait MultiauthActions
      */
     protected $oauthTokenRoute = 'oauth/token';
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function setUp()
     {
         parent::setUp();
@@ -40,16 +44,16 @@ trait MultiauthActions
      */
     public function multiauthActingAs(Authenticatable $user, $scope = '')
     {
+        // @todo Change to specific repository
         $client = Client::where('personal_access_client', false)
                         ->where('revoked', false)
                         ->first();
 
-        $provider = '';
-        foreach (config('auth.providers') as $p => $config) {
-            if ($user instanceof $config['model']) {
-                $provider = $p;
-            }
+        if (!$client) {
+            throw new ModelNotFoundException('Laravel\Passport password grant not found. Please run `passport:install` to generate client.');
         }
+
+        $provider = $this->getUserProvider($user);
 
         $params = [
             'grant_type' => 'password',
@@ -60,16 +64,48 @@ trait MultiauthActions
             'scope' => $scope,
         ];
 
-        // If model to be authenticated don't has the default provider
-        if (config('auth.guards.api.provider') !== $provider) {
+        // If model to be authenticated don't is the default provider
+        if (! $this->isDefaultProvider($provider)) {
             $params = array_merge($params, ['provider' => $provider]);
         }
 
         $response = $this->json('POST', $this->oauthTokenRoute, $params);
-        $accessToken = json_decode($response->original)->access_token;
+
+        $accessToken = json_decode($response->getContent())->access_token;
 
         $this->withHeader('Authorization', 'Bearer '.$accessToken);
 
         return $this;
+    }
+
+    /**
+     * Get the user provider on configs.
+     *
+     * @todo Move to class specialized in check auth configs.
+     * @param  \Illuminate\Contracts\Auth\Authenticatable $user
+     * @return string
+     */
+    protected function getUserProvider(Authenticatable $user)
+    {
+        $provider = '';
+        foreach (config('auth.providers') as $p => $config) {
+            if ($user instanceof $config['model']) {
+                $provider = $p;
+            }
+        }
+
+        return $provider;
+    }
+
+    /**
+     * Check if provider is the default provider used by Laravel\Passport.
+     *
+     * @todo Move to class specialized in check auth configs.
+     * @param string $provider
+     * @return boolean
+     */
+    protected function isDefaultProvider(string $provider)
+    {
+        return config('auth.guards.api.provider') === $provider;
     }
 }
