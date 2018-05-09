@@ -1,9 +1,10 @@
 <?php
 
-namespace SMartins\PassportMultiauth\Tests;
+namespace SMartins\PassportMultiauth\Tests\Unit;
 
 use Mockery;
 use Illuminate\Http\Request;
+use SMartins\PassportMultiauth\Tests\TestCase;
 use SMartins\PassportMultiauth\Http\Middleware\AddCustomProvider;
 
 class AddCustomProviderTest extends TestCase

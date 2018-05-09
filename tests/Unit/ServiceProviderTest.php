@@ -1,8 +1,9 @@
 <?php
 
-namespace SMartins\PassportMultiauth\Tests;
+namespace SMartins\PassportMultiauth\Tests\Unit;
 
 use SMartins\PassportMultiauth\Provider;
+use SMartins\PassportMultiauth\Tests\TestCase;
 use Illuminate\Database\Capsule\Manager as DB;
 use Laravel\Passport\Events\AccessTokenCreated;
 use Illuminate\Database\Eloquent\Model as Eloquent;

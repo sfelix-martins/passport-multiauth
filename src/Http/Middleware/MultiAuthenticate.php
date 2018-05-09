@@ -50,20 +50,17 @@ class MultiAuthenticate extends Authenticate
      */
     public function handle($request, Closure $next, ...$guards)
     {
-        // Get the auth guard if has to check the default guard
-        $guards = GuardChecker::getAuthGuards($request);
-
         // If don't has any guard follow the flow
-        if (0 === count($guards)) {
+        if (count($guards) === 0) {
             return $next($request);
         }
 
-        $psr = (new DiactorosFactory())->createRequest($request);
+        $psrRequest = (new DiactorosFactory())->createRequest($request);
 
         try {
-            $psr = $this->server->validateAuthenticatedRequest($psr);
+            $psrRequest = $this->server->validateAuthenticatedRequest($psrRequest);
 
-            $tokenId = $psr->getAttribute('oauth_access_token_id');
+            $tokenId = $psrRequest->getAttribute('oauth_access_token_id');
 
             if (! $tokenId) {
                 throw new AuthenticationException('Unauthenticated', $guards);

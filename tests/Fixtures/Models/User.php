@@ -1,12 +1,12 @@
 <?php
 
-namespace SMartins\PassportMultiauth\Tests\Models;
+namespace SMartins\PassportMultiauth\Tests\Fixtures\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Company extends Authenticatable
+class User extends Authenticatable
 {
-    protected $table = 'companies';
+    protected $table = 'users';
 
     use \Laravel\Passport\HasApiTokens;
 
@@ -15,9 +15,9 @@ class Company extends Authenticatable
         return 'id';
     }
 
-    public static function createCompany()
+    public static function createUser()
     {
-        \DB::table('companies')->insert([
+        \DB::table('users')->insert([
             'name' => 'Samuel',
             'email' => 'sam.martins.dev@gmail.com',
             'password' => \Hash::make('456'),
