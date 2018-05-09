@@ -4,12 +4,10 @@ namespace SMartins\PassportMultiauth\Tests\Unit;
 
 use Mockery;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Route;
 use Illuminate\Auth\AuthenticationException;
 use SMartins\PassportMultiauth\Tests\TestCase;
-use SMartins\PassportMultiauth\Tests\Models\User;
-use SMartins\PassportMultiauth\Testing\MultiauthActions;
 use League\OAuth2\Server\Exception\OAuthServerException;
+use SMartins\PassportMultiauth\Testing\MultiauthActions;
 use SMartins\PassportMultiauth\Http\Middleware\MultiAuthenticate;
 
 class MultiAuthenticateMiddlewareTest extends TestCase
@@ -114,18 +112,18 @@ class MultiAuthenticateMiddlewareTest extends TestCase
         }, 'api', 'company');
     }
 
-    protected function createRequest($token = null)
+    /**
+     * Create request instance to be used on MultiAuthenticate::handle() param.
+     *
+     * @param string $token|null
+     * @return \Illuminate\Http\Request
+     */
+    protected function createRequest(string $token = null)
     {
         $token = $token ?? 'Bearer token';
 
         $request = Request::create('/');
         $request->headers->set('Authorization', $token);
-        $request = $request->setRouteResolver(function () use ($request) {
-            $route = new Route('GET', '/foo/bar', ['as' => 'foo.bar']);
-            $route->bind($request);
-
-            return $route;
-        });
 
         return $request;
     }

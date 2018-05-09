@@ -4,8 +4,8 @@ namespace SMartins\PassportMultiauth\Tests\Unit;
 
 use Mockery;
 use SMartins\PassportMultiauth\Tests\TestCase;
-use SMartins\PassportMultiauth\Testing\MultiauthActions;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use SMartins\PassportMultiauth\Testing\MultiauthActions;
 use SMartins\PassportMultiauth\Tests\Fixtures\Models\User;
 use SMartins\PassportMultiauth\Tests\Fixtures\Models\Company;
 

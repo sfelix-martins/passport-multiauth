@@ -57,6 +57,11 @@ abstract class TestCase extends BaseTestCase
         $app->singleton('Illuminate\Contracts\Http\Kernel', Kernel::class);
     }
 
+    /**
+     * Set up necessary configs to testing with Laravel Passport.
+     *
+     * @return void
+     */
     protected function setUpLaravelPassport()
     {
         $this->installPassport();
@@ -66,6 +71,8 @@ abstract class TestCase extends BaseTestCase
 
     /**
      * Install laravel passport to generate configs.
+     *
+     * @return void
      */
     protected function installPassport()
     {
@@ -75,6 +82,7 @@ abstract class TestCase extends BaseTestCase
     /**
      * Load laravel passport routes.
      *
+     * @return void
      */
     protected function loadPassportRoutes()
     {
@@ -90,6 +98,8 @@ abstract class TestCase extends BaseTestCase
 
     /**
      * Setup auth configs.
+     *
+     * @return void
      */
     protected function setAuthConfigs()
     {

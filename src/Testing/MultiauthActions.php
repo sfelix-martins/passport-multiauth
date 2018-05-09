@@ -49,7 +49,7 @@ trait MultiauthActions
                         ->where('revoked', false)
                         ->first();
 
-        if (!$client) {
+        if (! $client) {
             throw new ModelNotFoundException('Laravel\Passport password grant not found. Please run `passport:install` to generate client.');
         }
 
@@ -102,7 +102,7 @@ trait MultiauthActions
      *
      * @todo Move to class specialized in check auth configs.
      * @param string $provider
-     * @return boolean
+     * @return bool
      */
     protected function isDefaultProvider(string $provider)
     {
