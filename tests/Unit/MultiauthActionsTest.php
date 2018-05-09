@@ -3,6 +3,7 @@
 namespace SMartins\PassportMultiauth\Tests\Unit;
 
 use Mockery;
+use Illuminate\Support\Facades\App;
 use SMartins\PassportMultiauth\Tests\TestCase;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use SMartins\PassportMultiauth\Testing\MultiauthActions;
@@ -62,5 +63,15 @@ class MultiauthActionsTest extends TestCase
 
         $this->assertArrayHasKey('Authorization', $httpRequest->defaultHeaders);
         $this->assertNotNull($httpRequest->defaultHeaders['Authorization']);
+    }
+
+    public function testTryUseMultiauthActingAsWithVersionLessThan55()
+    {
+        $this->setUpLaravelPassport();
+        $this->expectException(\RuntimeException::class);
+
+        App::shouldReceive('version')->andReturn('5.4.36');
+
+        $this->multiauthActingAs(factory(User::class)->create());
     }
 }

@@ -3,15 +3,12 @@
 namespace SMartins\PassportMultiauth\Testing;
 
 use Laravel\Passport\Client;
+use Illuminate\Support\Facades\App;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Foundation\Testing\Concerns\MakesHttpRequests;
-use Illuminate\Foundation\Testing\Concerns\InteractsWithConsole;
 
 trait MultiauthActions
 {
-    use MakesHttpRequests, InteractsWithConsole;
-
     /**
      * The route to generate the access token. The default value is the standard
      * route from Laravel\Passport.
@@ -32,7 +29,8 @@ trait MultiauthActions
 
     /**
      * Set the the Authorization header with an access token created using
-     * Laravel Passport.
+     * Laravel Passport. The method `ẁithHeader` of trait `MakesHttpRequests` is
+     * avaiable after version 5.5 of Laravel Framework.
      *
      * @todo Change way to issue token from $this->json() to creating accessing
      *       AccessTokenController@issueToken directly.
@@ -43,6 +41,24 @@ trait MultiauthActions
      * @return $this
      */
     public function multiauthActingAs(Authenticatable $user, $scope = '')
+    {
+        if ((float) App::version() < 5.5) {
+            throw new \RuntimeException('The method is only available to Laravel >= 5.5. To older versions try use $this->multiauthAccessToken() to get access token.');
+        }
+
+        $this->withHeader('Authorization', $this->multiauthAccessToken($user, $scope));
+
+        return $this;
+    }
+
+    /**
+     * Get multiauth header to be used on request to get access token.
+     *
+     * @param  \Illuminate\Contracts\Auth\Authenticatable  $user
+     * @param  string $scope
+     * @return string
+     */
+    public function multiauthAccessToken(Authenticatable $user, $scope = '')
     {
         // @todo Change to specific repository
         $client = Client::where('personal_access_client', false)
@@ -73,9 +89,7 @@ trait MultiauthActions
 
         $accessToken = json_decode($response->getContent())->access_token;
 
-        $this->withHeader('Authorization', 'Bearer '.$accessToken);
-
-        return $this;
+        return 'Bearer '.$accessToken;
     }
 
     /**

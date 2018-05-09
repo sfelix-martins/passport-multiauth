@@ -120,7 +120,7 @@ class MultiAuthenticateMiddlewareTest extends TestCase
      */
     protected function createRequest(string $token = null)
     {
-        $token = $token ?? 'Bearer token';
+        $token = $token ? $token : 'Bearer token';
 
         $request = Request::create('/');
         $request->headers->set('Authorization', $token);
