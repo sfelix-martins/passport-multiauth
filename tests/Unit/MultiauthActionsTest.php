@@ -12,6 +12,13 @@ use SMartins\PassportMultiauth\Tests\Fixtures\Models\Company;
 
 class MultiauthActionsTest extends TestCase
 {
+    /**
+     * Store app version.
+     *
+     * @var float
+     */
+    protected $appVersion;
+
     use MultiauthActions;
 
     public function setUp()
@@ -25,6 +32,8 @@ class MultiauthActionsTest extends TestCase
         $this->withFactories(__DIR__.'/../Fixtures/factories');
 
         $this->setAuthConfigs();
+
+        $this->appVersion = (float) App::version();
     }
 
     public function tearDown()
@@ -38,7 +47,11 @@ class MultiauthActionsTest extends TestCase
 
         $user = factory(User::class)->create();
 
-        $this->multiauthActingAs($user);
+        if ($this->appVersion >= 5.5) {
+            $this->multiauthActingAs($user);
+        } else {
+            $this->multiauthAccessToken($user);
+        }
     }
 
     public function testMultiauthActingsWithoutDefaultProvider()
@@ -47,10 +60,16 @@ class MultiauthActionsTest extends TestCase
 
         $company = factory(Company::class)->create();
 
-        $httpRequest = $this->multiauthActingAs($company);
+        if ($this->appVersion >= 5.5) {
+            $httpRequest = $this->multiauthActingAs($company);
 
-        $this->assertArrayHasKey('Authorization', $httpRequest->defaultHeaders);
-        $this->assertNotNull($httpRequest->defaultHeaders['Authorization']);
+            $this->assertArrayHasKey('Authorization', $httpRequest->defaultHeaders);
+            $this->assertNotNull($httpRequest->defaultHeaders['Authorization']);
+        } else {
+            $accessToken = $this->multiauthAccessToken($company);
+
+            $this->assertNotNull($accessToken);
+        }
     }
 
     public function testMultiauthActingsAsGenerateAccessToken()
@@ -59,10 +78,16 @@ class MultiauthActionsTest extends TestCase
 
         $user = factory(User::class)->create();
 
-        $httpRequest = $this->multiauthActingAs($user);
+        if ($this->appVersion >= 5.5) {
+            $httpRequest = $this->multiauthActingAs($user);
 
-        $this->assertArrayHasKey('Authorization', $httpRequest->defaultHeaders);
-        $this->assertNotNull($httpRequest->defaultHeaders['Authorization']);
+            $this->assertArrayHasKey('Authorization', $httpRequest->defaultHeaders);
+            $this->assertNotNull($httpRequest->defaultHeaders['Authorization']);
+        } else {
+            $accessToken = $this->multiauthAccessToken($user);
+
+            $this->assertNotNull($accessToken);
+        }
     }
 
     public function testTryUseMultiauthActingAsWithVersionLessThan55()

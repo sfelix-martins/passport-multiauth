@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Auth\AuthenticationException;
 use SMartins\PassportMultiauth\Tests\TestCase;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use SMartins\PassportMultiauth\Testing\MultiauthActions;
 use SMartins\PassportMultiauth\Tests\Fixtures\Models\User;
 use SMartins\PassportMultiauth\Tests\Fixtures\Models\Company;

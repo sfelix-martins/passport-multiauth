@@ -118,7 +118,7 @@ trait MultiauthActions
      * @param string $provider
      * @return bool
      */
-    protected function isDefaultProvider(string $provider)
+    protected function isDefaultProvider($provider)
     {
         return config('auth.guards.api.provider') === $provider;
     }
