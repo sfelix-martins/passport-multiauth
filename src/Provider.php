@@ -4,6 +4,9 @@ namespace SMartins\PassportMultiauth;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property string $provider The provider related with access token
+ */
 class Provider extends Model
 {
     /**

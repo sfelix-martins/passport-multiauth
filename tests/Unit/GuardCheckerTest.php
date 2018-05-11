@@ -1,8 +1,9 @@
 <?php
 
-namespace SMartins\PassportMultiauth\Tests;
+namespace SMartins\PassportMultiauth\Tests\Unit;
 
 use Mockery;
+use SMartins\PassportMultiauth\Tests\TestCase;
 use SMartins\PassportMultiauth\Guards\GuardChecker;
 
 class GuardCheckerTest extends TestCase

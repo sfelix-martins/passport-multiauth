@@ -1,13 +1,22 @@
 <?php
 
-namespace SMartins\PassportMultiauth\Tests;
+namespace SMartins\PassportMultiauth\Tests\Unit;
 
 use Mockery;
 use Illuminate\Http\Request;
+use SMartins\PassportMultiauth\Tests\TestCase;
 use SMartins\PassportMultiauth\Http\Middleware\AddCustomProvider;
 
 class AddCustomProviderTest extends TestCase
 {
+    public function setUp()
+    {
+        parent::setUp();
+
+        // Config default provider
+        config(['auth.guards.api.provider', 'users']);
+    }
+
     public function tearDown()
     {
         Mockery::close();
@@ -25,8 +34,10 @@ class AddCustomProviderTest extends TestCase
             return 'response';
         });
 
-        $provider = $this->app['config']->get('auth.guards.api.provider');
+        $this->assertEquals(config('auth.guards.api.provider'), 'companies');
 
-        $this->assertEquals($provider, 'companies');
+        // Check if was correctly reset to default provider on `terminate()`
+        $middleware->terminate();
+        $this->assertEquals(config('auth.guards.api.provider'), 'users');
     }
 }

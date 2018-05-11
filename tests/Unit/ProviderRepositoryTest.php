@@ -1,8 +1,9 @@
 <?php
 
-namespace SMartins\PassportMultiauth\Tests;
+namespace SMartins\PassportMultiauth\Tests\Unit;
 
 use SMartins\PassportMultiauth\Provider;
+use SMartins\PassportMultiauth\Tests\TestCase;
 use SMartins\PassportMultiauth\ProviderRepository;
 
 class ProviderRepositoryTest extends TestCase
@@ -11,7 +12,7 @@ class ProviderRepositoryTest extends TestCase
     {
         parent::setUp();
 
-        $this->loadMigrationsFrom(realpath(__DIR__.'/../database/migrations'));
+        $this->loadMigrationsFrom(realpath(__DIR__.'/../../database/migrations'));
     }
 
     public function testFindForToken()
