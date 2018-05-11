@@ -51,16 +51,15 @@ Example:
 - Configure your model:
 
 ```php
-<?php
 
-use Illuminate\Database\Eloquent\Model;
+use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Laravel\Passport\HasApiTokens;
 
 class Admin extends Authenticatable
 {
-   use Notifiable, HasApiTokens;
+    use Notifiable, HasApiTokens;
+}
 
 ```
 
@@ -167,8 +166,13 @@ class Kernel extends HttpKernel
 - Encapsulate the passport routes for access token with the registered middleware in `AuthServiceProvider`. This middleware will add the capability to `Passport` route `oauth/token` use the value of `provider` param on request:
 
 ```php
+
+namespace App\Providers;
+
 use Route;
 use Laravel\Passport\Passport;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
 {
