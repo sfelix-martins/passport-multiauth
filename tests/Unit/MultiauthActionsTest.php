@@ -99,4 +99,12 @@ class MultiauthActionsTest extends TestCase
 
         $this->multiauthActingAs(factory(User::class)->create());
     }
+
+    /**
+     * @todo Test multiauth acting as With oauth token route property.
+     */
+    public function testMultiauthActingsWithOauthTokenRouteProperty()
+    {
+        $this->assertTrue(true);
+    }
 }

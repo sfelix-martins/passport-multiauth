@@ -4,6 +4,7 @@ namespace SMartins\PassportMultiauth\Testing;
 
 use Laravel\Passport\Client;
 use Illuminate\Support\Facades\App;
+use Illuminate\Routing\Route;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -15,7 +16,7 @@ trait MultiauthActions
      *
      * @var string
      */
-    protected $oauthTokenRoute = 'oauth/token';
+    protected $passportOAuthTokenRoute = 'oauth/token';
 
     /**
      * @codeCoverageIgnore
@@ -85,7 +86,11 @@ trait MultiauthActions
             $params = array_merge($params, ['provider' => $provider]);
         }
 
-        $response = $this->json('POST', $this->oauthTokenRoute, $params);
+        if (property_exists($this, 'oauthTokenRoute')) {
+            $this->passportOAuthTokenRoute = $this->oauthTokenRoute;
+        }
+
+        $response = $this->json('POST', $this->passportOAuthTokenRoute, $params);
 
         $accessToken = json_decode($response->getContent())->access_token;
 
