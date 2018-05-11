@@ -13,14 +13,12 @@ Add multi-authentication support to [Laravel Passport](https://laravel.com/docs/
 
 ## Compatibility
 
-
 | Laravel Passport |
 |------------------|
 | ^2.0             |
 | ^3.0             |
 | ^4.0             |
 | ^5.0             |
-| ^6.0             |
 
 ## Installing and configuring
 
@@ -34,7 +32,7 @@ $ composer require smartins/passport-multiauth
 
 ```php
     'providers' => [
-        // ...
+        ...
         SMartins\PassportMultiauth\Providers\MultiauthServiceProvider::class,
     ],
 ```
@@ -52,15 +50,16 @@ Example:
 - Configure your model:
 
 ```php
+<?php
 
-use Laravel\Passport\HasApiTokens;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Passport\HasApiTokens;
 
 class Admin extends Authenticatable
 {
-    use Notifiable, HasApiTokens;
-}
+   use Notifiable, HasApiTokens;
 
 ```
 
@@ -70,7 +69,7 @@ class Admin extends Authenticatable
 <?php
 
 return [
-    // ...
+    ...
 
     'providers' => [
         'users' => [
@@ -81,7 +80,7 @@ return [
         // ** New provider**
         'admins' => [
             'driver' => 'eloquent',
-            'model' => App\Admin::class,
+            'model' => App\Administrator::class,
         ],
     ],
 ];
@@ -110,74 +109,56 @@ return [
     ]
 ```
 
-- Register the middleware `AddCustomProvider` to `$routeMiddleware` attributes on `app/Http/Kernel.php` file.
+- Register the middlewares `AddCustomProvider` and `ConfigAccessTokenCustomProvider` on `app/Http/Kernel` `$middlewareGroups` attribute.
 
 ```php
 
 class Kernel extends HttpKernel
 {
-    // ...
+    ...
 
     /**
-     * The application's route middleware.
-     *
-     * These middleware may be assigned to groups or used individually.
+     * The application's route middleware groups.
      *
      * @var array
      */
-    protected $routeMiddleware = [
-        // ...
-        'oauth.providers' => \SMartins\PassportMultiauth\Http\Middleware\AddCustomProvider::class,
+    protected $middlewareGroups = [
+        'web' => [
+            \App\Http\Middleware\EncryptCookies::class,
+            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+            \Illuminate\Session\Middleware\StartSession::class,
+            // \Illuminate\Session\Middleware\AuthenticateSession::class,
+            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+            \App\Http\Middleware\VerifyCsrfToken::class,
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        ],
+
+        'api' => [
+            'throttle:60,1',
+            'bindings',
+            \Barryvdh\Cors\HandleCors::class,
+            'custom-provider',
+        ],
+
+        'custom-provider' => [
+            \SMartins\PassportMultiauth\Http\Middleware\AddCustomProvider::class,
+            \SMartins\PassportMultiauth\Http\Middleware\ConfigAccessTokenCustomProvider::class,
+        ]
     ];
 
-    // ...
+    ...
 }
 ```
 
-- Replace the middleware `Authenticate` on `app/Http/Kernel` `$routeMiddleware` attribute.
+- Encapsulate the passport routes for access token with the registered middleware in `AuthServiceProvider`:
 
 ```php
-
-class Kernel extends HttpKernel
-{
-    // ...
-
-    /**
-     * The application's route middleware.
-     *
-     * These middleware may be assigned to groups or used individually.
-     *
-     * @var array
-     */
-    protected $routeMiddleware = [
-        // 'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
-        'auth' => \SMartins\PassportMultiauth\Http\Middleware\MultiAuthenticate::class,
-        'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
-        'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
-        'can' => \Illuminate\Auth\Middleware\Authorize::class,
-        'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
-        'oauth.providers' => \SMartins\PassportMultiauth\Http\Middleware\AddCustomProvider::class,
-        'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-    ];
-
-    // ...
-}
-```
-
-- Encapsulate the passport routes for access token with the registered middleware in `AuthServiceProvider`. This middleware will add the capability to `Passport` route `oauth/token` use the value of `provider` param on request:
-
-```php
-
-namespace App\Providers;
-
 use Route;
 use Laravel\Passport\Passport;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
 {
-    // ...
+    ...
 
     /**
      * Register any authentication / authorization services.
@@ -190,14 +171,14 @@ class AuthServiceProvider extends ServiceProvider
 
         Passport::routes();
 
-        // Middleware `oauth.providers` middleware defined on $routeMiddleware above
-        Route::group(['middleware' => 'oauth.providers'], function () {
+        // Middleware `api` that contains the `custom-provider` middleware group defined on $middlewareGroups above
+        Route::group(['middleware' => 'api'], function () {
             Passport::routes(function ($router) {
                 return $router->forAccessTokens();
             });
         });
     }
-    // ...
+    ...
 }
 ```
 
@@ -213,7 +194,7 @@ $ php artisan vendor:publish --provider="SMartins\PassportMultiauth\Providers\Mu
 
 - Add the `provider` parameter in your request at `/oauth/token`:
 
-```http
+```
 POST /oauth/token HTTP/1.1
 Host: localhost
 Accept: application/json, text/plain, */*
@@ -246,11 +227,15 @@ The  `api` guard use is equals the example with `admin`.
 
 - You can pass many guards to `auth` middleware.
 
+**OBS:** To pass many you need pass the `api` guard on end of guards and the guard `api` as parameter on `$request->user()` method. Ex:
+
 ```php
+// `api` guard on end of guards separated by comma
 Route::group(['middleware' => ['api', 'auth:admin,api']], function () {
     Route::get('/admin', function ($request) {
+        // Passing `api` guard to `$request->user()` method
         // The instance of user authenticated (Admin or User in this case) will be returned
-        return $request->user();
+        return $request->user('api');
     });
 });
 ```
@@ -258,15 +243,14 @@ Route::group(['middleware' => ['api', 'auth:admin,api']], function () {
 You can use too the `Auth` facade:
 
 ```php
-Auth::check();
-Auth::user();
+Auth::guard('api')->user();
 ```
 
 ### Refreshing tokens
 
 - Add the `provider` parameter in your request at `/oauth/token`:
 
-```html
+```
 POST /oauth/token HTTP/1.1
 Host: localhost
 Accept: application/json, text/plain, */*
@@ -284,120 +268,124 @@ Cache-Control: no-cache
 
 ### Using scopes
 
-- Just use the [`scope` and `scopes`](https://laravel.com/docs/5.5/passport#checking-scopes
+- If you are using more than one guard on same route, use the following package middlewares instead of using the [`scope` and `scopes`](https://laravel.com/docs/5.5/passport#checking-scopes
 ) middlewares from `Laravel\Passport`.
 
 ```php
 protected $routeMiddleware = [
-    'scopes' => \Laravel\Passport\Http\Middleware\CheckScopes::class,
-    'scope' => \Laravel\Passport\Http\Middleware\CheckForAnyScope::class,
+    'multiauth.scope' => \SMartins\PassportMultiauth\Http\Middleware\MultiAuthCheckForAnyScope::class,
+    'multiauth.scopes' => \SMartins\PassportMultiauth\Http\Middleware\MultiAuthCheckScopes::class,
 ];
+```
+
+The middlewares are equals the `Laravel\Passport` middlewares with guard `api` on `request->user()` object.
+
+Use Sample:
+
+```php
+Route::group([
+    'middleware' => ['auth:admin,api', 'multiauth.scope:read-books']
+], function ($request) {
+    return $request->user('api');
+});
 ```
 
 ### Unit tests
 
-**Warning:** The trait `MultiauthActions` actions call on your `setUp` the method `$this->artisan('passport:install')`. It's highly recommended that you use a test database.
+If you are using multi-authentication in a request you need to pass just an `Authenticatable` object to `Laravel\Passport\Passport::actingAs()`. E.g.:
 
-#### Laravel >= 5.5
-
-Use the trait `SMartins\PassportMultiauth\Testing\MultiauthActions` in your test and call the method `multiauthActingAs()` passing an `Authenticatable` instance. Actually the `multiauthActingAs` uses the `Laravel\Passport` `oauth/token` route to generate the access token. If your route has a different address, set in attribute `oauthTokenRoute`. E.g.:
-
+- You have a route with multi-auth:
 
 ```php
+Route::group(['middleware' => 'auth:admin,api'], function () {
+    Route::get('/foo', function ($request) {
+        return $request->user('api'); // Return user or admin
+    });
+});
+```
 
-namespace Tests\Feature;
+- On your test just pass your entity to `Passport::actingAs()`:
 
+```php
 use App\User;
 use App\Admin;
-use Tests\TestCase;
-use Illuminate\Auth\AuthenticationException;
-use SMartins\PassportMultiauth\Testing\MultiauthActions;
+use Laravel\Passport\Passport;
 
-class AuthTest extends TestCase
+class MyTest extends TestCase
 {
-    // If your route was changed.
-    protected $oauthTokenRoute = 'api/oauth/token';
-
-    use MultiauthActions;
-
-    public function testGetLoggedAdminAsAdmin()
+    public function testFooAdmin()
     {
         $admin = factory(Admin::class)->create();
 
-        $response = $this->multiauthActingAs($admin)->json('GET', 'api/admin');
+        Passport::actingAs($admin);
 
-        $this->assertInstanceOf(Admin::class, $response->original);
+        // When you use your endpoint your admin will be returned
+        $this->json('GET', '/foo')
+            ->assertStatus(200)
+            ->assertJson([
+                'data' => [
+                    'id' => 1,
+                    'name' => 'Admin',
+                    'email' => 'admin@admin.com'
+                ]
+            ]);
     }
 
-    public function testGetLoggedAdminAsUser()
+    public function testFooUser()
     {
         $user = factory(User::class)->create();
 
-        // You can too pass a scope
-        $response = $this->multiauthActingAs($user, 'your-scope')->json('GET', 'api/admin');
+        Passport::actingAs($user);
 
-        $this->assertInstanceOf(AuthenticationException::class, $response->exception);
+        // When you use your endpoint your user will be returned
+        $this->json('GET', '/foo')
+            ->assertStatus(200)
+            ->assertJson([
+                'data' => [
+                    'id' => 1,
+                    'name' => 'User',
+                    'email' => 'user@user.com'
+                ]
+            ]);
     }
 }
 ```
 
-**OBS:** If you override the method `setUp()` in your test you should call `$this->artisan('passport:install');` in your `setUp()`. E.g.:
+- If your route has just one guard:
 
 ```php
-namespace Tests\Feature;
-
-use Tests\TestCase;
-use SMartins\PassportMultiauth\Testing\MultiauthActions;
-
-class AuthTest extends TestCase
-{
-    use MultiauthActions;
-
-    public function setUp()
-    {
-        parent::setUp();
-
-        // Call to $this->multiauthActingAs() method works correctly.
-        $this->artisan('passport:install');
-
-        // Your another set ups.
-    }
-
-    // ...
-
+Route::group(['middleware' => 'auth:admin'], function () {
+    Route::get('/foo', function ($request) {
+        return $request->user(); // Return admin
+    });
+});
 ```
 
-#### Laravel <= 5.4
-
-To olders versions of Laravel you must use the method `multiauthAccessToken()` instead of `multiauthActingAs()`. The `multiauthAccessToken()`  receive the same parameters of `multiauthActingAs()` (Authenticatable $user, string $scope = "") but returns the access token to be used on request headers. E.g.:
+- And on your tests just pass your entity, scopes and guard to `Passport::actingAs()`:
 
 ```php
-
-namespace Tests\Feature;
-
 use App\User;
 use App\Admin;
-use Tests\TestCase;
-use Illuminate\Auth\AuthenticationException;
-use SMartins\PassportMultiauth\Testing\MultiauthActions;
+use Laravel\Passport\Passport;
 
-class AuthTest extends TestCase
+class MyTest extends TestCase
 {
-    // If your route was changed.
-    protected $oauthTokenRoute = 'api/oauth/token';
-
-    use MultiauthActions;
-
-    public function testGetLoggedAdminAsAdmin()
+    public function testFooAdmin()
     {
         $admin = factory(Admin::class)->create();
 
-        $data = [];
-        $headers = ['Authorization' => $this->multiauthAccessToken($admin)];
+        Passport::actingAs($admin, [], 'admin');
 
-        $response = $this->json('GET', 'api/admin', $data, $headers);
-
-        $this->assertInstanceOf(Admin::class, $response->original);
+        // When you use your endpoint your admin will be returned
+        $this->json('GET', '/foo')
+            ->assertStatus(200)
+            ->assertJson([
+                'data' => [
+                    'id' => 1,
+                    'name' => 'Admin',
+                    'email' => 'admin@admin.com'
+                ]
+            ]);
     }
 }
 ```
