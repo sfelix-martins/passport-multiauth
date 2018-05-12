@@ -4,7 +4,6 @@ namespace SMartins\PassportMultiauth\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
 use League\OAuth2\Server\ResourceServer;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Middleware\Authenticate;
@@ -116,9 +115,7 @@ class MultiAuthenticate extends Authenticate
      */
     public function authenticateTokenGuard(Token $token, $guards)
     {
-        $providers = collect($guards)->mapWithKeys(function ($guard) {
-            return [GuardChecker::defaultGuardProvider($guard) => $guard];
-        });
+        $providers = GuardChecker::getGuardsProviders($guards);
 
         // use only guard associated to access token provider
         $authGuards = $providers->has($token->provider) ? [$providers->get($token->provider)] : [];

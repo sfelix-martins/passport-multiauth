@@ -29,6 +29,20 @@ class GuardChecker
     }
 
     /**
+     * Get guards provider returning a assoc array with provider on key and
+     * guard on value.
+     *
+     * @param  array $guards
+     * @return array
+     */
+    public static function getGuardsProviders($guards)
+    {
+        return collect($guards)->mapWithKeys(function ($guard) {
+            return [GuardChecker::defaultGuardProvider($guard) => $guard];
+        });
+    }
+
+    /**
      * Get default provider from guard.
      *
      * @param  string $guard
