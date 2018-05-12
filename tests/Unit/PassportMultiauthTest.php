@@ -60,7 +60,6 @@ class PassportMultiauthTest extends TestCase
     protected function modelNotFoundOnProviders()
     {
         return new class() extends Authenticatable {
-
         };
     }
 }
