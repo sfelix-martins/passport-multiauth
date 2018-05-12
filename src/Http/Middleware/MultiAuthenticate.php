@@ -64,11 +64,15 @@ class MultiAuthenticate extends Authenticate
 
             $tokenId = $psrRequest->getAttribute('oauth_access_token_id');
 
-            throw_if(! $tokenId, AuthenticationException::class, 'Unauthenticated', $guards);
+            if (! $tokenId) {
+                throw new AuthenticationException('Unauthenticated', $guards);
+            }
 
             $accessToken = $this->providers->findForToken($tokenId);
 
-            throw_if(! $accessToken, AuthenticationException::class, 'Unauthenticated', $guards);
+            if (! $accessToken) {
+                throw new AuthenticationException('Unauthenticated', $guards);
+            }
 
             $providers = collect($guards)->mapWithKeys(function ($guard) {
                 return [GuardChecker::defaultGuardProvider($guard) => $guard];
@@ -96,7 +100,9 @@ class MultiAuthenticate extends Authenticate
 
                 $userGuard = PassportMultiauth::getUserGuard($user);
 
-                throw_if(! in_array($userGuard, $guards), AuthenticationException::class, 'Unauthenticated', $guards);
+                if (! in_array($userGuard, $guards)) {
+                    throw new AuthenticationException('Unauthenticated', $guards);
+                }
 
                 return $next($request);
             }
