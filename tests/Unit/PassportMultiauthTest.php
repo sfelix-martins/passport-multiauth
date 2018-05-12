@@ -6,6 +6,7 @@ use SMartins\PassportMultiauth\Tests\TestCase;
 use SMartins\PassportMultiauth\PassportMultiauth;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use SMartins\PassportMultiauth\Tests\Fixtures\Models\User;
+use SMartins\PassportMultiauth\Tests\Fixtures\Models\Customer;
 
 class PassportMultiauthTest extends TestCase
 {
@@ -36,7 +37,7 @@ class PassportMultiauthTest extends TestCase
 
     public function testGetUserProviderWithModelNotExistentOnProviders()
     {
-        $model = $this->modelNotFoundOnProviders();
+        $model = new Customer;
 
         $provider = PassportMultiauth::getUserProvider($model);
 
@@ -49,7 +50,7 @@ class PassportMultiauthTest extends TestCase
         config(['auth.guards.customer.provider' => 'customers']);
 
         config(['auth.providers.customers.driver' => 'eloquent']);
-        config(['auth.providers.customers.model' => get_class($this->modelNotFoundOnProviders())]);
+        config(['auth.providers.customers.model' => Customer::class]);
 
         $guard = PassportMultiauth::getProviderGuard('customers');
 
