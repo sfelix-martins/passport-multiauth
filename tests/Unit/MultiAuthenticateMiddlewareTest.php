@@ -4,17 +4,16 @@ namespace SMartins\PassportMultiauth\Tests\Unit;
 
 use Mockery;
 use Illuminate\Http\Request;
+use SMartins\PassportMultiauth\Provider;
 use Illuminate\Auth\AuthenticationException;
 use SMartins\PassportMultiauth\Tests\TestCase;
 use League\OAuth2\Server\Exception\OAuthServerException;
-use SMartins\PassportMultiauth\Testing\MultiauthActions;
+use SMartins\PassportMultiauth\Tests\Fixtures\Models\Company;
 use SMartins\PassportMultiauth\Http\Middleware\MultiAuthenticate;
 
 class MultiAuthenticateMiddlewareTest extends TestCase
 {
     protected $auth;
-
-    use MultiauthActions;
 
     public function setUp()
     {
@@ -24,11 +23,9 @@ class MultiAuthenticateMiddlewareTest extends TestCase
 
         $this->artisan('migrate');
 
-        $this->withFactories(__DIR__.'/factories');
+        $this->withFactories(__DIR__.'/../Fixtures/factories');
 
         $this->setAuthConfigs();
-
-        $this->setUpLaravelPassport();
 
         $this->auth = $this->app['auth'];
     }
@@ -91,6 +88,55 @@ class MultiAuthenticateMiddlewareTest extends TestCase
         $middleware->handle($request, function () {
             return 'response';
         }, 'api', 'company');
+    }
+
+    public function testTryAuthWithExistentAccessTokenAndExistentOnProviders()
+    {
+        $resourceServer = Mockery::mock('League\OAuth2\Server\ResourceServer');
+        $resourceServer->shouldReceive('validateAuthenticatedRequest')->andReturn($psr = Mockery::mock());
+        $psr->shouldReceive('getAttribute')->with('oauth_access_token_id')->andReturn(1);
+
+        $tokenProvider = new Provider;
+        $tokenProvider->provider = 'companies';
+
+        $repository = Mockery::mock('SMartins\PassportMultiauth\ProviderRepository');
+        $repository->shouldReceive('findForToken')->andReturn($tokenProvider);
+
+        $request = $this->createRequest();
+
+        $guard = 'company';
+        app('auth')->guard($guard)->setUser(factory(Company::class)->create());
+
+        app('auth')->shouldUse($guard);
+
+        $middleware = new MultiAuthenticate($resourceServer, $repository, $this->auth);
+        $response = $middleware->handle($request, function () {
+            return 'response';
+        }, 'api', 'company');
+
+        $this->assertEquals('response', $response);
+    }
+
+    public function testTryAuthWithExistentAccessTokenAndNotExistentOnProviders()
+    {
+        $this->expectException(AuthenticationException::class);
+
+        $resourceServer = Mockery::mock('League\OAuth2\Server\ResourceServer');
+        $resourceServer->shouldReceive('validateAuthenticatedRequest')->andReturn($psr = Mockery::mock());
+        $psr->shouldReceive('getAttribute')->with('oauth_access_token_id')->andReturn(1);
+
+        $tokenProvider = new Provider;
+        $tokenProvider->provider = 'companies';
+
+        $repository = Mockery::mock('SMartins\PassportMultiauth\ProviderRepository');
+        $repository->shouldReceive('findForToken')->andReturn($tokenProvider);
+
+        $request = $this->createRequest();
+
+        $middleware = new MultiAuthenticate($resourceServer, $repository, $this->auth);
+        $response = $middleware->handle($request, function () {
+            return 'response';
+        }, 'api');
     }
 
     public function testTryAuthWithoutAuthorizationHeader()

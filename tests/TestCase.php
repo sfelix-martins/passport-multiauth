@@ -2,8 +2,6 @@
 
 namespace SMartins\PassportMultiauth\Tests;
 
-use Laravel\Passport\Passport;
-use Illuminate\Support\Facades\Route;
 use Laravel\Passport\PassportServiceProvider;
 use Orchestra\Database\ConsoleServiceProvider;
 use Orchestra\Testbench\TestCase as BaseTestCase;
@@ -55,45 +53,6 @@ abstract class TestCase extends BaseTestCase
     protected function resolveApplicationHttpKernel($app)
     {
         $app->singleton('Illuminate\Contracts\Http\Kernel', Kernel::class);
-    }
-
-    /**
-     * Set up necessary configs to testing with Laravel Passport.
-     *
-     * @return void
-     */
-    protected function setUpLaravelPassport()
-    {
-        $this->installPassport();
-
-        $this->loadPassportRoutes();
-    }
-
-    /**
-     * Install laravel passport to generate configs.
-     *
-     * @return void
-     */
-    protected function installPassport()
-    {
-        $this->artisan('passport:install');
-    }
-
-    /**
-     * Load laravel passport routes.
-     *
-     * @return void
-     */
-    protected function loadPassportRoutes()
-    {
-        Passport::routes();
-
-        // Middleware `api` that contains the `custom-provider` middleware group defined on $middlewareGroups above
-        Route::group(['middleware' => 'oauth.providers'], function () {
-            Passport::routes(function ($router) {
-                return $router->forAccessTokens();
-            });
-        });
     }
 
     /**

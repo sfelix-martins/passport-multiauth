@@ -3,10 +3,12 @@
 namespace SMartins\PassportMultiauth\Http\Middleware;
 
 use Closure;
+use Illuminate\Support\Facades\App;
 use League\OAuth2\Server\ResourceServer;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Contracts\Auth\Factory as Auth;
+use SMartins\PassportMultiauth\PassportMultiauth;
 use SMartins\PassportMultiauth\ProviderRepository;
 use SMartins\PassportMultiauth\Guards\GuardChecker;
 use League\OAuth2\Server\Exception\OAuthServerException;
@@ -15,21 +17,21 @@ use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 class MultiAuthenticate extends Authenticate
 {
     /**
+     * @var \League\OAuth2\Server\ResourceServer
+     */
+    protected $server;
+
+    /**
+     * @var \SMartins\PassportMultiauth\ProviderRepository
+     */
+    protected $providers;
+
+    /**
      * The authentication factory instance.
      *
      * @var \Illuminate\Contracts\Auth\Factory
      */
     protected $auth;
-
-    /**
-     * @var \League\OAuth2\Server\ResourceServer
-     */
-    private $server;
-
-    /**
-     * @var \SMartins\PassportMultiauth\ProviderRepository
-     */
-    private $providers;
 
     public function __construct(ResourceServer $server, ProviderRepository $providers, Auth $auth)
     {
@@ -62,15 +64,11 @@ class MultiAuthenticate extends Authenticate
 
             $tokenId = $psrRequest->getAttribute('oauth_access_token_id');
 
-            if (! $tokenId) {
-                throw new AuthenticationException('Unauthenticated', $guards);
-            }
+            throw_if(! $tokenId, AuthenticationException::class, 'Unauthenticated', $guards);
 
             $accessToken = $this->providers->findForToken($tokenId);
 
-            if (! $accessToken) {
-                throw new AuthenticationException('Unauthenticated', $guards);
-            }
+            throw_if(! $accessToken, AuthenticationException::class, 'Unauthenticated', $guards);
 
             $providers = collect($guards)->mapWithKeys(function ($guard) {
                 return [GuardChecker::defaultGuardProvider($guard) => $guard];
@@ -85,6 +83,24 @@ class MultiAuthenticate extends Authenticate
 
             return $next($request);
         } catch (OAuthServerException $e) {
+            // @todo It's the best place to this code???
+            //
+            // If running unit test and try authenticate an user with
+            // `PassportMultiauth::actingAs($user) check the guards on request
+            // to authenticate or not the user.
+            $user = app('auth')->user();
+
+            if (App::runningUnitTests() && $user) {
+                // @todo Move to method
+                $guards = GuardChecker::getAuthGuards($request);
+
+                $userGuard = PassportMultiauth::getUserGuard($user);
+
+                throw_if(! in_array($userGuard, $guards), AuthenticationException::class, 'Unauthenticated', $guards);
+
+                return $next($request);
+            }
+
             // @todo Check if it's the best way to handle with OAuthServerException
             throw new AuthenticationException('Unauthenticated', $guards);
         }

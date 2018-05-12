@@ -3,18 +3,15 @@
 namespace SMartins\PassportMultiauth\Tests\Feature;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Auth\AuthenticationException;
 use SMartins\PassportMultiauth\Tests\TestCase;
-use SMartins\PassportMultiauth\Testing\MultiauthActions;
+use SMartins\PassportMultiauth\PassportMultiauth;
 use SMartins\PassportMultiauth\Tests\Fixtures\Models\User;
 use SMartins\PassportMultiauth\Tests\Fixtures\Models\Company;
 
 class MultiauthTest extends TestCase
 {
-    use MultiauthActions;
-
     public function setUp()
     {
         parent::setUp();
@@ -26,8 +23,6 @@ class MultiauthTest extends TestCase
         $this->withFactories(__DIR__.'/../Fixtures/factories');
 
         $this->setAuthConfigs();
-
-        $this->setUpLaravelPassport();
 
         $this->setUpRoutes();
     }
@@ -114,10 +109,10 @@ class MultiauthTest extends TestCase
      * @param  \Illuminate\Foundation\Auth\User $user
      * @return \Illuminate\Foundation\Testing\TestResponse
      */
-    public function sendRequest($method, $uri, $user)
+    public function sendRequest($method, $uri, $user, $scopes = [])
     {
-        return (float) App::version() < 5.5
-            ? $this->json($method, $uri, [], ['Authorization' => $this->multiauthAccessToken($user)])
-            : $this->multiauthActingAs($user)->json($method, $uri);
+        PassportMultiauth::actingAs($user, $scopes);
+
+        return $this->json($method, $uri);
     }
 }

@@ -299,108 +299,24 @@ protected $routeMiddleware = [
 
 ### Unit tests
 
-**Warning:** The trait `MultiauthActions` actions call on your `setUp` the method `$this->artisan('passport:install')`. It's highly recommended that you use a test database.
+Instead to use the `Laravel\Passport\Passport::actingAs()` method, use `SMartins\PassportMultiauth\PassportMultiauth::actingAs()`.
+The difference is that the `actingAs` from this package get the guard based on `Authenticatable` instance passed on first parameter and authenticate this user using your guard. On authenticated request (Using `auth` middleware from package -  `SMartins\PassportMultiauth\Http\Middleware\MultiAuthenticate)` the guard is checked on `Request` to return the user or throws a `Unauthenticated` exception. E.g.:
 
-#### Laravel >= 5.5
-
-Use the trait `SMartins\PassportMultiauth\Testing\MultiauthActions` in your test and call the method `multiauthActingAs()` passing an `Authenticatable` instance. Actually the `multiauthActingAs` uses the `Laravel\Passport` `oauth/token` route to generate the access token. If your route has a different address, set in attribute `oauthTokenRoute`. E.g.:
-
-
-```php
-
-namespace Tests\Feature;
-
+```
 use App\User;
-use App\Admin;
 use Tests\TestCase;
-use Illuminate\Auth\AuthenticationException;
-use SMartins\PassportMultiauth\Testing\MultiauthActions;
+use SMartins\PassportMultiauth\PassportMultiauth;
 
 class AuthTest extends TestCase
 {
-    // If your route was changed.
-    protected $oauthTokenRoute = 'api/oauth/token';
-
-    use MultiauthActions;
-
-    public function testGetLoggedAdminAsAdmin()
-    {
-        $admin = factory(Admin::class)->create();
-
-        $response = $this->multiauthActingAs($admin)->json('GET', 'api/admin');
-
-        $this->assertInstanceOf(Admin::class, $response->original);
-    }
-
-    public function testGetLoggedAdminAsUser()
+    public function fooTest()
     {
         $user = factory(User::class)->create();
 
-        // You can too pass a scope
-        $response = $this->multiauthActingAs($user, 'your-scope')->json('GET', 'api/admin');
+        PassportMultiauth::actingAs($user);
 
-        $this->assertInstanceOf(AuthenticationException::class, $response->exception);
+        $this->json('GET', 'api/user');
     }
 }
-```
 
-**OBS:** If you override the method `setUp()` in your test you should call `$this->artisan('passport:install');` in your `setUp()`. E.g.:
-
-```php
-namespace Tests\Feature;
-
-use Tests\TestCase;
-use SMartins\PassportMultiauth\Testing\MultiauthActions;
-
-class AuthTest extends TestCase
-{
-    use MultiauthActions;
-
-    public function setUp()
-    {
-        parent::setUp();
-
-        // Call to $this->multiauthActingAs() method works correctly.
-        $this->artisan('passport:install');
-
-        // Your another set ups.
-    }
-
-    // ...
-
-```
-
-#### Laravel <= 5.4
-
-To olders versions of Laravel you must use the method `multiauthAccessToken()` instead of `multiauthActingAs()`. The `multiauthAccessToken()`  receive the same parameters of `multiauthActingAs()` (Authenticatable $user, string $scope = "") but returns the access token to be used on request headers. E.g.:
-
-```php
-
-namespace Tests\Feature;
-
-use App\User;
-use App\Admin;
-use Tests\TestCase;
-use Illuminate\Auth\AuthenticationException;
-use SMartins\PassportMultiauth\Testing\MultiauthActions;
-
-class AuthTest extends TestCase
-{
-    // If your route was changed.
-    protected $oauthTokenRoute = 'api/oauth/token';
-
-    use MultiauthActions;
-
-    public function testGetLoggedAdminAsAdmin()
-    {
-        $admin = factory(Admin::class)->create();
-
-        $data = [];
-        $headers = ['Authorization' => $this->multiauthAccessToken($admin)];
-
-        $response = $this->json('GET', 'api/admin', $data, $headers);
-
-        $this->assertInstanceOf(Admin::class, $response->original);
-    }
-}
 ```
