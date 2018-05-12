@@ -56,7 +56,7 @@ class MultiAuthenticate extends Authenticate
     public function handle($request, Closure $next, ...$guards)
     {
         // If don't has any guard follow the flow
-        if (count($guards) === 0) {
+        if (empty($guards)) {
             return $next($request);
         }
 
@@ -65,15 +65,11 @@ class MultiAuthenticate extends Authenticate
         try {
             $psrRequest = $this->server->validateAuthenticatedRequest($psrRequest);
 
-            $tokenId = $psrRequest->getAttribute('oauth_access_token_id');
-
-            if (! $tokenId) {
+            if (! $tokenId = $psrRequest->getAttribute('oauth_access_token_id')) {
                 throw new AuthenticationException('Unauthenticated', $guards);
             }
 
-            $accessToken = $this->providers->findForToken($tokenId);
-
-            if (! $accessToken) {
+            if (! $accessToken = $this->providers->findForToken($tokenId)) {
                 throw new AuthenticationException('Unauthenticated', $guards);
             }
 
@@ -82,8 +78,7 @@ class MultiAuthenticate extends Authenticate
             return $next($request);
         } catch (OAuthServerException $e) {
             // @todo It's the best place to this code???
-            if ($user = PassportMultiauth::hasUserActing()) {
-                // @todo Move to method
+            if ($user = PassportMultiauth::userActing()) {
                 if (! $this->canBeAuthenticated($user, $request)) {
                     throw new AuthenticationException('Unauthenticated', $guards);
                 }
@@ -126,10 +121,8 @@ class MultiAuthenticate extends Authenticate
         });
 
         // use only guard associated to access token provider
-        if ($providers->has($token->provider)) {
-            $this->authenticate([$providers->get($token->provider)]);
-        } else {
-            $this->authenticate([]);
-        }
+        $authGuards = $providers->has($token->provider) ? [$providers->get($token->provider)] : [];
+
+        $this->authenticate($authGuards);
     }
 }

@@ -14,7 +14,6 @@ class PassportMultiauth
      *
      * @param  \Illuminate\Contracts\Auth\Authenticatable  $user
      * @param  array  $scopes
-     * @param  string  $guard
      * @return void
      */
     public static function actingAs($user, $scopes = [])
@@ -86,7 +85,7 @@ class PassportMultiauth
      *
      * @return \Illuminate\Contracts\Auth\Authenticatable|null
      */
-    public static function hasUserActing()
+    public static function userActing()
     {
         if (App::runningUnitTests() && $user = app('auth')->user()) {
             return $user;
