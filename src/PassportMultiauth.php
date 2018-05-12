@@ -16,7 +16,7 @@ class PassportMultiauth
      * @param  string  $guard
      * @return void
      */
-    public static function actingAs($user, $scopes = [], $guard = 'api')
+    public static function actingAs($user, $scopes = [])
     {
         $token = Mockery::mock(Token::class)->shouldIgnoreMissing(false);
 
