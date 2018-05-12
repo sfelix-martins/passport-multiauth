@@ -56,11 +56,4 @@ class PassportMultiauthTest extends TestCase
 
         $this->assertNull($guard);
     }
-
-    protected function modelNotFoundOnProviders()
-    {
-        return new class() extends Authenticatable {
-
-        };
-    }
 }
