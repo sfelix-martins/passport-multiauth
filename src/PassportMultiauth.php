@@ -47,8 +47,6 @@ class PassportMultiauth
                 return $provider;
             }
         }
-
-        return null;
     }
 
     /**
@@ -65,12 +63,10 @@ class PassportMultiauth
                 return $guard;
             }
         }
-
-        return null;
     }
 
     /**
-     * Get the user guard on provider with `passport` driver;
+     * Get the user guard on provider with `passport` driver;.
      *
      * @todo Move to class specialized in check auth configs.
      * @param  \Illuminate\Contracts\Auth\Authenticatable $user
