@@ -59,6 +59,14 @@ class MultiAuthenticate extends Authenticate
             return $next($request);
         }
 
+        if ($user = PassportMultiauth::userActing()) {
+            if (! $this->canBeAuthenticated($user, $guards)) {
+                throw new AuthenticationException('Unauthenticated', $guards);
+            }
+
+            return $next($request);
+        }
+
         $psrRequest = (new DiactorosFactory())->createRequest($request);
 
         try {
@@ -76,15 +84,6 @@ class MultiAuthenticate extends Authenticate
 
             return $next($request);
         } catch (OAuthServerException $e) {
-            // @todo It's the best place to this code???
-            if ($user = PassportMultiauth::userActing()) {
-                if (! $this->canBeAuthenticated($user, $request)) {
-                    throw new AuthenticationException('Unauthenticated', $guards);
-                }
-
-                return $next($request);
-            }
-
             // @todo Check if it's the best way to handle with OAuthServerException
             throw new AuthenticationException('Unauthenticated', $guards);
         }
@@ -97,10 +96,8 @@ class MultiAuthenticate extends Authenticate
      * @param  \Illuminate\Http\Request $request
      * @return bool
      */
-    public function canBeAuthenticated(Authenticatable $user, Request $request)
+    public function canBeAuthenticated(Authenticatable $user, $guards)
     {
-        $guards = GuardChecker::getAuthGuards($request);
-
         $userGuard = PassportMultiauth::getUserGuard($user);
 
         return in_array($userGuard, $guards);
