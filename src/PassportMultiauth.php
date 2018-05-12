@@ -4,6 +4,7 @@ namespace SMartins\PassportMultiauth;
 
 use Mockery;
 use Laravel\Passport\Token;
+use Illuminate\Support\Facades\App;
 use Illuminate\Contracts\Auth\Authenticatable;
 
 class PassportMultiauth
@@ -47,8 +48,6 @@ class PassportMultiauth
                 return $provider;
             }
         }
-
-        return null;
     }
 
     /**
@@ -56,7 +55,7 @@ class PassportMultiauth
      *
      * @todo Move to class specialized in check auth configs.
      * @param  string $provider
-     * @return string|null
+     * @return string
      */
     public static function getProviderGuard($provider)
     {
@@ -65,12 +64,10 @@ class PassportMultiauth
                 return $guard;
             }
         }
-
-        return null;
     }
 
     /**
-     * Get the user guard on provider with `passport` driver;
+     * Get the user guard on provider with `passport` driver.
      *
      * @todo Move to class specialized in check auth configs.
      * @param  \Illuminate\Contracts\Auth\Authenticatable $user
@@ -81,5 +78,18 @@ class PassportMultiauth
         $provider = self::getUserProvider($user);
 
         return self::getProviderGuard($provider);
+    }
+
+    /**
+     * If running unit test and try authenticate an user with actingAs($user)
+     * check the guards on request to authenticate or not the user.
+     *
+     * @return \Illuminate\Contracts\Auth\Authenticatable|null
+     */
+    public static function hasUserActing()
+    {
+        if (App::runningUnitTests() && $user = app('auth')->user()) {
+            return $user;
+        }
     }
 }

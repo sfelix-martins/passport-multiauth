@@ -4,7 +4,6 @@ namespace SMartins\PassportMultiauth\Tests\Unit;
 
 use SMartins\PassportMultiauth\Tests\TestCase;
 use SMartins\PassportMultiauth\PassportMultiauth;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use SMartins\PassportMultiauth\Tests\Fixtures\Models\User;
 use SMartins\PassportMultiauth\Tests\Fixtures\Models\Customer;
 
