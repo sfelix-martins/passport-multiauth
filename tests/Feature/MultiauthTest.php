@@ -20,6 +20,8 @@ class MultiauthTest extends TestCase
 
         $this->artisan('migrate');
 
+        $this->artisan('passport:install');
+
         $this->withFactories(__DIR__.'/../Fixtures/factories');
 
         $this->setAuthConfigs();
