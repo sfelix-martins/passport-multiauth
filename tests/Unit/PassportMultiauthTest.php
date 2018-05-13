@@ -2,9 +2,9 @@
 
 namespace SMartins\PassportMultiauth\Tests\Unit;
 
+use Exception;
 use SMartins\PassportMultiauth\Tests\TestCase;
 use SMartins\PassportMultiauth\PassportMultiauth;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use SMartins\PassportMultiauth\Tests\Fixtures\Models\User;
 use SMartins\PassportMultiauth\Tests\Fixtures\Models\Customer;
 
@@ -42,6 +42,13 @@ class PassportMultiauthTest extends TestCase
         $provider = PassportMultiauth::getUserProvider($model);
 
         $this->assertNull($provider);
+    }
+
+    public function testActingAsWithUserThatNotUsesHasApiTokens()
+    {
+        $this->expectException(Exception::class);
+
+        PassportMultiauth::actingAs(new Customer);
     }
 
     public function testGetProviderGuardWithNotPassportDriver()

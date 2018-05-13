@@ -10,8 +10,6 @@ class GuardChecker
     /**
      * Get guards passed as parameters to `auth` middleware.
      *
-     * @deprecated 2.0. This method is not more necessary. The guards are passed
-     *             directly to MultiAuthenticate middleware on handle() params;
      * @param  \Illuminate\Http\Request $request
      * @return array
      */
@@ -28,6 +26,20 @@ class GuardChecker
         }
 
         return $guards;
+    }
+
+    /**
+     * Get guards provider returning a assoc array with provider on key and
+     * guard on value.
+     *
+     * @param  array $guards
+     * @return array
+     */
+    public static function getGuardsProviders($guards)
+    {
+        return collect($guards)->mapWithKeys(function ($guard) {
+            return [GuardChecker::defaultGuardProvider($guard) => $guard];
+        });
     }
 
     /**

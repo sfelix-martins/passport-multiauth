@@ -3,8 +3,12 @@
 namespace SMartins\PassportMultiauth;
 
 use Mockery;
+use Exception;
 use Laravel\Passport\Token;
+use Laravel\Passport\HasApiTokens;
+use Illuminate\Support\Facades\App;
 use Illuminate\Contracts\Auth\Authenticatable;
+use SMartins\PassportMultiauth\Tests\Fixtures\Models\Customer;
 
 class PassportMultiauth
 {
@@ -13,10 +17,9 @@ class PassportMultiauth
      *
      * @param  \Illuminate\Contracts\Auth\Authenticatable  $user
      * @param  array  $scopes
-     * @param  string  $guard
      * @return void
      */
-    public static function actingAs($user, $scopes = [], $guard = 'api')
+    public static function actingAs($user, $scopes = [])
     {
         $token = Mockery::mock(Token::class)->shouldIgnoreMissing(false);
 
@@ -25,6 +28,10 @@ class PassportMultiauth
         }
 
         $guard = self::getUserGuard($user);
+
+        if (! in_array(HasApiTokens::class, class_uses($user))) {
+            throw new Exception('The model ['.get_class($user).'] must uses the trait '.HasApiTokens::class);
+        }
 
         $user->withAccessToken($token);
 
@@ -47,8 +54,6 @@ class PassportMultiauth
                 return $provider;
             }
         }
-
-        return null;
     }
 
     /**
@@ -56,7 +61,7 @@ class PassportMultiauth
      *
      * @todo Move to class specialized in check auth configs.
      * @param  string $provider
-     * @return string|null
+     * @return string
      */
     public static function getProviderGuard($provider)
     {
@@ -65,12 +70,10 @@ class PassportMultiauth
                 return $guard;
             }
         }
-
-        return null;
     }
 
     /**
-     * Get the user guard on provider with `passport` driver;
+     * Get the user guard on provider with `passport` driver.
      *
      * @todo Move to class specialized in check auth configs.
      * @param  \Illuminate\Contracts\Auth\Authenticatable $user
@@ -81,5 +84,18 @@ class PassportMultiauth
         $provider = self::getUserProvider($user);
 
         return self::getProviderGuard($provider);
+    }
+
+    /**
+     * If running unit test and try authenticate an user with actingAs($user)
+     * check the guards on request to authenticate or not the user.
+     *
+     * @return \Illuminate\Contracts\Auth\Authenticatable|null
+     */
+    public static function userActing()
+    {
+        if (App::runningUnitTests() && $user = app('auth')->user()) {
+            return $user;
+        }
     }
 }
