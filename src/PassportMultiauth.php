@@ -3,9 +3,12 @@
 namespace SMartins\PassportMultiauth;
 
 use Mockery;
+use Exception;
 use Laravel\Passport\Token;
+use Laravel\Passport\HasApiTokens;
 use Illuminate\Support\Facades\App;
 use Illuminate\Contracts\Auth\Authenticatable;
+use SMartins\PassportMultiauth\Tests\Fixtures\Models\Customer;
 
 class PassportMultiauth
 {
@@ -25,6 +28,10 @@ class PassportMultiauth
         }
 
         $guard = self::getUserGuard($user);
+
+        if (! in_array(HasApiTokens::class, class_uses($user))) {
+            throw new Exception('The model ['.get_class($user).'] must uses the trait '.HasApiTokens::class);
+        }
 
         $user->withAccessToken($token);
 

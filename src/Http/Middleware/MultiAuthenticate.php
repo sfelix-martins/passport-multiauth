@@ -49,21 +49,14 @@ class MultiAuthenticate extends Authenticate
      * @param \Illuminate\Http\Request $request
      * @param \Closure                 $next
      * @param string[]                 ...$guards
-     *
      * @return mixed
+     *
+     * @throws \Illuminate\Auth\AuthenticationException
      */
     public function handle($request, Closure $next, ...$guards)
     {
         // If don't has any guard follow the flow
         if (empty($guards)) {
-            return $next($request);
-        }
-
-        if ($user = PassportMultiauth::userActing()) {
-            if (! $this->canBeAuthenticated($user, $guards)) {
-                throw new AuthenticationException('Unauthenticated', $guards);
-            }
-
             return $next($request);
         }
 
@@ -81,19 +74,28 @@ class MultiAuthenticate extends Authenticate
             }
 
             $this->authenticateTokenGuard($accessToken, $guards);
-
-            return $next($request);
         } catch (OAuthServerException $e) {
+            // If has an OAuthServerException check if has unit tests and fake
+            // user authenticated.
+            if ($user = PassportMultiauth::userActing()) {
+                if ($this->canBeAuthenticated($user, $guards)) {
+                    return $next($request);
+                    // throw new AuthenticationException('Unauthenticated', $guards);
+                }
+            }
+
             // @todo Check if it's the best way to handle with OAuthServerException
             throw new AuthenticationException('Unauthenticated', $guards);
         }
+
+        return $next($request);
     }
 
     /**
      * Check if user acting has the required guards and scopes on request.
      *
      * @param  \Illuminate\Foundation\Auth\User $user
-     * @param  \Illuminate\Http\Request $request
+     * @param  array $guards
      * @return bool
      */
     public function canBeAuthenticated(Authenticatable $user, $guards)
@@ -109,6 +111,8 @@ class MultiAuthenticate extends Authenticate
      * @param \SMartins\PassportMultiauth\Provider $token
      * @param  array $guards
      * @return void
+     *
+     * @throws \Illuminate\Auth\AuthenticationException
      */
     public function authenticateTokenGuard(Token $token, $guards)
     {
@@ -117,6 +121,6 @@ class MultiAuthenticate extends Authenticate
         // use only guard associated to access token provider
         $authGuards = $providers->has($token->provider) ? [$providers->get($token->provider)] : [];
 
-        $this->authenticate($authGuards);
+        return $this->authenticate($authGuards);
     }
 }
