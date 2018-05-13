@@ -80,7 +80,6 @@ class MultiAuthenticate extends Authenticate
             if ($user = PassportMultiauth::userActing()) {
                 if ($this->canBeAuthenticated($user, $guards)) {
                     return $next($request);
-                    // throw new AuthenticationException('Unauthenticated', $guards);
                 }
             }
 
