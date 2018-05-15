@@ -70,9 +70,6 @@ class Admin extends Authenticatable
 - And your `config/auth.php` providers:
 
 ```php
-<?php
-
-return [
     // ...
 
     'providers' => [
@@ -87,13 +84,15 @@ return [
             'model' => App\Admin::class,
         ],
     ],
-];
 
+    // ...
 ```
 
 - Add a new `guard` in `config/auth.php` guards array using driver `passport` and the provider added above:
 
 ```php
+    // ...
+
     'guards' => [
         'web' => [
             'driver' => 'session',
@@ -110,7 +109,9 @@ return [
             'driver' => 'passport',
             'provider' => 'admins',
         ],
-    ]
+    ],
+
+    // ...
 ```
 
 - Register the middleware `AddCustomProvider` to `$routeMiddleware` attributes on `app/Http/Kernel.php` file.
@@ -170,7 +171,6 @@ class Kernel extends HttpKernel
 - Encapsulate the passport routes for access token with the registered middleware in `AuthServiceProvider`. This middleware will add the capability to `Passport` route `oauth/token` use the value of `provider` param on request:
 
 ```php
-
 namespace App\Providers;
 
 use Route;
@@ -269,7 +269,7 @@ Auth::user();
 
 - Add the `provider` parameter in your request at `/oauth/token`:
 
-```html
+```http
 POST /oauth/token HTTP/1.1
 Host: localhost
 Accept: application/json, text/plain, */*
@@ -287,8 +287,7 @@ Cache-Control: no-cache
 
 ### Using scopes
 
-- Just use the [`scope` and `scopes`](https://laravel.com/docs/5.5/passport#checking-scopes
-) middlewares from `Laravel\Passport`.
+- Just use the [`scope` and `scopes`](https://laravel.com/docs/5.5/passport#checking-scopes) middlewares from `Laravel\Passport`.
 
 ```php
 protected $routeMiddleware = [
@@ -302,7 +301,7 @@ protected $routeMiddleware = [
 Instead to use the `Laravel\Passport\Passport::actingAs()` method, use `SMartins\PassportMultiauth\PassportMultiauth::actingAs()`.
 The difference is that the `actingAs` from this package get the guard based on `Authenticatable` instance passed on first parameter and authenticate this user using your guard. On authenticated request (Using `auth` middleware from package -  `SMartins\PassportMultiauth\Http\Middleware\MultiAuthenticate)` the guard is checked on `Request` to return the user or throws a `Unauthenticated` exception. E.g.:
 
-```
+```php
 use App\User;
 use Tests\TestCase;
 use SMartins\PassportMultiauth\PassportMultiauth;
@@ -317,6 +316,14 @@ class AuthTest extends TestCase
 
         $this->json('GET', 'api/user');
     }
-}
 
+    public function withScopesTest()
+    {
+        $user = factory(User::class)->create();
+
+        PassportMultiauth::actingAs($user, ['see-balance']);
+
+        $this->json('GET', 'api/balance');
+    }
+}
 ```
