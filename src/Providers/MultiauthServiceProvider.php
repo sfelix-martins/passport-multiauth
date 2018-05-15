@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Events\AccessTokenCreated;
 use SMartins\PassportMultiauth\ProviderRepository;
+use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 
 class MultiauthServiceProvider extends ServiceProvider
 {
@@ -21,6 +22,11 @@ class MultiauthServiceProvider extends ServiceProvider
         }
 
         $this->createAccessTokenProvider($providers);
+
+        // Register the facade ServerRequest returning an instance of DiactorosFactory.
+        $this->app->singleton('ServerRequest', function () {
+            return new DiactorosFactory;
+        });
 
         // Register the middleware as signleton to use the same middleware
         // instance when the handle and terminate methods are called.

@@ -10,8 +10,6 @@
 
 Add multi-authentication support to [Laravel Passport](https://laravel.com/docs/5.5/passport)
 
-**OBS:** Based on [renanwilian](https://github.com/renanwilliam) responses to [Passport Multi-Auth issue](https://github.com/laravel/passport/issues/161)
-
 ## Important
 
 The instructions below are from the developing version (Branch `master`). Please prefer stable versions! Stable docs [HERE](https://github.com/sfelix-martins/passport-multiauth/tree/v1.0.1)
@@ -327,3 +325,7 @@ class AuthTest extends TestCase
     }
 }
 ```
+
+### Contributors
+
+Based on [renanwilian](https://github.com/renanwilliam) responses to [Passport Multi-Auth issue](https://github.com/laravel/passport/issues/161).
