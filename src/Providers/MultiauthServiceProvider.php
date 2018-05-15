@@ -24,7 +24,7 @@ class MultiauthServiceProvider extends ServiceProvider
         $this->createAccessTokenProvider($providers);
 
         // Register the facade ServerRequest returning an instance of DiactorosFactory.
-        $this->app->singleton('ServerRequest', function ($app) {
+        $this->app->singleton('ServerRequest', function () {
             return new DiactorosFactory;
         });
 
