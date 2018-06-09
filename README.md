@@ -10,10 +10,6 @@
 
 Add multi-authentication support to [Laravel Passport](https://laravel.com/docs/5.5/passport)
 
-## Important
-
-The instructions below are from the developing version (Branch `master`). Please prefer stable versions! Stable docs [HERE](https://github.com/sfelix-martins/passport-multiauth/tree/v1.0.1)
-
 ## Compatibility
 
 | Laravel Passport |
