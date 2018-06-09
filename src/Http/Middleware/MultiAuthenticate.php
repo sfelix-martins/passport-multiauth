@@ -13,8 +13,8 @@ use SMartins\PassportMultiauth\PassportMultiauth;
 use SMartins\PassportMultiauth\Provider as Token;
 use SMartins\PassportMultiauth\ProviderRepository;
 use SMartins\PassportMultiauth\Guards\GuardChecker;
+use SMartins\PassportMultiauth\Facades\ServerRequest;
 use League\OAuth2\Server\Exception\OAuthServerException;
-use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 
 class MultiAuthenticate extends Authenticate
 {
@@ -60,7 +60,7 @@ class MultiAuthenticate extends Authenticate
             return $next($request);
         }
 
-        $psrRequest = (new DiactorosFactory())->createRequest($request);
+        $psrRequest = ServerRequest::createRequest($request);
 
         try {
             $psrRequest = $this->server->validateAuthenticatedRequest($psrRequest);
