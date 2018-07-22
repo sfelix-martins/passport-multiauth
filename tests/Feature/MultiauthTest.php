@@ -47,6 +47,17 @@ class MultiauthTest extends TestCase
         Route::middleware('auth:api,company')->get('/users', function (Request $request) {
             return get_class($request->user());
         });
+
+        Route::middleware('auth')->get('/no_guards', function (Request $request) {
+            return $request->user();
+        });
+    }
+
+    public function testAuthenticateOnRouteWithoutGuardsWithInvalidToken()
+    {
+        $response = $this->json('GET', 'no_guards', [], ['Authorization' => 'Bearer token']);
+
+        $this->assertInstanceOf(AuthenticationException::class, $response->exception);
     }
 
     public function testGetLoggedUserAsUser()
