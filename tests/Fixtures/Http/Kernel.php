@@ -3,6 +3,7 @@
 namespace SMartins\PassportMultiauth\Tests\Fixtures\Http;
 
 use Orchestra\Testbench\Http\Kernel as HttpKernel;
+use Orchestra\Testbench\Http\Middleware\RedirectIfAuthenticated;
 
 class Kernel extends HttpKernel
 {
@@ -19,7 +20,7 @@ class Kernel extends HttpKernel
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
-        'guest' => Middleware\RedirectIfAuthenticated::class,
+        'guest' => RedirectIfAuthenticated::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
     ];
 }

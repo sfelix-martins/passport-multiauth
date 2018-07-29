@@ -33,10 +33,12 @@ class MultiAuthenticate extends Authenticate
      * @param ResourceServer $server
      * @param ProviderRepository $providers
      * @param Auth $auth
-     * @return void
      */
-    public function __construct(ResourceServer $server, ProviderRepository $providers, Auth $auth)
-    {
+    public function __construct(
+        ResourceServer $server,
+        ProviderRepository $providers,
+        Auth $auth
+    ) {
         parent::__construct($auth);
 
         $this->server = $server;
