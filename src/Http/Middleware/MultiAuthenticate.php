@@ -3,7 +3,6 @@
 namespace SMartins\PassportMultiauth\Http\Middleware;
 
 use Closure;
-use Illuminate\Http\Request;
 use League\OAuth2\Server\ResourceServer;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Middleware\Authenticate;
@@ -29,17 +28,19 @@ class MultiAuthenticate extends Authenticate
     protected $providers;
 
     /**
-     * The authentication factory instance.
+     * Create a new middleware instance.
      *
-     * @var \Illuminate\Contracts\Auth\Factory
+     * @param ResourceServer $server
+     * @param ProviderRepository $providers
+     * @param Auth $auth
+     * @return void
      */
-    protected $auth;
-
     public function __construct(ResourceServer $server, ProviderRepository $providers, Auth $auth)
     {
+        parent::__construct($auth);
+
         $this->server = $server;
         $this->providers = $providers;
-        $this->auth = $auth;
     }
 
     /**
@@ -93,7 +94,7 @@ class MultiAuthenticate extends Authenticate
     /**
      * Check if user acting has the required guards and scopes on request.
      *
-     * @param  \Illuminate\Foundation\Auth\User $user
+     * @param Authenticatable $user
      * @param  array $guards
      * @return bool
      */
@@ -109,7 +110,7 @@ class MultiAuthenticate extends Authenticate
      *
      * @param \SMartins\PassportMultiauth\Provider $token
      * @param  array $guards
-     * @return void
+     * @return mixed
      *
      * @throws \Illuminate\Auth\AuthenticationException
      */
