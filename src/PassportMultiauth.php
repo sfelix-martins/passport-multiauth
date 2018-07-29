@@ -14,9 +14,10 @@ class PassportMultiauth
     /**
      * Set the current user for the application with the given scopes.
      *
-     * @param  \Illuminate\Contracts\Auth\Authenticatable  $user
-     * @param  array  $scopes
+     * @param  \Illuminate\Contracts\Auth\Authenticatable $user
+     * @param  array $scopes
      * @return void
+     * @throws Exception
      */
     public static function actingAs($user, $scopes = [])
     {

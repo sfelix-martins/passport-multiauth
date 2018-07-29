@@ -39,6 +39,8 @@ class MultiAuthenticateMiddlewareTest extends TestCase
 
     public function testTryAuthWithoutGuards()
     {
+        $this->expectException(AuthenticationException::class);
+
         $resourceServer = Mockery::mock('League\OAuth2\Server\ResourceServer');
 
         $repository = Mockery::mock('SMartins\PassportMultiauth\ProviderRepository');
@@ -46,11 +48,9 @@ class MultiAuthenticateMiddlewareTest extends TestCase
         $request = $this->createRequest();
 
         $middleware = new MultiAuthenticate($resourceServer, $repository, $this->auth);
-        $response = $middleware->handle($request, function () {
+        $middleware->handle($request, function () {
             return 'response';
         });
-
-        $this->assertEquals('response', $response);
     }
 
     public function testTryAuthWithoutAccessTokenId()

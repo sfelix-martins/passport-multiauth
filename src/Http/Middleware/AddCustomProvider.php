@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 class AddCustomProvider
 {
     /**
-     * The default provder of api guard.
+     * The default provider of api guard.
      *
      * @var string
      */

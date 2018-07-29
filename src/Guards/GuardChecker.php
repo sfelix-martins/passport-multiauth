@@ -4,6 +4,7 @@ namespace SMartins\PassportMultiauth\Guards;
 
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class GuardChecker
 {
@@ -33,7 +34,7 @@ class GuardChecker
      * guard on value.
      *
      * @param  array $guards
-     * @return array
+     * @return Collection
      */
     public static function getGuardsProviders($guards)
     {
