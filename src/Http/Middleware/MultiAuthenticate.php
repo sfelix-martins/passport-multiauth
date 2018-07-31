@@ -59,9 +59,10 @@ class MultiAuthenticate extends Authenticate
     public function handle($request, Closure $next, ...$guards)
     {
         // If don't has any guard follow the flow
-        // stop laravel from checking for a token if session is not set
         if (empty($guards)) {
             $this->authenticate($guards);
+
+            // Stop laravel from checking for a token if session is not set
             return $next($request);
         }
 
@@ -114,7 +115,7 @@ class MultiAuthenticate extends Authenticate
      *
      * @param \SMartins\PassportMultiauth\Provider $token
      * @param  array $guards
-     * @return mixed
+     * @return void
      *
      * @throws \Illuminate\Auth\AuthenticationException
      */
@@ -125,6 +126,6 @@ class MultiAuthenticate extends Authenticate
         // use only guard associated to access token provider
         $authGuards = $providers->has($token->provider) ? [$providers->get($token->provider)] : [];
 
-        return $this->authenticate($authGuards);
+        $this->authenticate($authGuards);
     }
 }
