@@ -60,7 +60,9 @@ class MultiAuthenticate extends Authenticate
     {
         // If don't has any guard follow the flow
         if (empty($guards)) {
-            return $this->authenticate($guards);
+            $this->authenticate($guards);
+            
+            return $next($request);
         }
 
         $psrRequest = ServerRequest::createRequest($request);
