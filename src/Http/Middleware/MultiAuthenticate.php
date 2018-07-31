@@ -61,7 +61,7 @@ class MultiAuthenticate extends Authenticate
         // If don't has any guard follow the flow
         if (empty($guards)) {
             $this->authenticate($guards);
-            
+        // stop laravel from checking for a token if session is not set 
             return $next($request);
         }
 
