@@ -59,8 +59,10 @@ class MultiAuthenticate extends Authenticate
     public function handle($request, Closure $next, ...$guards)
     {
         // If don't has any guard follow the flow
+        // stop laravel from checking for a token if session is not set
         if (empty($guards)) {
-            return $this->authenticate($guards);
+            $this->authenticate($guards);
+            return $next($request);
         }
 
         $psrRequest = ServerRequest::createRequest($request);
