@@ -48,10 +48,9 @@ class MultiAuthenticateMiddlewareTest extends TestCase
         $request = $this->createRequest();
 
         $middleware = new MultiAuthenticate($resourceServer, $repository, $this->auth);
-        $response = $middleware->handle($request, function () {
+        $middleware->handle($request, function () {
             return 'response';
         });
-        $this->assertEquals('response', $response);
     }
 
     public function testTryAuthWithoutAccessTokenId()
@@ -162,7 +161,7 @@ class MultiAuthenticateMiddlewareTest extends TestCase
     /**
      * Create request instance to be used on MultiAuthenticate::handle() param.
      *
-     * @param string $token|null
+     * @param string $token
      * @return \Illuminate\Http\Request
      */
     protected function createRequest(string $token = null)

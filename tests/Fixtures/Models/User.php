@@ -3,12 +3,13 @@
 namespace SMartins\PassportMultiauth\Tests\Fixtures\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use SMartins\PassportMultiauth\HasApiTokens;
 
 class User extends Authenticatable
 {
     protected $table = 'users';
 
-    use \Laravel\Passport\HasApiTokens;
+    use HasApiTokens;
 
     public function getAuthIdentifierName()
     {

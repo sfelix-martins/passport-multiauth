@@ -29,7 +29,9 @@ class PassportMultiauth
 
         $guard = self::getUserGuard($user);
 
-        if (! in_array(HasApiTokens::class, class_uses($user))) {
+        $uses = array_flip(class_uses_recursive($user));
+
+        if (! isset($uses[HasApiTokens::class])) {
             throw new Exception('The model ['.get_class($user).'] must uses the trait '.HasApiTokens::class);
         }
 
