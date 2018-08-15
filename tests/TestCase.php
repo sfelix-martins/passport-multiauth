@@ -2,6 +2,7 @@
 
 namespace SMartins\PassportMultiauth\Tests;
 
+use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
 use Laravel\Passport\PassportServiceProvider;
 use Orchestra\Database\ConsoleServiceProvider;
 use Orchestra\Testbench\TestCase as BaseTestCase;
@@ -42,6 +43,10 @@ abstract class TestCase extends BaseTestCase
             'driver'   => 'sqlite',
             'database' => ':memory:',
         ]);
+
+        $app->useEnvironmentPath(__DIR__.'/..');
+        $app->bootstrapWith([LoadEnvironmentVariables::class]);
+        parent::getEnvironmentSetUp($app);
     }
 
     /**
