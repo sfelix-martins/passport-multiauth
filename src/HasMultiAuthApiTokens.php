@@ -8,7 +8,7 @@ use Laravel\Passport\PersonalAccessTokenFactory;
 use Illuminate\Container\Container;
 use SMartins\PassportMultiauth\Config\AuthConfigHelper;
 
-trait HasApiTokens
+trait HasMultiAuthApiTokens
 {
     use BaseHasApiTokens;
 
