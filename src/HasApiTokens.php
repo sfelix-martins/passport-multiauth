@@ -3,13 +3,14 @@
 namespace SMartins\PassportMultiauth;
 
 use Laravel\Passport\Token;
+use Laravel\Passport\HasApiTokens as BaseHasApiTokens;
 use Laravel\Passport\PersonalAccessTokenFactory;
 use Illuminate\Container\Container;
 use SMartins\PassportMultiauth\Config\AuthConfigHelper;
 
 trait HasApiTokens
 {
-    use \Laravel\Passport\HasApiTokens;
+    use BaseHasApiTokens;
 
     /**
      * Get all of the access tokens for the user relating with Provider.
