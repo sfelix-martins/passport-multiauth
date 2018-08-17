@@ -7,7 +7,6 @@ use Exception;
 use Laravel\Passport\Token;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Support\Facades\App;
-use Illuminate\Contracts\Auth\Authenticatable;
 use SMartins\PassportMultiauth\Config\AuthConfigHelper;
 
 class PassportMultiauth
