@@ -2,20 +2,18 @@
 
 namespace SMartins\PassportMultiauth\Facades;
 
-use Illuminate\Support\Facades\Facade;
+use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
- * @method public static \Zend\Diactoros\ServerRequest createRequest(\Symfony\Component\HttpFoundation\Request $request)
+ * Facade to create Psr\Http\Message\ServerRequestInterface from Symfony Request.
+ *
+ * @author Samuel Martins <sam.martins.dev@gmail.com>
  */
-class ServerRequest extends Facade
+class ServerRequest
 {
-    /**
-     * Get the registered name of the component.
-     *
-     * @return string
-     */
-    protected static function getFacadeAccessor()
+    public static function createRequest(Request $symfonyRequest)
     {
-        return 'ServerRequest';
+        return (new DiactorosFactory())->createRequest($symfonyRequest);
     }
 }
