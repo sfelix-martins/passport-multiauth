@@ -8,6 +8,7 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Factory as Auth;
+use SMartins\PassportMultiauth\Config\AuthConfigHelper;
 use SMartins\PassportMultiauth\PassportMultiauth;
 use SMartins\PassportMultiauth\Provider as Token;
 use SMartins\PassportMultiauth\ProviderRepository;
@@ -105,7 +106,7 @@ class MultiAuthenticate extends Authenticate
      */
     public function canBeAuthenticated(Authenticatable $user, $guards)
     {
-        $userGuard = PassportMultiauth::getUserGuard($user);
+        $userGuard = AuthConfigHelper::getUserGuard($user);
 
         return in_array($userGuard, $guards);
     }

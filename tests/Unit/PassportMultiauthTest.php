@@ -3,6 +3,7 @@
 namespace SMartins\PassportMultiauth\Tests\Unit;
 
 use Exception;
+use SMartins\PassportMultiauth\Config\AuthConfigHelper;
 use SMartins\PassportMultiauth\Tests\TestCase;
 use SMartins\PassportMultiauth\PassportMultiauth;
 use SMartins\PassportMultiauth\Tests\Fixtures\Models\User;
@@ -35,32 +36,10 @@ class PassportMultiauthTest extends TestCase
         }
     }
 
-    public function testGetUserProviderWithModelNotExistentOnProviders()
-    {
-        $model = new Customer;
-
-        $provider = PassportMultiauth::getUserProvider($model);
-
-        $this->assertNull($provider);
-    }
-
     public function testActingAsWithUserThatNotUsesHasApiTokens()
     {
         $this->expectException(Exception::class);
 
         PassportMultiauth::actingAs(new Customer);
-    }
-
-    public function testGetProviderGuardWithNotPassportDriver()
-    {
-        config(['auth.guards.customer.driver' => 'token']);
-        config(['auth.guards.customer.provider' => 'customers']);
-
-        config(['auth.providers.customers.driver' => 'eloquent']);
-        config(['auth.providers.customers.model' => Customer::class]);
-
-        $guard = PassportMultiauth::getProviderGuard('customers');
-
-        $this->assertNull($guard);
     }
 }
