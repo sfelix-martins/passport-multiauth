@@ -4,13 +4,13 @@ namespace SMartins\PassportMultiauth\Tests\Unit;
 
 use Mockery;
 use Illuminate\Http\Request;
+use Zend\Diactoros\ServerRequest;
 use SMartins\PassportMultiauth\Provider;
 use Illuminate\Auth\AuthenticationException;
 use SMartins\PassportMultiauth\Tests\TestCase;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use SMartins\PassportMultiauth\Tests\Fixtures\Models\Company;
 use SMartins\PassportMultiauth\Http\Middleware\MultiAuthenticate;
-use Zend\Diactoros\ServerRequest;
 
 class MultiAuthenticateMiddlewareTest extends TestCase
 {
