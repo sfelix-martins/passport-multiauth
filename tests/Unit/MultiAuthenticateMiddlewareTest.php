@@ -10,6 +10,7 @@ use SMartins\PassportMultiauth\Tests\TestCase;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use SMartins\PassportMultiauth\Tests\Fixtures\Models\Company;
 use SMartins\PassportMultiauth\Http\Middleware\MultiAuthenticate;
+use Zend\Diactoros\ServerRequest;
 
 class MultiAuthenticateMiddlewareTest extends TestCase
 {
@@ -57,9 +58,10 @@ class MultiAuthenticateMiddlewareTest extends TestCase
     {
         $this->expectException(AuthenticationException::class);
 
+        $psr = (new ServerRequest())->withAttribute('oauth_access_token_id', null);
+
         $resourceServer = Mockery::mock('League\OAuth2\Server\ResourceServer');
-        $resourceServer->shouldReceive('validateAuthenticatedRequest')->andReturn($psr = Mockery::mock());
-        $psr->shouldReceive('getAttribute')->with('oauth_access_token_id')->andReturn(null);
+        $resourceServer->shouldReceive('validateAuthenticatedRequest')->andReturn($psr);
 
         $repository = Mockery::mock('SMartins\PassportMultiauth\ProviderRepository');
 
@@ -75,9 +77,10 @@ class MultiAuthenticateMiddlewareTest extends TestCase
     {
         $this->expectException(AuthenticationException::class);
 
+        $psr = (new ServerRequest())->withAttribute('oauth_access_token_id', 1);
+
         $resourceServer = Mockery::mock('League\OAuth2\Server\ResourceServer');
-        $resourceServer->shouldReceive('validateAuthenticatedRequest')->andReturn($psr = Mockery::mock());
-        $psr->shouldReceive('getAttribute')->with('oauth_access_token_id')->andReturn(1);
+        $resourceServer->shouldReceive('validateAuthenticatedRequest')->andReturn($psr);
 
         $repository = Mockery::mock('SMartins\PassportMultiauth\ProviderRepository');
         $repository->shouldReceive('findForToken')->andReturn(null);
@@ -92,9 +95,10 @@ class MultiAuthenticateMiddlewareTest extends TestCase
 
     public function testTryAuthWithExistentAccessTokenAndExistentOnProviders()
     {
+        $psr = (new ServerRequest())->withAttribute('oauth_access_token_id', 1);
+
         $resourceServer = Mockery::mock('League\OAuth2\Server\ResourceServer');
-        $resourceServer->shouldReceive('validateAuthenticatedRequest')->andReturn($psr = Mockery::mock());
-        $psr->shouldReceive('getAttribute')->with('oauth_access_token_id')->andReturn(1);
+        $resourceServer->shouldReceive('validateAuthenticatedRequest')->andReturn($psr);
 
         $tokenProvider = new Provider;
         $tokenProvider->provider = 'companies';
@@ -121,9 +125,10 @@ class MultiAuthenticateMiddlewareTest extends TestCase
     {
         $this->expectException(AuthenticationException::class);
 
+        $psr = (new ServerRequest())->withAttribute('oauth_access_token_id', 1);
+
         $resourceServer = Mockery::mock('League\OAuth2\Server\ResourceServer');
-        $resourceServer->shouldReceive('validateAuthenticatedRequest')->andReturn($psr = Mockery::mock());
-        $psr->shouldReceive('getAttribute')->with('oauth_access_token_id')->andReturn(1);
+        $resourceServer->shouldReceive('validateAuthenticatedRequest')->andReturn($psr);
 
         $tokenProvider = new Provider;
         $tokenProvider->provider = 'companies';

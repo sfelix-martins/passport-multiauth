@@ -4,6 +4,7 @@ namespace SMartins\PassportMultiauth\Http\Middleware;
 
 use Closure;
 use League\OAuth2\Server\ResourceServer;
+use Psr\Http\Message\ServerRequestInterface;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -73,9 +74,7 @@ class MultiAuthenticate extends Authenticate
         try {
             $psrRequest = $this->server->validateAuthenticatedRequest($psrRequest);
 
-            if (! ($tokenId     = $psrRequest->getAttribute('oauth_access_token_id')) ||
-                ! ($accessToken = $this->providers->findForToken($tokenId))
-            ) {
+            if (! ($accessToken = $this->getAccessTokenFromRequest($psrRequest))) {
                 throw new AuthenticationException('Unauthenticated', $guards);
             }
 
@@ -94,6 +93,19 @@ class MultiAuthenticate extends Authenticate
         }
 
         return $next($request);
+    }
+
+    /**
+     * @param ServerRequestInterface $request
+     * @return null|Token
+     */
+    public function getAccessTokenFromRequest(ServerRequestInterface $request)
+    {
+        if (! ($tokenId = $request->getAttribute('oauth_access_token_id'))) {
+            return null;
+        }
+
+        return $this->providers->findForToken($tokenId);
     }
 
     /**
