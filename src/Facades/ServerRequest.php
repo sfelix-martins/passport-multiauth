@@ -2,8 +2,8 @@
 
 namespace SMartins\PassportMultiauth\Facades;
 
-use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 
 /**
  * Facade to create Psr\Http\Message\ServerRequestInterface from Symfony Request.

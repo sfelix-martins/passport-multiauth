@@ -8,12 +8,12 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Factory as Auth;
-use SMartins\PassportMultiauth\Config\AuthConfigHelper;
 use SMartins\PassportMultiauth\PassportMultiauth;
 use SMartins\PassportMultiauth\Provider as Token;
 use SMartins\PassportMultiauth\ProviderRepository;
 use SMartins\PassportMultiauth\Guards\GuardChecker;
 use SMartins\PassportMultiauth\Facades\ServerRequest;
+use SMartins\PassportMultiauth\Config\AuthConfigHelper;
 use League\OAuth2\Server\Exception\OAuthServerException;
 
 class MultiAuthenticate extends Authenticate
