@@ -19,12 +19,12 @@ use League\OAuth2\Server\Exception\OAuthServerException;
 class MultiAuthenticate extends Authenticate
 {
     /**
-     * @var \League\OAuth2\Server\ResourceServer
+     * @var ResourceServer
      */
     protected $server;
 
     /**
-     * @var \SMartins\PassportMultiauth\ProviderRepository
+     * @var ProviderRepository
      */
     protected $providers;
 
@@ -51,11 +51,12 @@ class MultiAuthenticate extends Authenticate
      * used on request.
      *
      * @param \Illuminate\Http\Request $request
-     * @param \Closure                 $next
-     * @param string[]                 ...$guards
+     * @param \Closure $next
+     * @param string[] ...$guards
      * @return mixed
      *
      * @throws \Illuminate\Auth\AuthenticationException
+     * @throws \SMartins\PassportMultiauth\Exceptions\MissingConfigException
      */
     public function handle($request, Closure $next, ...$guards)
     {
@@ -72,11 +73,9 @@ class MultiAuthenticate extends Authenticate
         try {
             $psrRequest = $this->server->validateAuthenticatedRequest($psrRequest);
 
-            if (! $tokenId = $psrRequest->getAttribute('oauth_access_token_id')) {
-                throw new AuthenticationException('Unauthenticated', $guards);
-            }
-
-            if (! $accessToken = $this->providers->findForToken($tokenId)) {
+            if (! ($tokenId     = $psrRequest->getAttribute('oauth_access_token_id')) ||
+                ! ($accessToken = $this->providers->findForToken($tokenId))
+            ) {
                 throw new AuthenticationException('Unauthenticated', $guards);
             }
 
@@ -84,10 +83,10 @@ class MultiAuthenticate extends Authenticate
         } catch (OAuthServerException $e) {
             // If has an OAuthServerException check if has unit tests and fake
             // user authenticated.
-            if ($user = PassportMultiauth::userActing()) {
-                if ($this->canBeAuthenticated($user, $guards)) {
-                    return $next($request);
-                }
+            if (($user = PassportMultiauth::userActing()) &&
+                $this->canBeAuthenticated($user, $guards)
+            ) {
+                return $next($request);
             }
 
             // @todo Check if it's the best way to handle with OAuthServerException
@@ -103,7 +102,7 @@ class MultiAuthenticate extends Authenticate
      * @param Authenticatable $user
      * @param  array $guards
      * @return bool
-     * @throws \SMartins\PassportMultiauth\Exceptions\MissingProviderConfigException
+     * @throws \SMartins\PassportMultiauth\Exceptions\MissingConfigException
      */
     public function canBeAuthenticated(Authenticatable $user, $guards)
     {
@@ -118,7 +117,6 @@ class MultiAuthenticate extends Authenticate
      * @param \SMartins\PassportMultiauth\Provider $token
      * @param  array $guards
      * @return void
-     *
      * @throws \Illuminate\Auth\AuthenticationException
      */
     public function authenticateTokenGuard(Token $token, $guards)

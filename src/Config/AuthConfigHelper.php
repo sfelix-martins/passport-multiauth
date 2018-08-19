@@ -29,6 +29,7 @@ class AuthConfigHelper
      * Get the guard of specific provider to `passport` driver.
      *
      * @param  string $provider
+     * @param Authenticatable $user
      * @return string
      * @throws MissingConfigException
      */
