@@ -2,12 +2,12 @@
 
 namespace SMartins\PassportMultiauth\Tests;
 
-use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
 use Laravel\Passport\PassportServiceProvider;
 use Orchestra\Database\ConsoleServiceProvider;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 use SMartins\PassportMultiauth\Tests\Fixtures\Http\Kernel;
 use SMartins\PassportMultiauth\Tests\Fixtures\Models\User;
+use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
 use SMartins\PassportMultiauth\Tests\Fixtures\Models\Company;
 use SMartins\PassportMultiauth\Providers\MultiauthServiceProvider;
 

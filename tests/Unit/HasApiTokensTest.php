@@ -2,11 +2,11 @@
 
 namespace SMartins\PassportMultiauth\Tests\Unit;
 
-use SMartins\PassportMultiauth\Exceptions\MissingConfigException;
+use SMartins\PassportMultiauth\Tests\TestCase;
+use SMartins\PassportMultiauth\Tests\Fixtures\Models\User;
 use SMartins\PassportMultiauth\Tests\Fixtures\Models\Admin;
 use SMartins\PassportMultiauth\Tests\Fixtures\Models\Company;
-use SMartins\PassportMultiauth\Tests\Fixtures\Models\User;
-use SMartins\PassportMultiauth\Tests\TestCase;
+use SMartins\PassportMultiauth\Exceptions\MissingConfigException;
 
 class HasApiTokensTest extends TestCase
 {
@@ -65,12 +65,12 @@ class HasApiTokensTest extends TestCase
     {
         $company = factory(Company::class)->create();
         for ($i = 0; $i < 3; $i++) {
-            $company->createToken('Company Token ' . ($i + 1));
+            $company->createToken('Company Token '.($i + 1));
         }
 
         $user = factory(User::class)->create();
         for ($i = 0; $i < 1; $i++) {
-            $user->createToken('User Token ' . ($i + 1));
+            $user->createToken('User Token '.($i + 1));
         }
 
         $this->assertCount(3, $company->tokens());
