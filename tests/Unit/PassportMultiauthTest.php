@@ -3,7 +3,6 @@
 namespace SMartins\PassportMultiauth\Tests\Unit;
 
 use Exception;
-use SMartins\PassportMultiauth\Config\AuthConfigHelper;
 use SMartins\PassportMultiauth\Tests\TestCase;
 use SMartins\PassportMultiauth\PassportMultiauth;
 use SMartins\PassportMultiauth\Tests\Fixtures\Models\User;
