@@ -2,6 +2,8 @@
 
 namespace SMartins\PassportMultiauth\Tests\Unit;
 
+use SMartins\PassportMultiauth\Exceptions\MissingConfigException;
+use SMartins\PassportMultiauth\Tests\Fixtures\Models\Admin;
 use SMartins\PassportMultiauth\Tests\Fixtures\Models\Company;
 use SMartins\PassportMultiauth\Tests\Fixtures\Models\User;
 use SMartins\PassportMultiauth\Tests\TestCase;
@@ -85,5 +87,52 @@ class HasApiTokensTest extends TestCase
             $this->assertEquals('User Token '.($i + 1), $token->name);
             $i++;
         }
+    }
+
+    public function testCreateTokenToModelWithoutProviderConfigs()
+    {
+        $this->expectException(MissingConfigException::class);
+        $this->expectExceptionMessage('Any provider found to '.Admin::class.'. Please, check your config/auth.php file.');
+
+        $admin = factory(Admin::class)->create();
+
+        $admin->createToken('Admin token');
+    }
+
+    public function testGetTokensToModelWithoutProviderConfigs()
+    {
+        $this->expectException(MissingConfigException::class);
+        $this->expectExceptionMessage('Any provider found to '.Admin::class.'. Please, check your config/auth.php file.');
+
+        $admin = factory(Admin::class)->create();
+
+        $admin->tokens();
+    }
+
+    /**
+     * Setup auth configs.
+     *
+     * @return void
+     */
+    protected function setAuthConfigs()
+    {
+        // Set up default entity
+        config(['auth.guards.api.driver' => 'passport']);
+        config(['auth.guards.api.provider' => 'users']);
+        config(['auth.providers.users.model' => User::class]);
+
+        // Set up company entity
+        config(['auth.guards.company.driver' => 'passport']);
+        config(['auth.guards.company.provider' => 'companies']);
+        config(['auth.providers.companies.driver' => 'eloquent']);
+        config(['auth.providers.companies.model' => Company::class]);
+
+        // Set up Admin entity, without providers
+        config(['auth.guards.admin.driver' => 'passport']);
+        /*
+        config(['auth.guards.admin.provider' => 'admins']);
+        config(['auth.providers.admins.driver' => 'eloquent']);
+        config(['auth.providers.admins.model' => Company::class]);
+        */
     }
 }

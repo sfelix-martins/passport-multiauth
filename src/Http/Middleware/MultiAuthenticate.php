@@ -103,6 +103,7 @@ class MultiAuthenticate extends Authenticate
      * @param Authenticatable $user
      * @param  array $guards
      * @return bool
+     * @throws \SMartins\PassportMultiauth\Exceptions\MissingProviderConfigException
      */
     public function canBeAuthenticated(Authenticatable $user, $guards)
     {

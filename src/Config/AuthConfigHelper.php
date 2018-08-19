@@ -3,6 +3,7 @@
 namespace SMartins\PassportMultiauth\Config;
 
 use Illuminate\Contracts\Auth\Authenticatable;
+use SMartins\PassportMultiauth\Exceptions\MissingConfigException;
 
 class AuthConfigHelper
 {
@@ -11,6 +12,7 @@ class AuthConfigHelper
      *
      * @param  Authenticatable $user
      * @return string|null
+     * @throws MissingConfigException
      */
     public static function getUserProvider(Authenticatable $user)
     {
@@ -19,6 +21,8 @@ class AuthConfigHelper
                 return $provider;
             }
         }
+
+        throw MissingConfigException::provider($user);
     }
 
     /**
@@ -26,14 +30,17 @@ class AuthConfigHelper
      *
      * @param  string $provider
      * @return string
+     * @throws MissingConfigException
      */
-    public static function getProviderGuard($provider)
+    public static function getProviderGuard($provider, Authenticatable $user)
     {
         foreach (config('auth.guards') as $guard => $content) {
             if ($content['driver'] == 'passport' && $content['provider'] == $provider) {
                 return $guard;
             }
         }
+
+        throw MissingConfigException::guard($user);
     }
 
     /**
@@ -41,11 +48,12 @@ class AuthConfigHelper
      *
      * @param  Authenticatable $user
      * @return string|null
+     * @throws MissingConfigException
      */
     public static function getUserGuard(Authenticatable $user)
     {
         $provider = self::getUserProvider($user);
 
-        return self::getProviderGuard($provider);
+        return self::getProviderGuard($provider, $user);
     }
 }

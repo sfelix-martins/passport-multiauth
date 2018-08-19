@@ -15,13 +15,4 @@ class User extends Authenticatable
     {
         return 'id';
     }
-
-    public static function createUser()
-    {
-        \DB::table('users')->insert([
-            'name' => 'Samuel',
-            'email' => 'sam.martins.dev@gmail.com',
-            'password' => \Hash::make('456'),
-        ]);
-    }
 }

@@ -22,16 +22,17 @@ Add multi-authentication support to [Laravel Passport](https://laravel.com/docs/
 | ^4.0             |
 | ^5.0             |
 | ^6.0             |
+| ^7.0             |
 
 ## Installing and configuring
 
-- Install using composer:
+Install using composer:
 
 ```sh
 $ composer require smartins/passport-multiauth
 ```
 
-- If you are using a Laravel version **less than 5.5** you **need to add** the provider on `config/app.php`:
+If you are using a Laravel version **less than 5.5** you **need to add** the provider on `config/app.php`:
 
 ```php
     'providers' => [
@@ -40,32 +41,39 @@ $ composer require smartins/passport-multiauth
     ],
 ```
 
-- Migrate database to create `oauth_access_token_providers` table:
+Migrate database to create `oauth_access_token_providers` table:
 
 ```sh
 $ php artisan migrate
 ```
 
-- Add new provider in `config/auth.php` using a model that extends of `Authenticatable` class and use `HasApiTokens` trait.
+Instead use the `Laravel\Passport\HasApiTokens` trait from [Laravel Passport](https://laravel.com/docs/5.6/passport#installation) core, use the trait `SMartins\PassportMultiauth\HasMultiAuthApiTokens`. 
+Internally, this `HasMultiAuthApiTokens` uses the `HasApiTokens`, overriding the methods `tokens()` and `createToken($name, $scopes = [])`. 
+The behavior of the method `tokens()` was changed to join with the table `oauth_access_token_providers` getting just the tokens created
+to specific model. 
+The method `createToken($name, $scopes = [])` was changed to create the token using the `provider` defined to model on `config/auth.php`. 
+Now when you create the token, this token will be related with the model that is calling.
+
+Add new provider in `config/auth.php` using a model that extends of `Authenticatable` class and use `HasMultiAuthApiTokens` trait.
 
 Example:
 
-- Configure your model:
+Configure your model:
 
 ```php
 
-use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use SMartins\PassportMultiauth\HasMultiAuthApiTokens;
 
 class Admin extends Authenticatable
 {
-    use Notifiable, HasApiTokens;
+    use Notifiable, HasMultiAuthApiTokens;
 }
 
 ```
 
-- And your `config/auth.php` providers:
+And your `config/auth.php` providers:
 
 ```php
     // ...
@@ -86,7 +94,7 @@ class Admin extends Authenticatable
     // ...
 ```
 
-- Add a new `guard` in `config/auth.php` guards array using driver `passport` and the provider added above:
+Add a new `guard` in `config/auth.php` guards array using driver `passport` and the provider added above:
 
 ```php
     // ...
@@ -112,7 +120,7 @@ class Admin extends Authenticatable
     // ...
 ```
 
-- Register the middleware `AddCustomProvider` to `$routeMiddleware` attributes on `app/Http/Kernel.php` file.
+Register the middleware `AddCustomProvider` to `$routeMiddleware` attributes on `app/Http/Kernel.php` file.
 
 ```php
 
@@ -136,7 +144,7 @@ class Kernel extends HttpKernel
 }
 ```
 
-- Replace the middleware `Authenticate` on `app/Http/Kernel` `$routeMiddleware` attribute.
+Replace the middleware `Authenticate` on `app/Http/Kernel` `$routeMiddleware` attribute.
 
 ```php
 
@@ -166,7 +174,7 @@ class Kernel extends HttpKernel
 }
 ```
 
-- Encapsulate the passport routes for access token with the registered middleware in `AuthServiceProvider`. This middleware will add the capability to `Passport` route `oauth/token` use the value of `provider` param on request:
+Encapsulate the passport routes for access token with the registered middleware in `AuthServiceProvider`. This middleware will add the capability to `Passport` route `oauth/token` use the value of `provider` param on request:
 
 ```php
 namespace App\Providers;
@@ -212,7 +220,7 @@ $ php artisan vendor:publish --provider="SMartins\PassportMultiauth\Providers\Mu
 
 ## Usage
 
-- Add the `provider` parameter in your request at `/oauth/token`:
+Add the `provider` parameter in your request at `/oauth/token`:
 
 ```http
 POST /oauth/token HTTP/1.1
@@ -231,7 +239,7 @@ Cache-Control: no-cache
 }
 ```
 
-- You can pass your guards on `auth` middleware as you wish. Example:
+You can pass your guards on `auth` middleware as you wish. Example:
 
 ```php
 Route::group(['middleware' => ['api', 'auth:admin']], function () {
@@ -245,7 +253,7 @@ Route::group(['middleware' => ['api', 'auth:admin']], function () {
 
 The  `api` guard use is equals the example with `admin`.
 
-- You can pass many guards to `auth` middleware.
+You can pass many guards to `auth` middleware.
 
 ```php
 Route::group(['middleware' => ['api', 'auth:admin,api']], function () {
@@ -265,7 +273,7 @@ Auth::user();
 
 ### Refreshing tokens
 
-- Add the `provider` parameter in your request at `/oauth/token`:
+Add the `provider` parameter in your request at `/oauth/token`:
 
 ```http
 POST /oauth/token HTTP/1.1
@@ -285,13 +293,36 @@ Cache-Control: no-cache
 
 ### Using scopes
 
-- Just use the [`scope` and `scopes`](https://laravel.com/docs/5.5/passport#checking-scopes) middlewares from `Laravel\Passport`.
+Just use the [`scope` and `scopes`](https://laravel.com/docs/5.5/passport#checking-scopes) middlewares from `Laravel\Passport`.
 
 ```php
 protected $routeMiddleware = [
     'scopes' => \Laravel\Passport\Http\Middleware\CheckScopes::class,
     'scope' => \Laravel\Passport\Http\Middleware\CheckForAnyScope::class,
 ];
+```
+
+### Personal Access Tokens
+
+In your model that uses the trait `SMartins\PassportMultiauth\HasMultiAuthApiTokens` you can uses the methods `createToken($name, $scopes = [])` and `tokens()` to manage your personal access tokens. E.g.:
+
+```php
+
+$user = User::find(1);
+$admin = Admin::find(1);
+
+// Create token from Model instance.
+$user->createToken('My Token');
+$admin->createToken('My Admin Token');
+
+// Get the tokens created to this user. 
+$user->tokens()->each(function ($token) {
+    echo $token->name; // My Token
+});
+
+$admin->tokens()->each(function ($token) {
+    echo $token->name; // My Admin Token
+});
 ```
 
 ### Unit tests

@@ -5,8 +5,10 @@ namespace SMartins\PassportMultiauth;
 use Laravel\Passport\Token;
 use Laravel\Passport\HasApiTokens as BaseHasApiTokens;
 use Laravel\Passport\PersonalAccessTokenFactory;
+use Laravel\Passport\PersonalAccessTokenResult;
 use Illuminate\Container\Container;
 use SMartins\PassportMultiauth\Config\AuthConfigHelper;
+use SMartins\PassportMultiauth\Exceptions\MissingConfigException;
 
 trait HasMultiAuthApiTokens
 {
@@ -32,9 +34,10 @@ trait HasMultiAuthApiTokens
     /**
      * Create a new personal access token for the user and create .
      *
-     * @param  string  $name
-     * @param  array  $scopes
-     * @return \Laravel\Passport\PersonalAccessTokenResult
+     * @param  string $name
+     * @param  array $scopes
+     * @return PersonalAccessTokenResult
+     * @throws MissingConfigException
      */
     public function createToken($name, array $scopes = [])
     {
