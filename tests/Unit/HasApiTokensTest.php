@@ -75,18 +75,6 @@ class HasApiTokensTest extends TestCase
 
         $this->assertCount(3, $company->tokens());
         $this->assertCount(1, $user->tokens());
-
-        $i = 0;
-        foreach ($company->tokens() as $token) {
-            $this->assertEquals('Company Token '.($i + 1), $token->name);
-            $i++;
-        }
-
-        $i = 0;
-        foreach ($user->tokens() as $token) {
-            $this->assertEquals('User Token '.($i + 1), $token->name);
-            $i++;
-        }
     }
 
     public function testCreateTokenToModelWithoutProviderConfigs()
