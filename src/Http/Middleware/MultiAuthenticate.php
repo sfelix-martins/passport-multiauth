@@ -4,9 +4,9 @@ namespace SMartins\PassportMultiauth\Http\Middleware;
 
 use Closure;
 use League\OAuth2\Server\ResourceServer;
-use Psr\Http\Message\ServerRequestInterface;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Middleware\Authenticate;
+use Psr\Http\Message\ServerRequestInterface;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Factory as Auth;
 use SMartins\PassportMultiauth\PassportMultiauth;
@@ -102,7 +102,7 @@ class MultiAuthenticate extends Authenticate
     public function getAccessTokenFromRequest(ServerRequestInterface $request)
     {
         if (! ($tokenId = $request->getAttribute('oauth_access_token_id'))) {
-            return null;
+            return;
         }
 
         return $this->providers->findForToken($tokenId);
