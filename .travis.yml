@@ -41,6 +41,11 @@ matrix:
         - passport=6.0.x
         - testbench=3.6.x
         - phpunit=7.0.x
+    - php: 7.1
+      env:
+      - passport=7.0.x
+      - testbench=3.6.x
+      - phpunit=7.0.x
     - php: 7.2
       env:
         - passport=4.0.x
@@ -56,6 +61,11 @@ matrix:
         - passport=6.0.x
         - testbench=3.6.x
         - phpunit=7.0.x
+    - php: 7.2
+      env:
+      - passport=7.0.x
+      - testbench=3.6.x
+      - phpunit=7.0.x
 
 sudo: false
 

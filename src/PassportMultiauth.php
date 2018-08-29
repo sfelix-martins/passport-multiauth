@@ -7,7 +7,7 @@ use Exception;
 use Laravel\Passport\Token;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Support\Facades\App;
-use Illuminate\Contracts\Auth\Authenticatable;
+use SMartins\PassportMultiauth\Config\AuthConfigHelper;
 
 class PassportMultiauth
 {
@@ -27,63 +27,19 @@ class PassportMultiauth
             $token->shouldReceive('can')->with($scope)->andReturn(true);
         }
 
-        $guard = self::getUserGuard($user);
+        $uses = array_flip(class_uses_recursive($user));
 
-        if (! in_array(HasApiTokens::class, class_uses($user))) {
+        if (! isset($uses[HasApiTokens::class])) {
             throw new Exception('The model ['.get_class($user).'] must uses the trait '.HasApiTokens::class);
         }
 
         $user->withAccessToken($token);
 
+        $guard = AuthConfigHelper::getUserGuard($user);
+
         app('auth')->guard($guard)->setUser($user);
 
         app('auth')->shouldUse($guard);
-    }
-
-    /**
-     * Get the user provider on configs.
-     *
-     * @todo Move to class specialized in check auth configs.
-     * @param  \Illuminate\Contracts\Auth\Authenticatable $user
-     * @return string|null
-     */
-    public static function getUserProvider(Authenticatable $user)
-    {
-        foreach (config('auth.providers') as $provider => $config) {
-            if ($user instanceof $config['model']) {
-                return $provider;
-            }
-        }
-    }
-
-    /**
-     * Get the guard of specific provider to `passport` driver.
-     *
-     * @todo Move to class specialized in check auth configs.
-     * @param  string $provider
-     * @return string
-     */
-    public static function getProviderGuard($provider)
-    {
-        foreach (config('auth.guards') as $guard => $content) {
-            if ($content['driver'] == 'passport' && $content['provider'] == $provider) {
-                return $guard;
-            }
-        }
-    }
-
-    /**
-     * Get the user guard on provider with `passport` driver.
-     *
-     * @todo Move to class specialized in check auth configs.
-     * @param  \Illuminate\Contracts\Auth\Authenticatable $user
-     * @return string|null
-     */
-    public static function getUserGuard(Authenticatable $user)
-    {
-        $provider = self::getUserProvider($user);
-
-        return self::getProviderGuard($provider);
     }
 
     /**

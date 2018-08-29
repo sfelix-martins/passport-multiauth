@@ -6,6 +6,7 @@ use Closure;
 use League\OAuth2\Server\ResourceServer;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Middleware\Authenticate;
+use Psr\Http\Message\ServerRequestInterface;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Factory as Auth;
 use SMartins\PassportMultiauth\PassportMultiauth;
@@ -13,17 +14,18 @@ use SMartins\PassportMultiauth\Provider as Token;
 use SMartins\PassportMultiauth\ProviderRepository;
 use SMartins\PassportMultiauth\Guards\GuardChecker;
 use SMartins\PassportMultiauth\Facades\ServerRequest;
+use SMartins\PassportMultiauth\Config\AuthConfigHelper;
 use League\OAuth2\Server\Exception\OAuthServerException;
 
 class MultiAuthenticate extends Authenticate
 {
     /**
-     * @var \League\OAuth2\Server\ResourceServer
+     * @var ResourceServer
      */
     protected $server;
 
     /**
-     * @var \SMartins\PassportMultiauth\ProviderRepository
+     * @var ProviderRepository
      */
     protected $providers;
 
@@ -50,11 +52,12 @@ class MultiAuthenticate extends Authenticate
      * used on request.
      *
      * @param \Illuminate\Http\Request $request
-     * @param \Closure                 $next
-     * @param string[]                 ...$guards
+     * @param \Closure $next
+     * @param string[] ...$guards
      * @return mixed
      *
      * @throws \Illuminate\Auth\AuthenticationException
+     * @throws \SMartins\PassportMultiauth\Exceptions\MissingConfigException
      */
     public function handle($request, Closure $next, ...$guards)
     {
@@ -71,11 +74,7 @@ class MultiAuthenticate extends Authenticate
         try {
             $psrRequest = $this->server->validateAuthenticatedRequest($psrRequest);
 
-            if (! $tokenId = $psrRequest->getAttribute('oauth_access_token_id')) {
-                throw new AuthenticationException('Unauthenticated', $guards);
-            }
-
-            if (! $accessToken = $this->providers->findForToken($tokenId)) {
+            if (! ($accessToken = $this->getAccessTokenFromRequest($psrRequest))) {
                 throw new AuthenticationException('Unauthenticated', $guards);
             }
 
@@ -83,10 +82,10 @@ class MultiAuthenticate extends Authenticate
         } catch (OAuthServerException $e) {
             // If has an OAuthServerException check if has unit tests and fake
             // user authenticated.
-            if ($user = PassportMultiauth::userActing()) {
-                if ($this->canBeAuthenticated($user, $guards)) {
-                    return $next($request);
-                }
+            if (($user = PassportMultiauth::userActing()) &&
+                $this->canBeAuthenticated($user, $guards)
+            ) {
+                return $next($request);
             }
 
             // @todo Check if it's the best way to handle with OAuthServerException
@@ -97,15 +96,29 @@ class MultiAuthenticate extends Authenticate
     }
 
     /**
+     * @param ServerRequestInterface $request
+     * @return null|Token
+     */
+    public function getAccessTokenFromRequest(ServerRequestInterface $request)
+    {
+        if (! ($tokenId = $request->getAttribute('oauth_access_token_id'))) {
+            return;
+        }
+
+        return $this->providers->findForToken($tokenId);
+    }
+
+    /**
      * Check if user acting has the required guards and scopes on request.
      *
      * @param Authenticatable $user
      * @param  array $guards
      * @return bool
+     * @throws \SMartins\PassportMultiauth\Exceptions\MissingConfigException
      */
     public function canBeAuthenticated(Authenticatable $user, $guards)
     {
-        $userGuard = PassportMultiauth::getUserGuard($user);
+        $userGuard = AuthConfigHelper::getUserGuard($user);
 
         return in_array($userGuard, $guards);
     }
@@ -116,7 +129,6 @@ class MultiAuthenticate extends Authenticate
      * @param \SMartins\PassportMultiauth\Provider $token
      * @param  array $guards
      * @return void
-     *
      * @throws \Illuminate\Auth\AuthenticationException
      */
     public function authenticateTokenGuard(Token $token, $guards)

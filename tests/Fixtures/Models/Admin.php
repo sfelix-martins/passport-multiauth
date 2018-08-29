@@ -5,9 +5,9 @@ namespace SMartins\PassportMultiauth\Tests\Fixtures\Models;
 use SMartins\PassportMultiauth\HasMultiAuthApiTokens;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Company extends Authenticatable
+class Admin extends Authenticatable
 {
-    protected $table = 'companies';
+    protected $table = 'admins';
 
     use HasMultiAuthApiTokens;
 

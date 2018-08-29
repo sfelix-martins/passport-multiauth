@@ -7,6 +7,7 @@ use Orchestra\Database\ConsoleServiceProvider;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 use SMartins\PassportMultiauth\Tests\Fixtures\Http\Kernel;
 use SMartins\PassportMultiauth\Tests\Fixtures\Models\User;
+use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
 use SMartins\PassportMultiauth\Tests\Fixtures\Models\Company;
 use SMartins\PassportMultiauth\Providers\MultiauthServiceProvider;
 
@@ -42,6 +43,10 @@ abstract class TestCase extends BaseTestCase
             'driver'   => 'sqlite',
             'database' => ':memory:',
         ]);
+
+        $app->useEnvironmentPath(__DIR__.'/..');
+        $app->bootstrapWith([LoadEnvironmentVariables::class]);
+        parent::getEnvironmentSetUp($app);
     }
 
     /**

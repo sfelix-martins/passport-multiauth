@@ -2,25 +2,17 @@
 
 namespace SMartins\PassportMultiauth\Tests\Fixtures\Models;
 
+use SMartins\PassportMultiauth\HasMultiAuthApiTokens;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
     protected $table = 'users';
 
-    use \Laravel\Passport\HasApiTokens;
+    use HasMultiAuthApiTokens;
 
     public function getAuthIdentifierName()
     {
         return 'id';
-    }
-
-    public static function createUser()
-    {
-        \DB::table('users')->insert([
-            'name' => 'Samuel',
-            'email' => 'sam.martins.dev@gmail.com',
-            'password' => \Hash::make('456'),
-        ]);
     }
 }
