@@ -25,9 +25,7 @@ class AddCustomProviderTest extends TestCase
     public function testIfApiProviderOnAuthWasSetCorrectly()
     {
         $request = Mockery::mock(Request::class);
-        $request->shouldReceive('all')->andReturn([
-            'provider' => 'companies',
-        ]);
+        $request->shouldReceive('get')->andReturn('companies')->with('provider');
 
         $middleware = new AddCustomProvider();
         $middleware->handle($request, function () {
