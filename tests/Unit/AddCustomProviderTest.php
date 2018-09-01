@@ -2,6 +2,7 @@
 
 namespace SMartins\PassportMultiauth\Tests\Unit;
 
+use League\OAuth2\Server\Exception\OAuthServerException;
 use Mockery;
 use Illuminate\Http\Request;
 use SMartins\PassportMultiauth\Tests\TestCase;
@@ -24,6 +25,9 @@ class AddCustomProviderTest extends TestCase
 
     public function testIfApiProviderOnAuthWasSetCorrectly()
     {
+        // We'll push a fake testing provider in the auth config registered in the app..
+        config(['auth.guards.testing.provider' => 'companies']);
+
         $request = Mockery::mock(Request::class);
         $request->shouldReceive('get')->andReturn('companies')->with('provider');
 
@@ -37,5 +41,31 @@ class AddCustomProviderTest extends TestCase
         // Check if was correctly reset to default provider on `terminate()`
         $middleware->terminate();
         $this->assertEquals(config('auth.guards.api.provider'), 'users');
+    }
+
+    public function testPassNotExistentProvider()
+    {
+        $this->expectException(OAuthServerException::class);
+
+        $request = Mockery::mock(Request::class);
+        $request->shouldReceive('get')->andReturn('not_found')->with('provider');
+
+        $middleware = new AddCustomProvider();
+        $middleware->handle($request, function () {
+            return 'response';
+        });
+    }
+
+    public function testDoNotPassProviderToRequest()
+    {
+        $this->expectException(OAuthServerException::class);
+
+        $request = Mockery::mock(Request::class);
+        $request->shouldReceive('get')->andReturn(null)->with('provider');
+
+        $middleware = new AddCustomProvider();
+        $middleware->handle($request, function () {
+            return 'response';
+        });
     }
 }

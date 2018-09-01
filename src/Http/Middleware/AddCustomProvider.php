@@ -76,6 +76,6 @@ class AddCustomProvider
             }
         }
 
-        return false;
+        return true;
     }
 }
