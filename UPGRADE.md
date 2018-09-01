@@ -1,5 +1,64 @@
 # Upgrade Guide
 
+## Upgrading to 3.0 from 2.0
+
+You just should asserts that your requests to routes wrapped by middleware `\SMartins\PassportMultiauth\Http\Middleware\AddCustomProvider::class` has the `provider` param passing the desired provider.
+
+E.g.:
+
+In version `2.0` if your request to `oauth/token` don't has the param provider, the default provider defined on `config('auth.guards.api.provider')` will be used.
+
+```http
+POST /oauth/token HTTP/1.1
+Host: localhost
+Accept: application/json, text/plain, */*
+Content-Type: application/json;charset=UTF-8
+Cache-Control: no-cache
+
+{
+    "username":"user@domain.com",
+    "password":"password",
+    "grant_type" : "password",
+    "client_id": "client-id",
+    "client_secret" : "client-secret"
+}
+```
+
+The response to request above should be a `200 OK` with access token on body.
+
+In version `3.0` the request above will return a `400 Bad Request`
+
+```json
+{
+    "message": "The request is missing a required parameter, includes an invalid parameter value, includes a parameter more than once, or is otherwise malformed.",
+    "exception": "League\\OAuth2\\Server\\Exception\\OAuthServerException",
+    "file": "/home/vagrant/code/vendor/league/oauth2-server/src/Exception/OAuthServerException.php",
+    "line": 114,
+    "trace": []
+}
+```
+
+To fix it you should pass the provider param on request even for the provider defined in the `api` guard. E.g.:
+
+```http
+POST /oauth/token HTTP/1.1
+Host: localhost
+Accept: application/json, text/plain, */*
+Content-Type: application/json;charset=UTF-8
+Cache-Control: no-cache
+
+{
+    "username":"user@domain.com",
+    "password":"password",
+    "grant_type" : "password",
+    "client_id": "client-id",
+    "client_secret" : "client-secret",
+    "provider": "users" 
+}
+```
+
+In short, the param `provider` is required and must exists on `config/auth.php` providers config.
+
 ## Upgrading to 2.0 from 1.0
 
 ### Updating Dependencies

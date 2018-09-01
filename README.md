@@ -10,6 +10,10 @@
 
 Add multi-authentication support to [Laravel Passport](https://laravel.com/docs/5.5/passport)
 
+## Upgrading from 2.0 to 3.0
+
+- To upgrade from version 2.0 to 3.0 folow [this guide](https://github.com/sfelix-martins/passport-multiauth/blob/3.0/UPGRADE.md)
+
 ## Upgrading from 1.0 to 2.0
 
 - To upgrade from version 1.0 to 2.0 follow [this guide](https://github.com/sfelix-martins/passport-multiauth/blob/2.0/UPGRADE.md)
