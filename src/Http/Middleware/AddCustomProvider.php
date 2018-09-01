@@ -4,6 +4,7 @@ namespace SMartins\PassportMultiauth\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use League\OAuth2\Server\Exception\OAuthServerException;
 
 class AddCustomProvider
 {
@@ -20,20 +21,24 @@ class AddCustomProvider
      * is used by Laravel Passport to get the correct model on access token
      * creation.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param  \Illuminate\Http\Request $request
+     * @param  \Closure $next
+     *
      * @return mixed
+     *
+     * @throws OAuthServerException
      */
     public function handle(Request $request, Closure $next)
     {
         $this->defaultApiProvider = config('auth.guards.api.provider');
 
-        $params = $request->all();
-        if (array_key_exists('provider', $params)) {
-            if (! is_null($params['provider'])) {
-                config(['auth.guards.api.provider' => $params['provider']]);
-            }
+        $provider = $request->get('provider');
+
+        if ($this->invalidProvider($provider)) {
+            throw OAuthServerException::invalidRequest('provider');
         }
+
+        config(['auth.guards.api.provider' => $provider]);
 
         return $next($request);
     }
@@ -50,5 +55,27 @@ class AddCustomProvider
     public function terminate()
     {
         config(['auth.guards.api.provider' => $this->defaultApiProvider]);
+    }
+
+    /**
+     * Check if the given provider is not registered in the auth configuration file.
+     *
+     * @param $provider
+     *
+     * @return bool
+     */
+    protected function invalidProvider($provider)
+    {
+        if (is_null($provider)) {
+            return true;
+        }
+
+        foreach (config('auth.guards') as $guardsConfiguration) {
+            if ($guardsConfiguration['provider'] === $provider) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
