@@ -1,11 +1,10 @@
 # Laravel Passport Multi-Auth
 
 [![Latest Stable Version](https://poser.pugx.org/smartins/passport-multiauth/v/stable)](https://packagist.org/packages/smartins/passport-multiauth)
-[![Latest Unstable Version](https://poser.pugx.org/smartins/passport-multiauth/v/unstable)](https://packagist.org/packages/smartins/passport-multiauth)
 [![Build Status](https://travis-ci.org/sfelix-martins/passport-multiauth.svg?branch=master)](https://travis-ci.org/sfelix-martins/passport-multiauth)
-[![Code Coverage](https://scrutinizer-ci.com/g/sfelix-martins/passport-multiauth/badges/coverage.png?b=2.0)](https://scrutinizer-ci.com/g/sfelix-martins/passport-multiauth/?branch=2.0)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/sfelix-martins/passport-multiauth/badges/quality-score.png?b=2.0)](https://scrutinizer-ci.com/g/sfelix-martins/passport-multiauth/?branch=2.0)
-[![StyleCI](https://styleci.io/repos/106218586/shield?branch=2.0)](https://styleci.io/repos/106218586)
+[![Code Coverage](https://scrutinizer-ci.com/g/sfelix-martins/passport-multiauth/badges/coverage.png?b=3.0)](https://scrutinizer-ci.com/g/sfelix-martins/passport-multiauth/?branch=3.0)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/sfelix-martins/passport-multiauth/badges/quality-score.png?b=3.0)](https://scrutinizer-ci.com/g/sfelix-martins/passport-multiauth/?branch=3.0)
+[![StyleCI](https://styleci.io/repos/106218586/shield?branch=3.0)](https://styleci.io/repos/106218586)
 [![License](https://poser.pugx.org/smartins/passport-multiauth/license)](https://packagist.org/packages/smartins/passport-multiauth)
 
 Add multi-authentication support to [Laravel Passport](https://laravel.com/docs/5.5/passport)
