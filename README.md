@@ -148,6 +148,9 @@ class Kernel extends HttpKernel
 }
 ```
 
+**OBS:** The param `provider` is required to routes wrapped by `AddCustomProvider` middleware. 
+You must to pass a valid provider configured on `config/auth.php`.
+ 
 Replace the middleware `Authenticate` on `app/Http/Kernel` `$routeMiddleware` attribute.
 
 ```php
@@ -178,7 +181,8 @@ class Kernel extends HttpKernel
 }
 ```
 
-Encapsulate the passport routes for access token with the registered middleware in `AuthServiceProvider`. This middleware will add the capability to `Passport` route `oauth/token` use the value of `provider` param on request:
+Encapsulate the passport routes for access token with the registered middleware in `AuthServiceProvider`. 
+This middleware will add the capability to `Passport` route `oauth/token` use the value of `provider` param on request:
 
 ```php
 namespace App\Providers;
