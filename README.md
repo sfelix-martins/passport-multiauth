@@ -27,6 +27,11 @@ Add multi-authentication support to [Laravel Passport](https://laravel.com/docs/
 | ^6.0             |
 | ^7.0             |
 
+| Laravel Framework  | Passport Multiauth |
+|--------------------|--------------------|
+| <= 5.6             | <= 3.0             |
+| ^5.7                | TODO               |
+
 ## Installing and configuring
 
 Install using composer:
