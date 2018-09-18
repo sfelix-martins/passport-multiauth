@@ -138,6 +138,6 @@ class MultiAuthenticate extends Authenticate
         // use only guard associated to access token provider
         $authGuards = $providers->has($token->provider) ? [$providers->get($token->provider)] : [];
 
-        $this->authenticate($authGuards);
+        $this->authenticate($token, $authGuards);
     }
 }
