@@ -63,7 +63,7 @@ class MultiAuthenticate extends Authenticate
     {
         // If don't has any guard follow the flow
         if (empty($guards)) {
-            $this->authenticate($guards);
+            $this->authenticate($request, $guards);
 
             // Stop laravel from checking for a token if session is not set
             return $next($request);
@@ -78,7 +78,9 @@ class MultiAuthenticate extends Authenticate
                 throw new AuthenticationException('Unauthenticated', $guards);
             }
 
-            $this->authenticateTokenGuard($accessToken, $guards);
+            $guard = $this->getTokenGuard($accessToken, $guards);
+
+            $this->authenticate($request, $guard);
         } catch (OAuthServerException $e) {
             // If has an OAuthServerException check if has unit tests and fake
             // user authenticated.
@@ -124,20 +126,17 @@ class MultiAuthenticate extends Authenticate
     }
 
     /**
-     * Authenticate correct guard based on token.
+     * Get guard related with token.
      *
-     * @param \SMartins\PassportMultiauth\Provider $token
-     * @param  array $guards
-     * @return void
-     * @throws \Illuminate\Auth\AuthenticationException
+     * @param Token $token
+     * @param $guards
+     * @return array
      */
-    public function authenticateTokenGuard(Token $token, $guards)
+    public function getTokenGuard(Token $token, $guards)
     {
         $providers = GuardChecker::getGuardsProviders($guards);
 
         // use only guard associated to access token provider
-        $authGuards = $providers->has($token->provider) ? [$providers->get($token->provider)] : [];
-
-        $this->authenticate($token, $authGuards);
+        return $providers->has($token->provider) ? [$providers->get($token->provider)] : [];
     }
 }
