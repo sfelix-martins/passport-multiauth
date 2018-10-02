@@ -367,6 +367,10 @@ class AuthTest extends TestCase
 }
 ```
 
+### Sample Project
+
+You can see a complete `Passport-Multiauth` implementation using `Password Grant Tokens` and `Personal Access Token` on [passport-multiauth-demo](https://github.com/sfelix-martins/passport-multiauth-demo) project
+
 ### Contributors
 
 Based on [renanwilian](https://github.com/renanwilliam) responses to [Passport Multi-Auth issue](https://github.com/laravel/passport/issues/161).
