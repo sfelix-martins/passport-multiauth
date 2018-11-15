@@ -153,7 +153,7 @@ class Kernel extends HttpKernel
 **OBS:** The param `provider` is required to routes wrapped by `AddCustomProvider` middleware. 
 You must to pass a valid provider configured on `config/auth.php`.
  
-Replace the middleware `Authenticate` on `app/Http/Kernel` `$routeMiddleware` attribute.
+Add new middleware `Authenticate` on `app/Http/Kernel` `$routeMiddleware` attribute.
 
 ```php
 
@@ -169,8 +169,8 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $routeMiddleware = [
-        // 'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
-        'auth' => \SMartins\PassportMultiauth\Http\Middleware\MultiAuthenticate::class,
+        'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
+        'multiauth' => \SMartins\PassportMultiauth\Http\Middleware\MultiAuthenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
@@ -249,10 +249,10 @@ Cache-Control: no-cache
 }
 ```
 
-You can pass your guards on `auth` middleware as you wish. Example:
+You can pass your guards on `multiauth` middleware as you wish. Example:
 
 ```php
-Route::group(['middleware' => ['api', 'auth:admin']], function () {
+Route::group(['middleware' => ['api', 'multiauth:admin']], function () {
     Route::get('/admin', function ($request) {
         // Get the logged admin instance
         return $request->user(); // You can use too `$request->user('admin')` passing the guard.
@@ -263,10 +263,10 @@ Route::group(['middleware' => ['api', 'auth:admin']], function () {
 
 The  `api` guard use is equals the example with `admin`.
 
-You can pass many guards to `auth` middleware.
+You can pass many guards to `multiauth` middleware.
 
 ```php
-Route::group(['middleware' => ['api', 'auth:admin,api']], function () {
+Route::group(['middleware' => ['api', 'multiauth:admin,api']], function () {
     Route::get('/admin', function ($request) {
         // The instance of user authenticated (Admin or User in this case) will be returned
         return $request->user();
