@@ -3,12 +3,17 @@
 namespace SMartins\PassportMultiauth\Http\Middleware;
 
 use Closure;
+use Illuminate\Auth\EloquentUserProvider;
+use Illuminate\Auth\RequestGuard;
+use Illuminate\Contracts\Auth\UserProvider;
+use Illuminate\Foundation\Application;
 use League\OAuth2\Server\ResourceServer;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Middleware\Authenticate;
 use Psr\Http\Message\ServerRequestInterface;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Factory as Auth;
+use Illuminate\Support\Facades\Auth as AuthFacade;
 use SMartins\PassportMultiauth\PassportMultiauth;
 use SMartins\PassportMultiauth\Provider as Token;
 use SMartins\PassportMultiauth\ProviderRepository;
@@ -79,6 +84,33 @@ class MultiAuthenticate extends Authenticate
             }
 
             $this->authenticateTokenGuard($accessToken, $guards);
+
+            $guardsModels = [];
+            foreach ($guards as $guard) {
+                $provider = GuardChecker::defaultGuardProvider($guard);
+
+                $guardsModels[$guard] = AuthConfigHelper::getProviderModel($provider);
+            }
+
+            $user = $request->user();
+            $request->setUserResolver(function ($guard) use ($user, $guardsModels) {
+                if (!$guard || (isset($guardsModels[$guard]) && $user instanceof $guardsModels[$guard])) {
+                    return $user;
+                }
+
+                return null;
+            });
+
+            AuthFacade::extend(
+                'passport',
+                function ($app, $name, array $config) use ($request, $guards) {
+                    $providerGuard = AuthConfigHelper::getProviderGuard($config['provider']);
+
+                    return tap($this->makeGuard($request, $providerGuard), function ($guard) {
+                        Application::getInstance()->refresh('request', $guard, 'setRequest');
+                    });
+                }
+            );
         } catch (OAuthServerException $e) {
             // If has an OAuthServerException check if has unit tests and fake
             // user authenticated.
@@ -139,5 +171,17 @@ class MultiAuthenticate extends Authenticate
         $authGuards = $providers->has($token->provider) ? [$providers->get($token->provider)] : [];
 
         $this->authenticate($authGuards);
+    }
+
+    /**
+     * @param \Illuminate\Http\Request $request
+     * @param string $guard
+     * @return RequestGuard
+     */
+    private function makeGuard($request, $guard)
+    {
+        return new RequestGuard(function ($request) use ($guard) {
+            return $request->user($guard);
+        }, $request);
     }
 }

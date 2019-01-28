@@ -20,7 +20,7 @@ class AuthConfigHelperTest extends TestCase
 
     public function testGetProviderGuard()
     {
-        $guard = AuthConfigHelper::getProviderGuard('companies', new Company);
+        $guard = AuthConfigHelper::getProviderGuard('companies');
 
         $this->assertEquals('company', $guard);
     }
@@ -28,7 +28,7 @@ class AuthConfigHelperTest extends TestCase
     public function testGetProviderGuardWithNotPassportDriver()
     {
         $this->expectException(MissingConfigException::class);
-        $this->expectExceptionMessage('Any guard with driver "passport" found to '.Customer::class.'. Please, check your config/auth.php file.');
+        $this->expectExceptionMessage('Any guard found for provider customers and driver passport');
 
         config(['auth.guards.customer.driver' => 'token']);
         config(['auth.guards.customer.provider' => 'customers']);
@@ -36,7 +36,7 @@ class AuthConfigHelperTest extends TestCase
         config(['auth.providers.customers.driver' => 'eloquent']);
         config(['auth.providers.customers.model' => Customer::class]);
 
-        AuthConfigHelper::getProviderGuard('customers', new Customer);
+        AuthConfigHelper::getProviderGuard('customers');
     }
 
     public function testGetUserGuard()
