@@ -98,10 +98,9 @@ class MultiAuthenticate extends Authenticate
                 // default user will be returned.
                 // If has the guard on guards passed on middleware and the model
                 // instance are the same on an guard.
-                if (!$guard || (isset($guardsModels[$guard]) && $user instanceof $guardsModels[$guard])) {
+                if (! $guard || (isset($guardsModels[$guard]) && $user instanceof $guardsModels[$guard])) {
                     return $user;
                 }
-                return null;
             });
 
             // After it, we'll change the passport driver behavior to get the
@@ -111,6 +110,7 @@ class MultiAuthenticate extends Authenticate
                 'passport',
                 function ($app, $name, array $config) use ($request, $guards) {
                     $providerGuard = AuthConfigHelper::getProviderGuard($config['provider']);
+
                     return tap($this->makeGuard($request, $providerGuard), function ($guard) {
                         Application::getInstance()->refresh('request', $guard, 'setRequest');
                     });
@@ -186,6 +186,7 @@ class MultiAuthenticate extends Authenticate
             return $request->user($guard);
         }, $request);
     }
+
     /**
      * Get models from guards. It'll return an associative array where the keys
      * are the guards and the values are the correspondent models.
@@ -200,6 +201,7 @@ class MultiAuthenticate extends Authenticate
             $provider = GuardChecker::defaultGuardProvider($guard);
             $guardsModels[$guard] = AuthConfigHelper::getProviderModel($provider);
         }
+
         return $guardsModels;
     }
 }
