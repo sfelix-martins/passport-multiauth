@@ -11,9 +11,9 @@ use Illuminate\Auth\Middleware\Authenticate;
 use Psr\Http\Message\ServerRequestInterface;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Factory as Auth;
-use Illuminate\Support\Facades\Auth as AuthFacade;
 use SMartins\PassportMultiauth\PassportMultiauth;
 use SMartins\PassportMultiauth\Provider as Token;
+use Illuminate\Support\Facades\Auth as AuthFacade;
 use SMartins\PassportMultiauth\ProviderRepository;
 use SMartins\PassportMultiauth\Guards\GuardChecker;
 use SMartins\PassportMultiauth\Facades\ServerRequest;
@@ -97,11 +97,9 @@ class MultiAuthenticate extends Authenticate
                 // default user will be returned.
                 // If has the guard on guards passed on middleware and the model
                 // instance are the same on an guard.
-                if (!$guard || (isset($guardsModels[$guard]) && $user instanceof $guardsModels[$guard])) {
+                if (! $guard || (isset($guardsModels[$guard]) && $user instanceof $guardsModels[$guard])) {
                     return $user;
                 }
-
-                return null;
             });
 
             // After it, we'll change the passport driver behavior to get the
