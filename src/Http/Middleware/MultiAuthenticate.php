@@ -3,9 +3,7 @@
 namespace SMartins\PassportMultiauth\Http\Middleware;
 
 use Closure;
-use Illuminate\Auth\EloquentUserProvider;
 use Illuminate\Auth\RequestGuard;
-use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Foundation\Application;
 use League\OAuth2\Server\ResourceServer;
 use Illuminate\Auth\AuthenticationException;
@@ -83,17 +81,22 @@ class MultiAuthenticate extends Authenticate
                 throw new AuthenticationException('Unauthenticated', $guards);
             }
 
+            // At this point, the authentication will be done by Laravel Passport default driver.
             $this->authenticateTokenGuard($accessToken, $guards);
 
-            $guardsModels = [];
-            foreach ($guards as $guard) {
-                $provider = GuardChecker::defaultGuardProvider($guard);
+            $guardsModels = $this->getGuardsModels($guards);
 
-                $guardsModels[$guard] = AuthConfigHelper::getProviderModel($provider);
-            }
+            // The laravel passport will define the logged user on request.
 
+            // The returned model can be anywhere, depending on the guard.
             $user = $request->user();
+
+            // But we need check if the user logged has the correct guard.
             $request->setUserResolver(function ($guard) use ($user, $guardsModels) {
+                // If don't exists any guard on $request->user() parameter, the
+                // default user will be returned.
+                // If has the guard on guards passed on middleware and the model
+                // instance are the same on an guard.
                 if (!$guard || (isset($guardsModels[$guard]) && $user instanceof $guardsModels[$guard])) {
                     return $user;
                 }
@@ -101,6 +104,9 @@ class MultiAuthenticate extends Authenticate
                 return null;
             });
 
+            // After it, we'll change the passport driver behavior to get the
+            // authenticated user. It'll change on methods like Auth::user(),
+            // Auth::guard('company')-user(), Auth::check().
             AuthFacade::extend(
                 'passport',
                 function ($app, $name, array $config) use ($request, $guards) {
@@ -183,5 +189,24 @@ class MultiAuthenticate extends Authenticate
         return new RequestGuard(function ($request) use ($guard) {
             return $request->user($guard);
         }, $request);
+    }
+
+    /**
+     * Get models from guards. It'll return an associative array where the keys
+     * are the guards and the values are the correspondent models.
+     *
+     * @param array $guards
+     * @return array
+     */
+    private function getGuardsModels(array $guards)
+    {
+        $guardsModels = [];
+        foreach ($guards as $guard) {
+            $provider = GuardChecker::defaultGuardProvider($guard);
+
+            $guardsModels[$guard] = AuthConfigHelper::getProviderModel($provider);
+        }
+
+        return $guardsModels;
     }
 }
