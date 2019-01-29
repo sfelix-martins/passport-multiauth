@@ -4,15 +4,15 @@ namespace SMartins\PassportMultiauth\Tests\Feature;
 
 use Illuminate\Http\Request;
 use Laravel\Passport\Client;
+use Laravel\Passport\Passport;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Auth\AuthenticationException;
-use Laravel\Passport\Passport;
-use SMartins\PassportMultiauth\Http\Middleware\AddCustomProvider;
 use SMartins\PassportMultiauth\Tests\TestCase;
 use SMartins\PassportMultiauth\PassportMultiauth;
 use SMartins\PassportMultiauth\Tests\Fixtures\Models\User;
 use SMartins\PassportMultiauth\Tests\Fixtures\Models\Company;
+use SMartins\PassportMultiauth\Http\Middleware\AddCustomProvider;
 
 class MultiauthTest extends TestCase
 {
@@ -65,7 +65,7 @@ class MultiauthTest extends TestCase
                 Auth::guard('api')->user(),
                 Auth::guard('company')->user(),
                 Auth::check(),
-                Auth::id()
+                Auth::id(),
             ];
         });
 
@@ -78,7 +78,7 @@ class MultiauthTest extends TestCase
                 Auth::guard('api')->user(),
                 Auth::guard('company')->user(),
                 Auth::check(),
-                Auth::id()
+                Auth::id(),
             ];
         });
 
@@ -91,7 +91,7 @@ class MultiauthTest extends TestCase
                 Auth::guard('api')->user(),
                 Auth::guard('company')->user(),
                 Auth::check(),
-                Auth::id()
+                Auth::id(),
             ];
         });
 
