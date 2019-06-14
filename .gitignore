@@ -3,4 +3,5 @@
 /.idea
 /.phpintel
 /.vscode
-.composer.lock
+composer.lock
+.phpunit.result.cache
