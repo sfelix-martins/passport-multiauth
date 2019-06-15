@@ -4,3 +4,4 @@
 /.phpintel
 /.vscode
 composer.lock
+.phpunit.result.cache

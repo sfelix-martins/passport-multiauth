@@ -11,6 +11,7 @@ use Illuminate\Auth\Middleware\Authenticate;
 use Psr\Http\Message\ServerRequestInterface;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Factory as Auth;
+use SMartins\PassportMultiauth\Auth\AuthManager;
 use SMartins\PassportMultiauth\PassportMultiauth;
 use SMartins\PassportMultiauth\Provider as Token;
 use Illuminate\Support\Facades\Auth as AuthFacade;
@@ -101,21 +102,23 @@ class MultiAuthenticate extends Authenticate
                 if (! $guard || (isset($guardsModels[$guard]) && $user instanceof $guardsModels[$guard])) {
                     return $user;
                 }
+
+                return null;
             });
 
             // After it, we'll change the passport driver behavior to get the
             // authenticated user. It'll change on methods like Auth::user(),
-            // Auth::guard('company')-user(), Auth::check().
+            // Auth::guard('company')->user(), Auth::check().
             AuthFacade::extend(
                 'passport',
-                function ($app, $name, array $config) use ($request, $guards) {
+                function ($app, $name, array $config) use ($request) {
                     $providerGuard = AuthConfigHelper::getProviderGuard($config['provider']);
-
                     return tap($this->makeGuard($request, $providerGuard), function ($guard) {
                         Application::getInstance()->refresh('request', $guard, 'setRequest');
                     });
                 }
             );
+            AuthFacade::clearGuardsCache();
         } catch (OAuthServerException $e) {
             // If has an OAuthServerException check if has unit tests and fake
             // user authenticated.

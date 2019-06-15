@@ -23,8 +23,8 @@ abstract class TestCase extends BaseTestCase
     protected function getPackageProviders($app)
     {
         return [
-            PassportServiceProvider::class,
             MultiauthServiceProvider::class,
+            PassportServiceProvider::class,
             ConsoleServiceProvider::class,
         ];
     }
@@ -68,6 +68,7 @@ abstract class TestCase extends BaseTestCase
     protected function setAuthConfigs()
     {
         // Set up default entity
+        config(['auth.defaults.guard' => 'company']);
         config(['auth.guards.api.driver' => 'passport']);
         config(['auth.guards.api.provider' => 'users']);
         config(['auth.providers.users.model' => User::class]);
