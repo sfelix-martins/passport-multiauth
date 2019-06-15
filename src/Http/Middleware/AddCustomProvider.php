@@ -32,7 +32,7 @@ class AddCustomProvider
     {
         $this->defaultApiProvider = config('auth.guards.api.provider');
 
-        $provider = $request->get('provider');
+        $provider = $request->get('provider', 'users');
 
         if ($this->invalidProvider($provider)) {
             throw OAuthServerException::invalidRequest('provider');
