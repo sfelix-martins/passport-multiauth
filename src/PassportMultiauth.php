@@ -16,7 +16,7 @@ class PassportMultiauth
      *
      * @param  \Illuminate\Contracts\Auth\Authenticatable $user
      * @param  array $scopes
-     * @return void
+     * @return \Illuminate\Contracts\Auth\Authenticatable
      * @throws Exception
      */
     public static function actingAs($user, $scopes = [])
@@ -35,11 +35,17 @@ class PassportMultiauth
 
         $user->withAccessToken($token);
 
+        if (isset($user->wasRecentlyCreated) && $user->wasRecentlyCreated) {
+            $user->wasRecentlyCreated = false;
+        }
+
         $guard = AuthConfigHelper::getUserGuard($user);
 
         app('auth')->guard($guard)->setUser($user);
 
         app('auth')->shouldUse($guard);
+
+        return $user;
     }
 
     /**

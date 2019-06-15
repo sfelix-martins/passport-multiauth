@@ -39,7 +39,7 @@ class GuardChecker
     public static function getGuardsProviders($guards)
     {
         return collect($guards)->mapWithKeys(function ($guard) {
-            return [GuardChecker::defaultGuardProvider($guard) => $guard];
+            return [self::defaultGuardProvider($guard) => $guard];
         });
     }
 
