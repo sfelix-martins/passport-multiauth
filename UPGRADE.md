@@ -1,5 +1,54 @@
 # Upgrade Guide
 
+## Upgrading to 5.0 from 4.0
+
+Change version on `composer.json`:
+
+```json
+"smartins/passport-multiauth": "^5.0",
+```
+
+Update using composer:
+
+```sh
+$ composer update smartins/passport-multiauth
+```
+
+To all works fine, we need to ensure that the `SMartins\PassportMultiauth\Providers\MultiauthServiceProvider::class` service provider
+be registered before `Laravel\Passport\PassportServiceProvider::class`.
+
+Firstly, you will remove the `laravel/passport` package from Laravel [Package Discovery](https://laravel.com/docs/5.8/packages#package-discovery).
+
+In your `composer.json` file, add the `laravel/passport` to `extra.laravel.dont-discover` array:
+
+```json
+    "extra": {
+        "laravel": {
+            "dont-discover": [
+                "laravel/passport"
+            ]
+        }
+    },
+```
+
+And register the providers manually on `config/app.php`:
+
+```php
+    'providers' => [
+        // ...
+        SMartins\PassportMultiauth\Providers\MultiauthServiceProvider::class,
+        Laravel\Passport\PassportServiceProvider::class,
+    ],
+```
+
+**WARNING:** The provider `SMartins\PassportMultiauth\Providers\MultiauthServiceProvider::class` MUST be added before `Laravel\Passport\PassportServiceProvider::class` to it works fine.
+
+Clear the bootstrap cache files to re-register the providers:
+
+```sh
+php artisan optimize:clear
+```
+
 ## Upgrading to 3.0 from 2.0
 
 You just should asserts that your requests to routes wrapped by middleware `\SMartins\PassportMultiauth\Http\Middleware\AddCustomProvider::class` has the `provider` param passing the desired provider.
