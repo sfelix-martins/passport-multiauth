@@ -91,7 +91,7 @@ $ php artisan migrate
 $ php artisan passport:install
 ``` 
 
-Instead use the `Laravel\Passport\HasApiTokens` trait from [Laravel Passport](https://laravel.com/docs/5.6/passport#installation) core, use the trait `SMartins\PassportMultiauth\HasMultiAuthApiTokens`. 
+Instead of using the `Laravel\Passport\HasApiTokens` trait from [Laravel Passport](https://laravel.com/docs/5.6/passport#installation) core, use the trait `SMartins\PassportMultiauth\HasMultiAuthApiTokens`. 
 
 Internally, this `HasMultiAuthApiTokens` uses the `HasApiTokens`, overriding the methods `tokens()` and `createToken($name, $scopes = [])`. 
 The behavior of the method `tokens()` was changed to join with the table `oauth_access_token_providers` getting just the tokens created
@@ -209,6 +209,7 @@ class Kernel extends HttpKernel
      */
     protected $routeMiddleware = [
         'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
+        // ** New middleware **
         'multiauth' => \SMartins\PassportMultiauth\Http\Middleware\MultiAuthenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
