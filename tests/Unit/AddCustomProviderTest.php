@@ -10,7 +10,7 @@ use SMartins\PassportMultiauth\Http\Middleware\AddCustomProvider;
 
 class AddCustomProviderTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -18,7 +18,7 @@ class AddCustomProviderTest extends TestCase
         config(['auth.guards.api.provider', 'users']);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         Mockery::close();
     }

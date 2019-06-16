@@ -8,7 +8,7 @@ use SMartins\PassportMultiauth\ProviderRepository;
 
 class ProviderRepositoryTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

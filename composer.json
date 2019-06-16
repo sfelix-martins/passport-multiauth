@@ -17,9 +17,9 @@
         "laravel/passport": "^5.0|^6.0|^7.0"
     },
     "require-dev": {
-        "orchestra/testbench": "~3.7",
+        "orchestra/testbench": "~3.8",
         "mockery/mockery": "^1.0",
-        "orchestra/database": "^3.7"
+        "orchestra/database": "^3.8"
     },
     "autoload": {
         "psr-4": {
