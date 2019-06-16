@@ -10,4 +10,5 @@
 .travis.yml export-ignore
 CONTRIBUTING.md export-ignore
 phpunit.xml export-ignore
+phpunit.xml.dist export-ignore
 UPGRADE.md export-ignore
