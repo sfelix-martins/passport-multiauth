@@ -103,6 +103,102 @@ class MultiauthTest extends TestCase
     /**
      * @test
      */
+    public function it_will_return_401_when_try_access_route_with_company_guard_as_user()
+    {
+        $configs = [
+            function () {
+                config(['auth.defaults.guard' => 'company']);
+            },
+            function () {
+                config(['auth.defaults.guard' => 'api']);
+            },
+            function () {
+                config(['auth.defaults.guard' => 'web']);
+            }
+        ];
+
+        foreach ($configs as $config) {
+            $config();
+
+            // Two different models with same id.
+            $user    = factory(User::class)->create();
+            $company = factory(Company::class)->create();
+
+            $this->assertEquals($user->getKey(), $company->getKey());
+
+            $client = Client::query()
+                ->where(['password_client' => 1, 'revoked' => 0])
+                ->first();
+
+            $params = [
+                'grant_type' => 'password',
+                'username' => $user->email,
+                'password' => 'secret',
+                'client_id' => $client->id,
+                'client_secret' => $client->secret,
+                'provider' => 'users',
+            ];
+
+            $response = $this->json('POST', '/oauth/token', $params);
+
+            $accessToken = json_decode($response->getContent(), true)['access_token'];
+
+            $this->json('GET', '/just_company', [], ['Authorization' => 'Bearer '.$accessToken])
+                ->assertStatus(401);
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function it_will_return_401_when_try_access_route_with_user_guard_as_company()
+    {
+        $configs = [
+            function () {
+                config(['auth.defaults.guard' => 'company']);
+            },
+            function () {
+                config(['auth.defaults.guard' => 'api']);
+            },
+            function () {
+                config(['auth.defaults.guard' => 'web']);
+            }
+        ];
+
+        foreach ($configs as $config) {
+            $config();
+
+            // Two different models with same id.
+            $user    = factory(User::class)->create();
+            $company = factory(Company::class)->create();
+
+            $this->assertEquals($user->getKey(), $company->getKey());
+
+            $client = Client::query()
+                ->where(['password_client' => 1, 'revoked' => 0])
+                ->first();
+
+            $params = [
+                'grant_type' => 'password',
+                'username' => $company->email,
+                'password' => 'secret',
+                'client_id' => $client->id,
+                'client_secret' => $client->secret,
+                'provider' => 'companies',
+            ];
+
+            $response = $this->json('POST', '/oauth/token', $params);
+
+            $accessToken = json_decode($response->getContent(), true)['access_token'];
+
+            $this->json('GET', '/just_user', [], ['Authorization' => 'Bearer '.$accessToken])
+                ->assertStatus(401);
+        }
+    }
+
+    /**
+     * @test
+     */
     public function it_will_return_user_instance_just_with_correct_guard()
     {
         // Two different models with same id.

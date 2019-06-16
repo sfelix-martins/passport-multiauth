@@ -84,6 +84,10 @@ class MultiAuthenticate extends Authenticate
 
             $guard = $this->getTokenGuard($accessToken, $guards);
 
+            if (empty($guard)) {
+                throw new AuthenticationException('Unauthenticated', $guards);
+            }
+
             // At this point, the authentication will be done by Laravel Passport default driver.
             $this->authenticate($request, $guard);
 
