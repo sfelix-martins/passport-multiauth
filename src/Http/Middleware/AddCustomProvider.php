@@ -81,7 +81,7 @@ class AddCustomProvider
 
     protected function clientGrantType(Request $request)
     {
-        if (!$request->has('client_credentials')) {
+        if (! $request->has('client_credentials')) {
             return false;
         }
 
