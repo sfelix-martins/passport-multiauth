@@ -10,7 +10,7 @@ use SMartins\PassportMultiauth\Http\Middleware\AddCustomProvider;
 
 class AddCustomProviderTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -18,7 +18,7 @@ class AddCustomProviderTest extends TestCase
         config(['auth.guards.api.provider', 'users']);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         Mockery::close();
     }
@@ -30,6 +30,7 @@ class AddCustomProviderTest extends TestCase
 
         $request = Mockery::mock(Request::class);
         $request->shouldReceive('get')->andReturn('companies')->with('provider');
+        $request->shouldReceive('has')->andReturn(false);
 
         $middleware = new AddCustomProvider();
         $middleware->handle($request, function () {
@@ -49,6 +50,7 @@ class AddCustomProviderTest extends TestCase
 
         $request = Mockery::mock(Request::class);
         $request->shouldReceive('get')->andReturn('not_found')->with('provider');
+        $request->shouldReceive('has')->andReturn(false);
 
         $middleware = new AddCustomProvider();
         $middleware->handle($request, function () {
@@ -62,6 +64,35 @@ class AddCustomProviderTest extends TestCase
 
         $request = Mockery::mock(Request::class);
         $request->shouldReceive('get')->andReturn(null)->with('provider');
+        $request->shouldReceive('has')->andReturn(false);
+
+        $middleware = new AddCustomProvider();
+        $middleware->handle($request, function () {
+            return 'response';
+        });
+    }
+
+    public function testPassClientCredentialsAndNoProvider()
+    {
+        $this->expectException(OAuthServerException::class);
+
+        $request = Mockery::mock(Request::class);
+        $request->shouldReceive('get')->andReturn(null)->with('provider');
+        $request->shouldReceive('has')->andReturn(true);
+
+        $middleware = new AddCustomProvider();
+        $middleware->handle($request, function () {
+            return 'response';
+        });
+    }
+
+    public function testDoNotPassNoClientCredentialsAndNoProvider()
+    {
+        $this->expectException(OAuthServerException::class);
+
+        $request = Mockery::mock(Request::class);
+        $request->shouldReceive('get')->andReturn(null)->with('provider');
+        $request->shouldReceive('has')->andReturn(false);
 
         $middleware = new AddCustomProvider();
         $middleware->handle($request, function () {

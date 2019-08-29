@@ -16,7 +16,7 @@ class MultiAuthenticateMiddlewareTest extends TestCase
 {
     protected $auth;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -31,7 +31,7 @@ class MultiAuthenticateMiddlewareTest extends TestCase
         $this->auth = $this->app['auth'];
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         Mockery::close();
 

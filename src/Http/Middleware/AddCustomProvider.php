@@ -34,7 +34,7 @@ class AddCustomProvider
 
         $provider = $request->get('provider');
 
-        if ($this->invalidProvider($provider)) {
+        if ($this->invalidProvider($provider) || $this->clientGrantType($request)) {
             throw OAuthServerException::invalidRequest('provider');
         }
 
@@ -74,6 +74,15 @@ class AddCustomProvider
             if ($guardsConfiguration['provider'] === $provider) {
                 return false;
             }
+        }
+
+        return true;
+    }
+
+    protected function clientGrantType(Request $request)
+    {
+        if (!$request->has('client_credentials')) {
+            return false;
         }
 
         return true;
