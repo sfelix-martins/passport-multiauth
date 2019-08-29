@@ -10,7 +10,7 @@ use SMartins\PassportMultiauth\Tests\Fixtures\Models\Customer;
 
 class PassportMultiauthTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
