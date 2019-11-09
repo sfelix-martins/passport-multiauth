@@ -34,10 +34,11 @@ trait HasMultiAuthApiTokens
     /**
      * Create a new personal access token for the user and create .
      *
-     * @param  string $name
-     * @param  array $scopes
+     * @param string $name
+     * @param array $scopes
      * @return PersonalAccessTokenResult
      * @throws MissingConfigException
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     public function createToken($name, array $scopes = [])
     {

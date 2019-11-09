@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property string $provider The provider related with access token
+ * @property int $oauth_access_token_id
  */
 class Provider extends Model
 {

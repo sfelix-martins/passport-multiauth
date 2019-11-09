@@ -20,9 +20,10 @@ class ProviderRepository
     /**
      * Store new register on `oauth_access_token_providers` table.
      *
-     * @param  string $token
-     * @param  string $provider
+     * @param string $token
+     * @param string $provider
      * @return \SMartins\PassportMultiauth\Provider
+     * @throws \Exception
      */
     public function create($token, $provider)
     {

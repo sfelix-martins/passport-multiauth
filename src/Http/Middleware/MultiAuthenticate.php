@@ -11,7 +11,6 @@ use Illuminate\Auth\Middleware\Authenticate;
 use Psr\Http\Message\ServerRequestInterface;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Factory as Auth;
-use SMartins\PassportMultiauth\Auth\AuthManager;
 use SMartins\PassportMultiauth\PassportMultiauth;
 use SMartins\PassportMultiauth\Provider as Token;
 use Illuminate\Support\Facades\Auth as AuthFacade;
