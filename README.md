@@ -34,7 +34,9 @@ Add multi-authentication support to [Laravel Passport](https://laravel.com/docs/
 |--------------------|--------------------|
 | <= 5.6             | <= 3.0             |
 | 5.7.x              | 4.0.x              |
-| >= 5.7.x           | 5.0.x              |          
+| >= 5.7.x  <= 5.8.x | 5.0.x              |
+| >= 6.x             | 6.0.x              |
+          
 
 ## Installing and configuring
 
