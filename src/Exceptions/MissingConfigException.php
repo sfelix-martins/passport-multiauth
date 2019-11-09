@@ -19,18 +19,6 @@ class MissingConfigException extends Exception
 
     /**
      * @param Authenticatable $model
-     * @param string $driver
-     * @return MissingConfigException
-     */
-    public static function guard(Authenticatable $model, $driver = 'passport')
-    {
-        $message = 'Any guard with driver "'.$driver.'" found to '.get_class($model);
-
-        return new static($message);
-    }
-
-    /**
-     * @param Authenticatable $model
      * @return MissingConfigException
      */
     public static function provider(Authenticatable $model)
@@ -38,5 +26,16 @@ class MissingConfigException extends Exception
         $message = 'Any provider found to '.get_class($model);
 
         return new static($message);
+    }
+
+    /**
+     * @param $provider
+     * @return MissingConfigException
+     */
+    public static function providerGuard($provider)
+    {
+        $msg = 'Any guard found for provider '.$provider.' and driver passport';
+
+        return new static($msg);
     }
 }

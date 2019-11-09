@@ -3,12 +3,16 @@
 namespace SMartins\PassportMultiauth\Tests\Feature;
 
 use Illuminate\Http\Request;
+use Laravel\Passport\Client;
+use Laravel\Passport\Passport;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Auth\AuthenticationException;
 use SMartins\PassportMultiauth\Tests\TestCase;
 use SMartins\PassportMultiauth\PassportMultiauth;
 use SMartins\PassportMultiauth\Tests\Fixtures\Models\User;
 use SMartins\PassportMultiauth\Tests\Fixtures\Models\Company;
+use SMartins\PassportMultiauth\Http\Middleware\AddCustomProvider;
 
 class MultiauthTest extends TestCase
 {
@@ -19,6 +23,8 @@ class MultiauthTest extends TestCase
         $this->loadLaravelMigrations(['--database' => 'passport']);
 
         $this->artisan('migrate');
+
+        $this->artisan('key:generate');
 
         $this->artisan('passport:install');
 
@@ -36,6 +42,12 @@ class MultiauthTest extends TestCase
      */
     public function setUpRoutes()
     {
+        Route::group(['middleware' => AddCustomProvider::class], function () {
+            Passport::routes(function ($router) {
+                return $router->forAccessTokens();
+            });
+        });
+
         Route::middleware('auth:api')->get('/user', function (Request $request) {
             return $request->user();
         });
@@ -45,7 +57,42 @@ class MultiauthTest extends TestCase
         });
 
         Route::middleware('auth:api,company')->get('/users', function (Request $request) {
-            return get_class($request->user());
+            return [
+                $request->user('api'),
+                $request->user('company'),
+                $request->user(),
+                Auth::user(),
+                Auth::guard('api')->user(),
+                Auth::guard('company')->user(),
+                Auth::check(),
+                Auth::id(),
+            ];
+        });
+
+        Route::middleware('auth:api')->get('/just_user', function (Request $request) {
+            return [
+                $request->user('api'),
+                $request->user('company'),
+                $request->user(),
+                Auth::user(),
+                Auth::guard('api')->user(),
+                Auth::guard('company')->user(),
+                Auth::check(),
+                Auth::id(),
+            ];
+        });
+
+        Route::middleware('auth:company')->get('/just_company', function (Request $request) {
+            return [
+                $request->user('api'),
+                $request->user('company'),
+                $request->user(),
+                Auth::user(),
+                Auth::guard('api')->user(),
+                Auth::guard('company')->user(),
+                Auth::check(),
+                Auth::id(),
+            ];
         });
 
         Route::middleware('auth')->get('/no_guards', function (Request $request) {
@@ -53,20 +100,171 @@ class MultiauthTest extends TestCase
         });
     }
 
+    /**
+     * @test
+     */
+    public function it_will_return_user_instance_just_with_correct_guard()
+    {
+        // Two different models with same id.
+        $user = factory(User::class)->create();
+        factory(Company::class)->create();
+
+        $client = (new Client())
+            ->where(['password_client' => 1, 'revoked' => 0])
+            ->first();
+
+        $params = [
+            'grant_type' => 'password',
+            'username' => $user->email,
+            'password' => 'secret',
+            'client_id' => $client->id,
+            'client_secret' => $client->secret,
+            'provider' => 'users',
+        ];
+
+        $response = $this->json('POST', '/oauth/token', $params);
+
+        $accessToken = json_decode($response->getContent(), true)['access_token'];
+
+        $response = $this->json('GET', '/just_user', [], ['Authorization' => 'Bearer '.$accessToken]);
+
+        $original = $response->getOriginalContent();
+
+        $this->assertInstanceOf(User::class, $original[0]);
+        $this->assertNull($original[1]);
+        $this->assertInstanceOf(User::class, $original[2]);
+        $this->assertInstanceOf(User::class, $original[3]);
+        $this->assertInstanceOf(User::class, $original[4]);
+        $this->assertNull($original[5]);
+        $this->assertTrue($original[6]);
+        $this->assertEquals($user->id, $original[7]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_will_return_company_instance_just_with_correct_guard()
+    {
+        // Two different models with same id.
+        factory(User::class)->create();
+        $company = factory(Company::class)->create();
+
+        $client = (new Client())
+            ->where(['password_client' => 1, 'revoked' => 0])
+            ->first();
+
+        $params = [
+            'grant_type' => 'password',
+            'username' => $company->email,
+            'password' => 'secret',
+            'client_id' => $client->id,
+            'client_secret' => $client->secret,
+            'provider' => 'companies',
+        ];
+
+        $response = $this->json('POST', '/oauth/token', $params);
+
+        $accessToken = json_decode($response->getContent(), true)['access_token'];
+
+        $response = $this->json('GET', '/just_company', [], ['Authorization' => 'Bearer '.$accessToken]);
+
+        $original = $response->getOriginalContent();
+
+        $this->assertNull($original[0]);
+        $this->assertInstanceOf(Company::class, $original[1]);
+        $this->assertInstanceOf(Company::class, $original[2]);
+        $this->assertInstanceOf(Company::class, $original[3]);
+        $this->assertNull($original[4]);
+        $this->assertInstanceOf(Company::class, $original[5]);
+        $this->assertTrue($original[6]);
+        $this->assertEquals($company->id, $original[7]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_will_return_ways_to_get_user_logged_as_user_on_multi_guards_route()
+    {
+        // Two different models with same id.
+        $user = factory(User::class)->create();
+        factory(Company::class)->create();
+
+        $client = (new Client())
+            ->where(['password_client' => 1, 'revoked' => 0])
+            ->first();
+
+        $params = [
+            'grant_type' => 'password',
+            'username' => $user->email,
+            'password' => 'secret',
+            'client_id' => $client->id,
+            'client_secret' => $client->secret,
+            'provider' => 'users',
+        ];
+
+        $response = $this->json('POST', '/oauth/token', $params);
+
+        $accessToken = json_decode($response->getContent(), true)['access_token'];
+
+        $response = $this->json('GET', '/users', [], ['Authorization' => 'Bearer '.$accessToken]);
+
+        $original = $response->getOriginalContent();
+
+        $this->assertInstanceOf(User::class, $original[0]);
+        $this->assertNull($original[1]);
+        $this->assertInstanceOf(User::class, $original[2]);
+        $this->assertInstanceOf(User::class, $original[3]);
+        $this->assertInstanceOf(User::class, $original[4]);
+        $this->assertNull($original[5]);
+        $this->assertTrue($original[6]);
+        $this->assertEquals($user->id, $original[7]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_will_return_ways_to_get_user_logged_as_company_on_multi_guards_route()
+    {
+        // Two different models with same id.
+        factory(User::class)->create();
+        $company = factory(Company::class)->create();
+
+        $client = (new Client())
+            ->where(['password_client' => 1, 'revoked' => 0])
+            ->first();
+
+        $params = [
+            'grant_type' => 'password',
+            'username' => $company->email,
+            'password' => 'secret',
+            'client_id' => $client->id,
+            'client_secret' => $client->secret,
+            'provider' => 'companies',
+        ];
+
+        $response = $this->json('POST', '/oauth/token', $params);
+
+        $accessToken = json_decode($response->getContent(), true)['access_token'];
+
+        $response = $this->json('GET', '/users', [], ['Authorization' => 'Bearer '.$accessToken]);
+
+        $original = $response->getOriginalContent();
+
+        $this->assertNull($original[0]);
+        $this->assertInstanceOf(Company::class, $original[1]);
+        $this->assertInstanceOf(Company::class, $original[2]);
+        $this->assertInstanceOf(Company::class, $original[3]);
+        $this->assertNull($original[4]);
+        $this->assertInstanceOf(Company::class, $original[5]);
+        $this->assertTrue($original[6]);
+        $this->assertEquals($company->id, $original[7]);
+    }
+
     public function testAuthenticateOnRouteWithoutGuardsWithInvalidToken()
     {
         $response = $this->json('GET', 'no_guards', [], ['Authorization' => 'Bearer token']);
 
         $this->assertInstanceOf(AuthenticationException::class, $response->exception);
-    }
-
-    public function testGetLoggedUserAsUser()
-    {
-        $user = factory(User::class)->create();
-
-        $response = $this->sendRequest('GET', 'user', $user);
-
-        $this->assertInstanceOf(User::class, $response->original);
     }
 
     public function testGetLoggedUserAsCompany()
@@ -78,15 +276,6 @@ class MultiauthTest extends TestCase
         $this->assertInstanceOf(AuthenticationException::class, $response->exception);
     }
 
-    public function testGetLoggedCompanyAsCompany()
-    {
-        $company = factory(Company::class)->create();
-
-        $response = $this->sendRequest('GET', 'company', $company);
-
-        $this->assertInstanceOf(Company::class, $response->original);
-    }
-
     public function testGetLoggedCompanyAsUser()
     {
         $user = factory(User::class)->create();
@@ -96,24 +285,6 @@ class MultiauthTest extends TestCase
         $this->assertInstanceOf(AuthenticationException::class, $response->exception);
     }
 
-    public function testGetLoggedUserTypeAsCompany()
-    {
-        $company = factory(Company::class)->create();
-
-        $response = $this->sendRequest('GET', 'users', $company);
-
-        $this->assertEquals(Company::class, $response->original);
-    }
-
-    public function testGetLoggedUserTypeAsUser()
-    {
-        $user = factory(User::class)->create();
-
-        $response = $this->sendRequest('GET', 'users', $user);
-
-        $this->assertEquals(User::class, $response->original);
-    }
-
     /**
      * Send request to route with user to be authenticated.
      *
@@ -121,6 +292,7 @@ class MultiauthTest extends TestCase
      * @param  string $uri
      * @param  \Illuminate\Foundation\Auth\User $user
      * @return \Illuminate\Foundation\Testing\TestResponse
+     * @throws \Exception
      */
     public function sendRequest($method, $uri, $user, $scopes = [])
     {

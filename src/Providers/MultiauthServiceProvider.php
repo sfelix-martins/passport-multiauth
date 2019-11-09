@@ -12,6 +12,7 @@ class MultiauthServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      *
+     * @param ProviderRepository $providers
      * @return void
      */
     public function boot(ProviderRepository $providers)

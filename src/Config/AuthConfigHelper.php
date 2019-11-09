@@ -29,11 +29,10 @@ class AuthConfigHelper
      * Get the guard of specific provider to `passport` driver.
      *
      * @param  string $provider
-     * @param Authenticatable $user
      * @return string
      * @throws MissingConfigException
      */
-    public static function getProviderGuard($provider, Authenticatable $user)
+    public static function getProviderGuard($provider)
     {
         foreach (config('auth.guards') as $guard => $content) {
             if ($content['driver'] == 'passport' && $content['provider'] == $provider) {
@@ -41,7 +40,7 @@ class AuthConfigHelper
             }
         }
 
-        throw MissingConfigException::guard($user);
+        throw MissingConfigException::providerGuard($provider);
     }
 
     /**
@@ -55,6 +54,17 @@ class AuthConfigHelper
     {
         $provider = self::getUserProvider($user);
 
-        return self::getProviderGuard($provider, $user);
+        return self::getProviderGuard($provider);
+    }
+
+    /**
+     * @param string $provider
+     * @return null|Illuminate\Database\Eloquent\Model
+     */
+    public static function getProviderModel($provider)
+    {
+        $model = config('auth.providers.'.$provider.'.model', null);
+
+        return $model ? $model : null;
     }
 }
