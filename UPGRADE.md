@@ -249,6 +249,18 @@ On version 2.0 you must do the opposite way. Just uses the default middlewares f
 
 Read more about laravel passport scopes on [official docs](https://laravel.com/docs/5.5/passport#checking-scopes)
 
+### Known Issues
+
+To all works correctly you must use the default guard `web` on `config/auth.php`. E.g.:
+
+```php
+    'defaults' => [
+        'guard' => 'web',
+    ],
+```
+
+Exists an opened [issues](https://github.com/sfelix-martins/passport-multiauth/issues/63) that will be analysed ASAP.
+
 ### Unit tests
 
 Instead to use the `Laravel\Passport\Passport::actingAs()` method, use `SMartins\PassportMultiauth\PassportMultiauth::actingAs()`.
