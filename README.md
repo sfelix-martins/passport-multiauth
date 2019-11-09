@@ -375,6 +375,18 @@ $admin->tokens()->each(function ($token) {
 });
 ```
 
+### Known Issues
+
+To all works correctly you must use the default guard `web` on `config/auth.php`. E.g.:
+
+```php
+    'defaults' => [
+        'guard' => 'web',
+    ],
+```
+
+Exists an opened [issues](https://github.com/sfelix-martins/passport-multiauth/issues/63) that will be analysed ASAP.
+
 ### Unit tests
 
 Instead to use the `Laravel\Passport\Passport::actingAs()` method, use `SMartins\PassportMultiauth\PassportMultiauth::actingAs()`.
