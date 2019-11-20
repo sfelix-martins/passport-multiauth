@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Event;
 use Laravel\Passport\Events\AccessTokenCreated;
 use SMartins\PassportMultiauth\Auth\AuthManager;
 use SMartins\PassportMultiauth\Http\Middleware\AddCustomProvider;
+use SMartins\PassportMultiauth\PassportMultiauth;
 use SMartins\PassportMultiauth\ProviderRepository;
 
 class MultiauthServiceProvider extends AuthServiceProvider
@@ -39,7 +40,9 @@ class MultiauthServiceProvider extends AuthServiceProvider
     {
         $migrationsPath = __DIR__.'/../../database/migrations';
 
-        $this->loadMigrationsFrom($migrationsPath);
+        if (PassportMultiauth::$runsMigrations) {
+            $this->loadMigrationsFrom($migrationsPath);
+        }
 
         $this->publishes(
             [$migrationsPath => database_path('migrations')],
