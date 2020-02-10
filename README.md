@@ -1,10 +1,10 @@
 # Laravel Passport Multi-Auth
 
 [![Latest Stable Version](https://poser.pugx.org/smartins/passport-multiauth/v/stable)](https://packagist.org/packages/smartins/passport-multiauth)
-[![Build Status](https://travis-ci.org/sfelix-martins/passport-multiauth.svg?branch=4.0)](https://travis-ci.org/sfelix-martins/passport-multiauth)
-[![Code Coverage](https://scrutinizer-ci.com/g/sfelix-martins/passport-multiauth/badges/coverage.png?b=4.0)](https://scrutinizer-ci.com/g/sfelix-martins/passport-multiauth/?branch=4.0)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/sfelix-martins/passport-multiauth/badges/quality-score.png?b=4.0)](https://scrutinizer-ci.com/g/sfelix-martins/passport-multiauth/?branch=4.0)
-[![StyleCI](https://styleci.io/repos/106218586/shield?branch=4.0)](https://styleci.io/repos/106218586)
+[![Build Status](https://travis-ci.org/sfelix-martins/passport-multiauth.svg?branch=6.x)](https://travis-ci.org/sfelix-martins/passport-multiauth)
+[![Code Coverage](https://scrutinizer-ci.com/g/sfelix-martins/passport-multiauth/badges/coverage.png?b=6.x)](https://scrutinizer-ci.com/g/sfelix-martins/passport-multiauth/?branch=6.x)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/sfelix-martins/passport-multiauth/badges/quality-score.png?b=6.x)](https://scrutinizer-ci.com/g/sfelix-martins/passport-multiauth/?branch=6.x)
+[![StyleCI](https://styleci.io/repos/106218586/shield?branch=6.x)](https://styleci.io/repos/106218586)
 [![License](https://poser.pugx.org/smartins/passport-multiauth/license)](https://packagist.org/packages/smartins/passport-multiauth)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AEXFGV23MM386&source=url)
 
@@ -29,13 +29,14 @@ Add multi-authentication support to [Laravel Passport](https://laravel.com/docs/
 | ^5.0             |
 | ^6.0             |
 | ^7.0             |
+| ^8.0             |
 
 | Laravel Framework  | Passport Multiauth |
 |--------------------|--------------------|
 | <= 5.6             | <= 3.0             |
 | 5.7.x              | 4.0.x              |
 | >= 5.7.x  <= 5.8.x | 5.0.x              |
-| >= 6.x             | 6.0.x              |
+| >= 6.x             | 6.x                |
           
 
 ## Installing and configuring
