@@ -1,0 +1,8 @@
+version: '2'
+
+options:
+  verbose: true
+  compose-dev-file-path: 'docker-compose.yml'
+syncs:
+  passport-multiauth-sync:
+    src: './'

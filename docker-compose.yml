@@ -1,0 +1,12 @@
+version: '3'
+services:
+  passport-multiauth:
+    build: .
+    volumes:
+      - passport-multiauth-sync:/var/www:nocopy
+    ports:
+      - 9000:9000
+
+volumes:
+  passport-multiauth-sync:
+    external: true

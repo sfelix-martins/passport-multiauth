@@ -12,3 +12,7 @@ CONTRIBUTING.md export-ignore
 phpunit.xml export-ignore
 phpunit.xml.dist export-ignore
 UPGRADE.md export-ignore
+
+Dockerfile export-ignore
+docker-compose.yml export-ignore
+docker-sync.yml export-ignore
