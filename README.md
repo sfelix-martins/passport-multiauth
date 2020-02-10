@@ -270,6 +270,8 @@ Just run the `vendor:publish` artisan command with package provider as parameter
 $ php artisan vendor:publish --provider="SMartins\PassportMultiauth\Providers\MultiauthServiceProvider"
 ```
 
+If you are not going to use PassportMultiauth's default migrations, you should call the `SMartins\PassportMultiauth\PassportMultiauth::ignoreMigrations` method in the register method of your AppServiceProvider.
+
 ## Usage
 
 Add the `provider` parameter in your request at `/oauth/token`:

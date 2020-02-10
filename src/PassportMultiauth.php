@@ -11,11 +11,31 @@ use SMartins\PassportMultiauth\Config\AuthConfigHelper;
 
 class PassportMultiauth
 {
+
+    /**
+     * Indicates if MultiAuth migrations will be run.
+     *
+     * @var bool
+     */
+    public static $runsMigrations = true;
+
+    /**
+     * Configure MultiAuth to not register its migrations.
+     *
+     * @return static
+     */
+    public static function ignoreMigrations()
+    {
+        static::$runsMigrations = false;
+
+        return new static;
+    }
+
     /**
      * Set the current user for the application with the given scopes.
      *
-     * @param  \Illuminate\Contracts\Auth\Authenticatable $user
-     * @param  array $scopes
+     * @param \Illuminate\Contracts\Auth\Authenticatable $user
+     * @param array $scopes
      * @return \Illuminate\Contracts\Auth\Authenticatable
      * @throws Exception
      */
@@ -29,8 +49,8 @@ class PassportMultiauth
 
         $uses = array_flip(class_uses_recursive($user));
 
-        if (! isset($uses[HasApiTokens::class])) {
-            throw new Exception('The model ['.get_class($user).'] must uses the trait '.HasApiTokens::class);
+        if (!isset($uses[HasApiTokens::class])) {
+            throw new Exception('The model [' . get_class($user) . '] must uses the trait ' . HasApiTokens::class);
         }
 
         $user->withAccessToken($token);
