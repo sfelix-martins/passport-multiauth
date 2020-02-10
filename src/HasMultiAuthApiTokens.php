@@ -2,11 +2,11 @@
 
 namespace SMartins\PassportMultiauth;
 
-use Laravel\Passport\Token;
 use Illuminate\Container\Container;
-use Laravel\Passport\PersonalAccessTokenResult;
-use Laravel\Passport\PersonalAccessTokenFactory;
 use Laravel\Passport\HasApiTokens as BaseHasApiTokens;
+use Laravel\Passport\PersonalAccessTokenFactory;
+use Laravel\Passport\PersonalAccessTokenResult;
+use Laravel\Passport\Token;
 use SMartins\PassportMultiauth\Config\AuthConfigHelper;
 use SMartins\PassportMultiauth\Exceptions\MissingConfigException;
 
