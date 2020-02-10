@@ -2,9 +2,9 @@
 
 namespace SMartins\PassportMultiauth\Guards;
 
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 class GuardChecker
 {

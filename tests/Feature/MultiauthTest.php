@@ -2,17 +2,17 @@
 
 namespace SMartins\PassportMultiauth\Tests\Feature;
 
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
-use Laravel\Passport\Client;
-use Laravel\Passport\Passport;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Auth\AuthenticationException;
-use SMartins\PassportMultiauth\Tests\TestCase;
-use SMartins\PassportMultiauth\PassportMultiauth;
-use SMartins\PassportMultiauth\Tests\Fixtures\Models\User;
-use SMartins\PassportMultiauth\Tests\Fixtures\Models\Company;
+use Laravel\Passport\Client;
+use Laravel\Passport\Passport;
 use SMartins\PassportMultiauth\Http\Middleware\AddCustomProvider;
+use SMartins\PassportMultiauth\PassportMultiauth;
+use SMartins\PassportMultiauth\Tests\Fixtures\Models\Company;
+use SMartins\PassportMultiauth\Tests\Fixtures\Models\User;
+use SMartins\PassportMultiauth\Tests\TestCase;
 
 class MultiauthTest extends TestCase
 {
@@ -114,14 +114,14 @@ class MultiauthTest extends TestCase
             },
             function () {
                 config(['auth.defaults.guard' => 'web']);
-            }
+            },
         ];
 
         foreach ($configs as $config) {
             $config();
 
             // Two different models with same id.
-            $user    = factory(User::class)->create();
+            $user = factory(User::class)->create();
             $company = factory(Company::class)->create();
 
             $this->assertEquals($user->getKey(), $company->getKey());
@@ -162,14 +162,14 @@ class MultiauthTest extends TestCase
             },
             function () {
                 config(['auth.defaults.guard' => 'web']);
-            }
+            },
         ];
 
         foreach ($configs as $config) {
             $config();
 
             // Two different models with same id.
-            $user    = factory(User::class)->create();
+            $user = factory(User::class)->create();
             $company = factory(Company::class)->create();
 
             $this->assertEquals($user->getKey(), $company->getKey());

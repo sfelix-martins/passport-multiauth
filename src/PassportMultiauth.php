@@ -2,16 +2,15 @@
 
 namespace SMartins\PassportMultiauth;
 
-use Mockery;
 use Exception;
-use Laravel\Passport\Token;
-use Laravel\Passport\HasApiTokens;
 use Illuminate\Support\Facades\App;
+use Laravel\Passport\HasApiTokens;
+use Laravel\Passport\Token;
+use Mockery;
 use SMartins\PassportMultiauth\Config\AuthConfigHelper;
 
 class PassportMultiauth
 {
-
     /**
      * Indicates if MultiAuth migrations will be run.
      *
@@ -49,8 +48,8 @@ class PassportMultiauth
 
         $uses = array_flip(class_uses_recursive($user));
 
-        if (!isset($uses[HasApiTokens::class])) {
-            throw new Exception('The model [' . get_class($user) . '] must uses the trait ' . HasApiTokens::class);
+        if (! isset($uses[HasApiTokens::class])) {
+            throw new Exception('The model ['.get_class($user).'] must uses the trait '.HasApiTokens::class);
         }
 
         $user->withAccessToken($token);

@@ -3,8 +3,8 @@
 namespace SMartins\PassportMultiauth\Tests\Unit;
 
 use Mockery;
-use SMartins\PassportMultiauth\Tests\TestCase;
 use SMartins\PassportMultiauth\Guards\GuardChecker;
+use SMartins\PassportMultiauth\Tests\TestCase;
 
 class GuardCheckerTest extends TestCase
 {

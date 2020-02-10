@@ -2,11 +2,11 @@
 
 namespace SMartins\PassportMultiauth\Tests\Unit;
 
-use Mockery;
 use Illuminate\Http\Request;
-use SMartins\PassportMultiauth\Tests\TestCase;
 use League\OAuth2\Server\Exception\OAuthServerException;
+use Mockery;
 use SMartins\PassportMultiauth\Http\Middleware\AddCustomProvider;
+use SMartins\PassportMultiauth\Tests\TestCase;
 
 class AddCustomProviderTest extends TestCase
 {

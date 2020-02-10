@@ -2,12 +2,12 @@
 
 namespace SMartins\PassportMultiauth\Tests\Unit;
 
-use SMartins\PassportMultiauth\Tests\TestCase;
 use SMartins\PassportMultiauth\Config\AuthConfigHelper;
-use SMartins\PassportMultiauth\Tests\Fixtures\Models\User;
+use SMartins\PassportMultiauth\Exceptions\MissingConfigException;
 use SMartins\PassportMultiauth\Tests\Fixtures\Models\Company;
 use SMartins\PassportMultiauth\Tests\Fixtures\Models\Customer;
-use SMartins\PassportMultiauth\Exceptions\MissingConfigException;
+use SMartins\PassportMultiauth\Tests\Fixtures\Models\User;
+use SMartins\PassportMultiauth\Tests\TestCase;
 
 class AuthConfigHelperTest extends TestCase
 {

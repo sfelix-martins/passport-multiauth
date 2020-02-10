@@ -2,8 +2,8 @@
 
 namespace SMartins\PassportMultiauth\Tests\Fixtures\Models;
 
-use SMartins\PassportMultiauth\HasMultiAuthApiTokens;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use SMartins\PassportMultiauth\HasMultiAuthApiTokens;
 
 class Admin extends Authenticatable
 {
