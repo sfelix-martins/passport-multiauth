@@ -6,26 +6,6 @@ env:
 
 matrix:
   include:
-    - php: 7.1
-      env:
-      - passport=^5.0
-      - testbench=3.7.x
-      - phpunit=7.0.x
-    - php: 7.1
-      env:
-      - passport=^6.0
-      - testbench=3.7.x
-      - phpunit=7.0.x
-    - php: 7.1
-      env:
-      - passport=^7.0
-      - testbench=3.7.x
-      - phpunit=7.0.x
-    - php: 7.1
-      env:
-      - passport=^7.0
-      - testbench=3.8.x
-      - phpunit=7.5.x
     - php: 7.2
       env:
       - passport=^5.0
@@ -46,6 +26,11 @@ matrix:
       - passport=^7.0
       - testbench=3.8.x
       - phpunit=7.5.x
+    - php: 7.2
+      env:
+        - passport=^8.0
+        - testbench=4.x
+        - phpunit=7.5.x
     - php: 7.3
       env:
       - passport=^7.0
@@ -56,6 +41,16 @@ matrix:
       - passport=^7.0
       - testbench=3.8.x
       - phpunit=7.5.x
+    - php: 7.3
+      env:
+        - passport=^8.0
+        - testbench=4.x
+        - phpunit=7.5.x
+    - php: 7.4
+      env:
+        - passport=^8.0
+        - testbench=4.x
+        - phpunit=7.5.x
 
 sudo: false
 
