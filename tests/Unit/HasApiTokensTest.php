@@ -2,11 +2,11 @@
 
 namespace SMartins\PassportMultiauth\Tests\Unit;
 
-use SMartins\PassportMultiauth\Tests\TestCase;
-use SMartins\PassportMultiauth\Tests\Fixtures\Models\User;
+use SMartins\PassportMultiauth\Exceptions\MissingConfigException;
 use SMartins\PassportMultiauth\Tests\Fixtures\Models\Admin;
 use SMartins\PassportMultiauth\Tests\Fixtures\Models\Company;
-use SMartins\PassportMultiauth\Exceptions\MissingConfigException;
+use SMartins\PassportMultiauth\Tests\Fixtures\Models\User;
+use SMartins\PassportMultiauth\Tests\TestCase;
 
 class HasApiTokensTest extends TestCase
 {

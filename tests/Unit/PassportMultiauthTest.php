@@ -3,10 +3,10 @@
 namespace SMartins\PassportMultiauth\Tests\Unit;
 
 use Exception;
-use SMartins\PassportMultiauth\Tests\TestCase;
 use SMartins\PassportMultiauth\PassportMultiauth;
-use SMartins\PassportMultiauth\Tests\Fixtures\Models\User;
 use SMartins\PassportMultiauth\Tests\Fixtures\Models\Customer;
+use SMartins\PassportMultiauth\Tests\Fixtures\Models\User;
+use SMartins\PassportMultiauth\Tests\TestCase;
 
 class PassportMultiauthTest extends TestCase
 {

@@ -3,22 +3,22 @@
 namespace SMartins\PassportMultiauth\Http\Middleware;
 
 use Closure;
-use Illuminate\Auth\RequestGuard;
-use Illuminate\Foundation\Application;
-use League\OAuth2\Server\ResourceServer;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Middleware\Authenticate;
-use Psr\Http\Message\ServerRequestInterface;
+use Illuminate\Auth\RequestGuard;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Factory as Auth;
+use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Auth as AuthFacade;
+use League\OAuth2\Server\Exception\OAuthServerException;
+use League\OAuth2\Server\ResourceServer;
+use Psr\Http\Message\ServerRequestInterface;
+use SMartins\PassportMultiauth\Config\AuthConfigHelper;
+use SMartins\PassportMultiauth\Facades\ServerRequest;
+use SMartins\PassportMultiauth\Guards\GuardChecker;
 use SMartins\PassportMultiauth\PassportMultiauth;
 use SMartins\PassportMultiauth\Provider as Token;
-use Illuminate\Support\Facades\Auth as AuthFacade;
 use SMartins\PassportMultiauth\ProviderRepository;
-use SMartins\PassportMultiauth\Guards\GuardChecker;
-use SMartins\PassportMultiauth\Facades\ServerRequest;
-use SMartins\PassportMultiauth\Config\AuthConfigHelper;
-use League\OAuth2\Server\Exception\OAuthServerException;
 
 class MultiAuthenticate extends Authenticate
 {
@@ -105,8 +105,6 @@ class MultiAuthenticate extends Authenticate
                 if (! $guard || (isset($guardsModels[$guard]) && $user instanceof $guardsModels[$guard])) {
                     return $user;
                 }
-
-                return null;
             });
 
             // After it, we'll change the passport driver behavior to get the
@@ -116,6 +114,7 @@ class MultiAuthenticate extends Authenticate
                 'passport',
                 function ($app, $name, array $config) use ($request) {
                     $providerGuard = AuthConfigHelper::getProviderGuard($config['provider']);
+
                     return tap($this->makeGuard($request, $providerGuard), function ($guard) {
                         Application::getInstance()->refresh('request', $guard, 'setRequest');
                     });

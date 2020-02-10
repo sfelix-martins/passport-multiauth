@@ -4,8 +4,8 @@ namespace SMartins\PassportMultiauth\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
-use Symfony\Component\HttpFoundation\Request;
 use SMartins\PassportMultiauth\Facades\ServerRequest;
+use Symfony\Component\HttpFoundation\Request;
 
 class ServerRequestFacadeTest extends TestCase
 {
