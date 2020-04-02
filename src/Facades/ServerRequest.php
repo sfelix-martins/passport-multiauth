@@ -3,10 +3,10 @@
 namespace SMartins\PassportMultiauth\Facades;
 
 use Exception;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 use Nyholm\Psr7\Factory\Psr17Factory;
+use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
+use Symfony\Component\HttpFoundation\Request;
 
 class ServerRequest
 {
