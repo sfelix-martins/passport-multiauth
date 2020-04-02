@@ -31,12 +31,13 @@ Add multi-authentication support to [Laravel Passport](https://laravel.com/docs/
 | ^7.0             |
 | ^8.0             |
 
-| Laravel Framework  | Passport Multiauth |
+| Laravel Framework  | Passport MultiAuth |
 |--------------------|--------------------|
 | <= 5.6             | <= 3.0             |
 | 5.7.x              | 4.0.x              |
 | >= 5.7.x  <= 5.8.x | 5.0.x              |
-| >= 6.x             | 6.x                |
+| 6.x                | 6.x                |
+| 7.x                | 7.x                |
           
 
 ## Installing and configuring
