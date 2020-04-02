@@ -17,7 +17,7 @@ class ServerRequest
      */
     public static function createRequest(Request $symfonyRequest)
     {
-        if (class_exists(PsrHttpFactory::class)) {
+        if (class_exists(Psr17Factory::class) && class_exists(PsrHttpFactory::class)) {
             $psr17Factory = new Psr17Factory;
 
             return (new PsrHttpFactory($psr17Factory, $psr17Factory, $psr17Factory, $psr17Factory))
