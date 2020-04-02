@@ -31,6 +31,11 @@ matrix:
         - passport=^8.0
         - testbench=4.x
         - phpunit=8.x
+    - php: 7.2
+      env:
+        - passport=^8.0
+        - testbench=5.x
+        - phpunit=8.x
     - php: 7.3
       env:
       - passport=^7.0
@@ -46,10 +51,20 @@ matrix:
         - passport=^8.0
         - testbench=4.x
         - phpunit=8.x
+    - php: 7.3
+      env:
+        - passport=^8.0
+        - testbench=5.x
+        - phpunit=8.x
     - php: 7.4
       env:
         - passport=^8.0
         - testbench=4.x
+        - phpunit=8.x
+    - php: 7.4
+      env:
+        - passport=^8.0
+        - testbench=5.x
         - phpunit=8.x
 
 sudo: false
