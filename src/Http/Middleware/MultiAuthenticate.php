@@ -78,13 +78,13 @@ class MultiAuthenticate extends Authenticate
             $psrRequest = $this->server->validateAuthenticatedRequest($psrRequest);
 
             if (! ($accessToken = $this->getAccessTokenFromRequest($psrRequest))) {
-                throw new AuthenticationException('Unauthenticated', $guards);
+                $this->unauthenticated($request, $guards);
             }
 
             $guard = $this->getTokenGuard($accessToken, $guards);
 
             if (empty($guard)) {
-                throw new AuthenticationException('Unauthenticated', $guards);
+                $this->unauthenticated($request, $guards);
             }
 
             // At this point, the authentication will be done by Laravel Passport default driver.
@@ -131,7 +131,7 @@ class MultiAuthenticate extends Authenticate
             }
 
             // @todo Check if it's the best way to handle with OAuthServerException
-            throw new AuthenticationException('Unauthenticated', $guards);
+            $this->unauthenticated($request, $guards);
         }
 
         return $next($request);
