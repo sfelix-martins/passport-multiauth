@@ -1,3 +1,6 @@
+# [ALERT] Deprecated !!
+> The package is deprecated because Laravel Password has a native implementaion since [version 9.0](https://github.com/laravel/passport/releases/tag/v9.0.0)
+
 # Laravel Passport Multi-Auth
 
 [![Latest Stable Version](https://poser.pugx.org/smartins/passport-multiauth/v/stable)](https://packagist.org/packages/smartins/passport-multiauth)
