@@ -1,5 +1,5 @@
 # [ALERT] Deprecated !!
-> The package is deprecated because Laravel Password has a native implementaion since [version 9.0](https://github.com/laravel/passport/releases/tag/v9.0.0)
+> The package is deprecated because Laravel Passport has a native implementaion since [version 9.0](https://github.com/laravel/passport/releases/tag/v9.0.0)
 
 # Laravel Passport Multi-Auth
 
