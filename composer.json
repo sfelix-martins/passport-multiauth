@@ -13,8 +13,8 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "php": "^7.2",
-        "laravel/passport": "^8.0"
+        "php": "^7.3|^8.0",
+        "laravel/passport": "^10.1.2"
     },
     "require-dev": {
         "orchestra/testbench": "^4.0",
